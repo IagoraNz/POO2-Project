@@ -1,11 +1,10 @@
 import sys
-import os
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QMessageBox, QInputDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout
 
 class Tela(QWidget):
     def __init__(self):
+        super().__init__()
         self.setWindowTitle('Sistema Gerenciador do Porto de Santos')
-        self.setGeometry(100, 100, 300, 300)
         
         # Inicializar aqui as classes necessárias
         
