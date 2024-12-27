@@ -207,6 +207,7 @@ class Autenticacao:
             r.hset('credenciais', mapping={user: senha})
         else:
             r.hset('credenciais', user, senha)
+        return True, "Cadastro efetuado com sucesso"
             
     def login(self, user: str, senha: str):
         r = redis.Redis(host='localhost', port=6379, db=0)
