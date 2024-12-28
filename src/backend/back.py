@@ -217,9 +217,9 @@ class Autenticacao:
                 senha_armazenada, tipo = dados.decode('utf-8').split(',')
                 if senha_armazenada == senha:
                     if int(tipo) == 1:
-                        return 1, "Login efetuado com sucesso"
+                        return 1, "Login efetuado com sucesso, Gerente"
                     elif int(tipo) == 2:
-                        return 2, "Login efetuado com sucesso"
+                        return 2, "Login efetuado com sucesso, Atendente"
         return False, "Login não foi efetuado com sucesso"
     
 class CiaAerea():
