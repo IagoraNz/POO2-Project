@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushBut
 from PyQt5.QtGui import QPixmap, QFontDatabase, QFont
 from PyQt5.QtCore import Qt
 from backend.back import Autenticacao
+from PyQt5.QtWidgets import QMessageBox
 
 # Caminho para a fonte
 font_path = os.path.abspath("./src/fonts/Montserrat-SemiBold.ttf")
@@ -94,6 +95,7 @@ class Tela(QWidget):
         bt_login.setFixedSize(200, 50)
         bt_login.setStyleSheet(button_style)
         bt_login.setFont(montserrat_bold)
+        bt_login.clicked.connect(self.mostrar_formulario_login)
         self.layout.addWidget(bt_login, alignment=Qt.AlignHCenter)
 
         bt_cadastrar = QPushButton("Cadastro")
@@ -154,11 +156,10 @@ class Tela(QWidget):
             self.senha_input.setStyleSheet(line_edit_style)
             self.layout.addWidget(self.senha_input, alignment=Qt.AlignHCenter)
 
-            self.confirma_senha_input = QLineEdit(self)
-            self.confirma_senha_input.setPlaceholderText("Confirmar Senha")
-            self.confirma_senha_input.setEchoMode(QLineEdit.Password)
-            self.confirma_senha_input.setStyleSheet(line_edit_style)
-            self.layout.addWidget(self.confirma_senha_input, alignment=Qt.AlignHCenter)
+            self.tipo_input = QLineEdit(self)
+            self.tipo_input.setPlaceholderText("Tipo de funcionário (1 - Gerente, 2 - Atendente)")
+            self.tipo_input.setStyleSheet(line_edit_style)
+            self.layout.addWidget(self.tipo_input, alignment=Qt.AlignHCenter)
 
             # Botão para efetuar o cadastro
             bt_efetuar_cadastro = QPushButton("Efetuar Cadastro")
@@ -177,27 +178,56 @@ class Tela(QWidget):
     def efetuar_cadastro(self):
         usuario = self.usuario_input.text()
         senha = self.senha_input.text()
-        confirma_senha = self.confirma_senha_input.text()
-
-        if senha != confirma_senha:
-            print("As senhas não coincidem!")
+        tipo = self.tipo_input.text()
+        
+        if not usuario or not senha or not tipo:
+            print("Todos os campos devem ser preenchidos!")
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setWindowTitle("Inválido")
+            msg.setText("Todos os campos devem ser preenchidos!")
+            msg.exec_()
             return
         
         if len(senha) < 8:
             print("A senha deve ter no mínimo 8 dígitos")
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setWindowTitle("Inválido")
+            msg.setText("A senha deve ter no mínimo 8 dígitos! Tente novamente...")
+            msg.exec_()
             return
 
-        if self.auth.cadastro(usuario, senha):
+        if tipo not in ["1", "2"]:
+            print("Tipo de usuário inválido! Deve ser 1 (Gerente) ou 2 (Atendente)")
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setWindowTitle("Inválido")
+            msg.setText("Tipo de usuário inválido! Deve ser 1 (Gerente) ou 2 (Atendente)")
+            msg.exec_()
+            return
+
+        if self.auth.cadastro(usuario, senha, tipo):
             print(f"Usuário {usuario} cadastrado com sucesso!")
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setWindowTitle("Sucesso")
+            msg.setText(f"Usuário {usuario} cadastrado com sucesso!")
+            msg.exec_()
             self.voltar_tela_inicial()
         else:
             print(f"Erro: Usuário {usuario} já existe.")
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setWindowTitle("Erro")
+            msg.setText(f"Erro: Usuário {usuario} já existe.")
+            msg.exec_()
 
     def voltar_tela_inicial(self):
         # Limpar os campos de cadastro
         self.usuario_input.setText("")
         self.senha_input.setText("")
-        self.confirma_senha_input.setText("")
+        self.tipo_input.setText("")
 
         # Remover os campos de cadastro
         self.layout.itemAt(5).widget().setVisible(False)
@@ -209,6 +239,75 @@ class Tela(QWidget):
         self.welcome_label.setText("<b>Bem-vindo ao sistema gerenciador da Delta Airlines</b>")
         self.layout.itemAt(3).widget().setVisible(True)
         self.layout.itemAt(4).widget().setVisible(True)
+        
+    def mostrar_formulario_login(self):
+        # Limpar a tela de boas-vindas e botões
+        self.welcome_label.setText("")
+        self.layout.itemAt(3).widget().setVisible(False)
+        self.layout.itemAt(4).widget().setVisible(False)
+
+        # Criar os campos de login (verifica se já foram criados antes)
+        if not hasattr(self, 'login_usuario_input'):
+            self.login_usuario_input = QLineEdit(self)
+            self.login_usuario_input.setPlaceholderText("Usuário")
+            self.login_usuario_input.setStyleSheet(line_edit_style)
+            self.layout.addWidget(self.login_usuario_input, alignment=Qt.AlignHCenter)
+
+            self.login_senha_input = QLineEdit(self)
+            self.login_senha_input.setPlaceholderText("Senha")
+            self.login_senha_input.setEchoMode(QLineEdit.Password)
+            self.login_senha_input.setStyleSheet(line_edit_style)
+            self.layout.addWidget(self.login_senha_input, alignment=Qt.AlignHCenter)
+
+            # Botão para efetuar o login
+            bt_efetuar_login = QPushButton("Efetuar Login")
+            bt_efetuar_login.setFixedSize(200, 50)
+            bt_efetuar_login.setStyleSheet(button_style)
+            bt_efetuar_login.setFont(QFont("Montserrat", 10, QFont.Bold))
+            bt_efetuar_login.clicked.connect(self.efetuar_login)
+            self.layout.addWidget(bt_efetuar_login, alignment=Qt.AlignHCenter)
+
+        # Mostrar a tela de login
+        self.layout.itemAt(5).widget().setVisible(True)
+        self.layout.itemAt(6).widget().setVisible(True)
+        self.layout.itemAt(7).widget().setVisible(True)
+
+    def efetuar_login(self):
+        usuario = self.login_usuario_input.text()
+        senha = self.login_senha_input.text()
+
+        if not usuario or not senha:
+            print("Todos os campos devem ser preenchidos!")
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setWindowTitle("Inválido")
+            msg.setText("Todos os campos devem ser preenchidos!")
+            msg.exec_()
+            return
+
+        if self.auth.login(usuario, senha) == 1:
+            print(f"Usuário {usuario} logado com sucesso!")
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setWindowTitle("Sucesso")
+            msg.setText(f"Usuário {usuario} logado com sucesso!")
+            msg.exec_()
+            # Aqui você pode adicionar a lógica para redirecionar o usuário para a próxima tela
+        elif self.auth.login(usuario, senha) == 2:
+            print(f"Usuário {usuario} logado com sucesso!")
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setWindowTitle("Sucesso")
+            msg.setText(f"Usuário {usuario} logado com sucesso!")
+            msg.exec_()
+            # Aqui você pode adicionar a lógica para redirecionar o usuário para a próxima tela
+        else:
+            print("Usuário ou senha incorretos!")
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setWindowTitle("Inválido")
+            msg.setText("Usuário ou senha incorretos! Tente novamente...")
+            msg.exec_()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
