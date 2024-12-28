@@ -201,20 +201,25 @@ class Autenticacao:
     def senha(self, senha: str):
         self._senha = senha
         
-    def cadastro(self, user: str, senha: str):
+    def cadastro(self, user: str, senha: str, tipo: int) -> tuple:
         r = redis.Redis(host='localhost', port=6379, db=0)
         if not r.exists('credenciais'):
-            r.hset('credenciais', mapping={user: senha})
+            r.hset('credenciais', mapping={user: f"{senha},{tipo}"})
         else:
-            r.hset('credenciais', user, senha)
+            r.hset('credenciais', user, f"{senha},{tipo}")
         return True, "Cadastro efetuado com sucesso"
             
-    def login(self, user: str, senha: str):
+    def login(self, user: str, senha: str) -> tuple:
         r = redis.Redis(host='localhost', port=6379, db=0)
         if r.exists('credenciais'):
-            senha_armazenada = r.hget('credenciais', user)
-            if senha_armazenada and senha_armazenada.decode('utf-8') == senha:
-                return True, "Login efetuado com sucesso"
+            dados = r.hget('credenciais', user)
+            if dados:
+                senha_armazenada, tipo = dados.decode('utf-8').split(',')
+                if senha_armazenada == senha:
+                    if int(tipo) == 1:
+                        return 1, "Login efetuado com sucesso, Gerente"
+                    elif int(tipo) == 2:
+                        return 2, "Login efetuado com sucesso, Atendente"
         return False, "Login não foi efetuado com sucesso"
     
 class CiaAerea():
