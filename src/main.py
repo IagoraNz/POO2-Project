@@ -1589,6 +1589,12 @@ class TelaVoos_Marcar(QMainWindow):
         self.layout.addWidget(self.button_container)
 
 
+
+
+
+
+
+
 class TelaAtendente(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -1634,11 +1640,11 @@ class TelaAtendente(QMainWindow):
         button_layout.setAlignment(Qt.AlignCenter)
         
         # Botões
-        self.bt_clientes = QPushButton("Clientes")
+        self.bt_clientes = QPushButton("Passageiros")
         self.bt_clientes.setFixedSize(200, 50)
         self.bt_clientes.setStyleSheet(button_style)
         self.bt_clientes.setFont(montserrat_bold)
-        self.bt_clientes.clicked.connect(self.mostrar_tela_clientes)
+        self.bt_clientes.clicked.connect(self.mostrar_tela_passageiros)
 
         self.bt_reservas = QPushButton("Reservas")
         self.bt_reservas.setFixedSize(200, 50)
@@ -1672,9 +1678,9 @@ class TelaAtendente(QMainWindow):
         self.placeholder_widget = QWidget()
         self.stacked_widget.addWidget(self.placeholder_widget)
 
-    def mostrar_tela_clientes(self):
-        self.tela_clientes = TelaClientes()
-        self.tela_clientes.show()
+    def mostrar_tela_passageiros(self):
+        self.tela_passageiros = TelaPassageiros()
+        self.tela_passageiros.show()
     
     def mostrar_tela_reservas(self):
         self.tela_reservas = TelaReservas()
@@ -1685,7 +1691,7 @@ class TelaAtendente(QMainWindow):
         self.tela_inicial.show()
 
 
-class TelaClientes(QMainWindow):
+class TelaPassageiros(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Gerenciamento de Clientes - Delta Airlines")
@@ -1743,24 +1749,28 @@ class TelaClientes(QMainWindow):
         self.bt_cadastrar.setStyleSheet(button_style)
         self.bt_cadastrar.setFont(montserrat_bold)
         self.button_layout.addWidget(self.bt_cadastrar)
+        self.bt_cadastrar.clicked.connect(self.mostrar_tela_cadastrar_passageiro)
 
         self.bt_alterar = QPushButton("Alterar")
         self.bt_alterar.setFixedSize(button_width, button_height)
         self.bt_alterar.setStyleSheet(button_style)
         self.bt_alterar.setFont(montserrat_bold)
         self.button_layout.addWidget(self.bt_alterar)
+        self.bt_alterar.clicked.connect(self.mostrar_tela_alterar_passageiro)
 
         self.bt_remover = QPushButton("Remover")
         self.bt_remover.setFixedSize(button_width, button_height)
         self.bt_remover.setStyleSheet(button_style)
         self.bt_remover.setFont(montserrat_bold)
         self.button_layout.addWidget(self.bt_remover)
+        self.bt_remover.clicked.connect(self.mostrar_tela_remover_passageiro)
 
         self.bt_listar = QPushButton("Listar")
         self.bt_listar.setFixedSize(button_width, button_height)
         self.bt_listar.setStyleSheet(button_style)
         self.bt_listar.setFont(montserrat_bold)
         self.button_layout.addWidget(self.bt_listar)
+        self.bt_listar.clicked.connect(self.mostrar_tela_listar_passageiro)
 
         self.bt_voltar = QPushButton("Voltar")
         self.bt_voltar.setFixedSize(button_width, button_height)
@@ -1783,6 +1793,22 @@ class TelaClientes(QMainWindow):
         self.placeholder_widget = QWidget()
         self.layout.addWidget(self.placeholder_widget)
 
+    def mostrar_tela_cadastrar_passageiro(self):
+        self.tela_cadastrar_passageiro = TelaPassageiros_Cadastrar()
+        self.tela_cadastrar_passageiro.show()
+        self.close()
+    def mostrar_tela_alterar_passageiro(self):
+        self.tela_alterar_passageiro = TelaPassageiros_Alterar()
+        self.tela_alterar_passageiro.show()
+        self.close()
+    def mostrar_tela_remover_passageiro(self):
+        self.tela_remover_passageiro = TelaPassageiros_Remover()
+        self.tela_remover_passageiro.show()
+        self.close()
+    def mostrar_tela_listar_passageiro(self):
+        self.tela_listar_passageiro = TelaPassageiros_Listar()
+        self.tela_listar_passageiro.show()
+        self.close()
 
 class TelaReservas(QMainWindow):
     def __init__(self):
@@ -1842,12 +1868,14 @@ class TelaReservas(QMainWindow):
         self.bt_reservar.setStyleSheet(button_style)
         self.bt_reservar.setFont(montserrat_bold)
         self.button_layout.addWidget(self.bt_reservar)
+        self.bt_reservar.clicked.connect(self.mostrar_tela_reservas_reservar)
 
-        self.bt_cancelar = QPushButton("Cancelar")
+        self.bt_cancelar = QPushButton("Remover")
         self.bt_cancelar.setFixedSize(button_width, button_height)
         self.bt_cancelar.setStyleSheet(button_style)
         self.bt_cancelar.setFont(montserrat_bold)
         self.button_layout.addWidget(self.bt_cancelar)
+        self.bt_cancelar.clicked.connect(self.mostrar_tela_reservas_remover)
 
         self.bt_voltar = QPushButton("Voltar")
         self.bt_voltar.setFixedSize(button_width, button_height)
@@ -1869,6 +1897,648 @@ class TelaReservas(QMainWindow):
         # Placeholder para conteúdos adicionais
         self.placeholder_widget = QWidget()
         self.layout.addWidget(self.placeholder_widget)
+    
+    def mostrar_tela_reservas_reservar(self):
+        self.tela_reservas_reservar = TelaReservas_Reservar()
+        self.tela_reservas_reservar.show()
+        self.close()
+    
+    def mostrar_tela_reservas_remover(self):
+        self.tela_reservas_remover = TelaReservas_Remover()
+        self.tela_reservas_remover.show()
+        self.close()
+
+
+class TelaPassageiros_Cadastrar(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Cadastrar Cliente - Delta Airlines")
+        self.setFixedSize(1000, 600)
+        self.setStyleSheet("background-color: white;")
+
+        # Carregar a fonte Montserrat
+        if os.path.exists(font_path):
+            QFontDatabase.addApplicationFont(font_path)
+            montserrat_bold = QFont("Montserrat", 14, QFont.Bold)
+        else:
+            montserrat_bold = QFont("Arial", 14, QFont.Bold)
+
+        # Layout principal
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+        self.layout = QVBoxLayout(self.central_widget)
+
+        # Contêiner 1: Logo e frase "Cadastrando Clientes"
+        self.logo_widget = QWidget()
+        self.logo_layout = QVBoxLayout(self.logo_widget)
+        self.logo_layout.setContentsMargins(0, 0, 0, 0)
+        self.logo_layout.setSpacing(10)
+
+        self.logo_label = QLabel(self.logo_widget)
+        logo_path = os.path.abspath("./src/images/image.png")
+        if os.path.exists(logo_path):
+            pixmap = QPixmap(logo_path)
+            resized_pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.logo_label.setPixmap(resized_pixmap)
+        else:
+            self.logo_label.setText("Imagem não encontrada.")
+        self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)
+
+        self.title_label = QLabel("Cadastrar Passageiro")
+        self.title_label.setFont(montserrat_bold)
+        self.title_label.setAlignment(Qt.AlignCenter)
+        self.logo_layout.addWidget(self.title_label)
+
+        self.layout.addWidget(self.logo_widget)
+
+        # Contêiner 2: Campos de entrada
+        self.form_widget = QWidget()
+        self.form_layout = QVBoxLayout(self.form_widget)
+        self.form_layout.setContentsMargins(50, 20, 50, 0)
+        self.form_layout.setSpacing(20)
+
+        self.nome_input = QLineEdit(self)
+        self.nome_input.setPlaceholderText("Nome")
+        self.nome_input.setStyleSheet(line_edit_style)
+        self.form_layout.addWidget(self.nome_input)
+
+        self.cpf_input = QLineEdit(self)
+        self.cpf_input.setPlaceholderText("CPF")
+        self.cpf_input.setStyleSheet(line_edit_style)
+        self.form_layout.addWidget(self.cpf_input)
+
+        self.telefone_input = QLineEdit(self)
+        self.telefone_input.setPlaceholderText("Telefone")
+        self.telefone_input.setStyleSheet(line_edit_style)
+        self.form_layout.addWidget(self.telefone_input)
+
+        self.layout.addWidget(self.form_widget)
+
+        # Contêiner 3: Botões
+        self.buttons_widget = QWidget()
+        self.buttons_layout = QVBoxLayout(self.buttons_widget)
+        self.buttons_layout.setContentsMargins(0, 30, 0, 0)
+        self.buttons_layout.setSpacing(20)
+
+        button_width = 200
+        button_height = 50
+
+        self.bt_cadastrar = QPushButton("Cadastrar")
+        self.bt_cadastrar.setFixedSize(button_width, button_height)
+        self.bt_cadastrar.setStyleSheet(button_style)
+        self.bt_cadastrar.setFont(montserrat_bold)
+        self.bt_cadastrar.clicked.connect(self.close)  # Conecta ao método de fechar a janela
+        self.buttons_layout.addWidget(self.bt_cadastrar, alignment=Qt.AlignCenter)
+
+        # Botão "Voltar"
+        self.bt_voltar = QPushButton("Voltar")
+        self.bt_voltar.setFixedSize(button_width, button_height)
+        self.bt_voltar.setStyleSheet(button_style)
+        self.bt_voltar.setFont(montserrat_bold)
+        self.bt_voltar.clicked.connect(self.close)  # Conecta ao método de fechar a janela
+        self.buttons_layout.addWidget(self.bt_voltar, alignment=Qt.AlignCenter)
+
+        self.layout.addWidget(self.buttons_widget)
+
+
+
+class TelaPassageiros_Alterar(QMainWindow): 
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Alterar Passageiro - Delta Airlines")
+        self.setFixedSize(1000, 600)
+        self.setStyleSheet("background-color: white;")
+
+        # Carregar a fonte Montserrat
+        if os.path.exists(font_path):
+            QFontDatabase.addApplicationFont(font_path)
+            montserrat_bold = QFont("Montserrat", 14, QFont.Bold)
+        else:
+            montserrat_bold = QFont("Arial", 14, QFont.Bold)
+
+        # Layout principal
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+        self.layout = QVBoxLayout(self.central_widget)
+
+        # Contêiner 1: Logo
+        self.logo_widget = QWidget()
+        self.logo_layout = QVBoxLayout(self.logo_widget)
+        self.logo_layout.setContentsMargins(0, 0, 0, 0)
+        self.logo_layout.setSpacing(0)
+
+        self.logo_label = QLabel(self.logo_widget)
+        logo_path = os.path.abspath("./src/images/image.png")
+        if os.path.exists(logo_path):
+            pixmap = QPixmap(logo_path)
+            resized_pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.logo_label.setPixmap(resized_pixmap)
+        else:
+            self.logo_label.setText("Imagem não encontrada.")
+
+        self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignTop)
+        self.layout.addWidget(self.logo_widget, alignment=Qt.AlignCenter)
+
+        # Botões e layout
+        button_width = 200
+        button_height = 50
+
+        # Contêiner de entrada para CPF
+        self.cpf_container = QWidget()
+        self.cpf_layout = QVBoxLayout(self.cpf_container)
+        self.cpf_layout.setContentsMargins(100, 10, 100, 10)
+        self.cpf_layout.setSpacing(15)
+
+        self.cpf_input = QLineEdit()
+        self.cpf_input.setPlaceholderText("Digite o CPF do passageiro")
+        self.cpf_input.setStyleSheet(line_edit_style)
+        self.cpf_layout.addWidget(self.cpf_input)
+
+        self.buscar_button = QPushButton("Buscar Passageiro")
+        self.buscar_button.setFixedSize(button_width, button_height)
+        self.buscar_button.setFont(montserrat_bold)
+        self.buscar_button.setStyleSheet(button_style)
+        self.cpf_layout.addWidget(self.buscar_button, alignment=Qt.AlignCenter)
+
+        self.layout.addWidget(self.cpf_container)
+
+        # Contêiner 3: Informações do passageiro
+        self.info_container = QWidget()
+        self.info_layout = QVBoxLayout(self.info_container)
+        self.info_container.setContentsMargins(100, 10, 100, 10)
+        self.info_layout.setSpacing(10)
+
+        self.passageiro_info_label = QLabel("Informações do passageiro a serem exibidas aqui")
+        self.passageiro_info_label.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
+        self.passageiro_info_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.info_layout.addWidget(self.passageiro_info_label)
+
+        self.layout.addWidget(self.info_container)
+
+        # Contêiner do título
+        self.title_container = QLabel("Alterar Passageiro")
+        self.title_container.setFont(montserrat_bold)
+        self.title_container.setAlignment(Qt.AlignCenter)
+        self.title_container.setStyleSheet(line_edit_style)
+        self.layout.addWidget(self.title_container)
+
+        # Contêiner para os campos de edição
+        self.edit_container = QWidget()
+        self.edit_layout = QVBoxLayout(self.edit_container)
+        self.edit_layout.setContentsMargins(100, 10, 100, 10)
+        self.edit_layout.setSpacing(15)
+
+        # Campo de Nome
+        self.nome_input = QLineEdit()
+        self.nome_input.setPlaceholderText("Digite o nome do passageiro")
+        self.nome_input.setStyleSheet(line_edit_style)
+        self.edit_layout.addWidget(self.nome_input)
+
+        # Campo de Telefone
+        self.telefone_input = QLineEdit()
+        self.telefone_input.setPlaceholderText("Digite o telefone do passageiro")
+        self.telefone_input.setStyleSheet(line_edit_style)
+        self.edit_layout.addWidget(self.telefone_input)
+
+        self.layout.addWidget(self.edit_container)
+
+        # Contêiner para os botões "Alterar Passageiro" e "Voltar"
+        self.buttons_container = QWidget()
+        self.buttons_layout = QHBoxLayout(self.buttons_container)
+        self.buttons_layout.setAlignment(Qt.AlignCenter)
+        self.buttons_layout.setSpacing(20)  # Espaçamento entre os botões
+
+        self.alterar_button = QPushButton("Alterar Passageiro")
+        self.alterar_button.setFixedSize(button_width, button_height)
+        self.alterar_button.setFont(montserrat_bold)
+        self.alterar_button.setStyleSheet(button_style)
+        self.buttons_layout.addWidget(self.alterar_button)
+        self.alterar_button.clicked.connect(self.close)
+
+        self.voltar_button = QPushButton("Voltar")
+        self.voltar_button.setFixedSize(button_width, button_height)
+        self.voltar_button.setFont(montserrat_bold)
+        self.voltar_button.setStyleSheet(button_style)
+        self.buttons_layout.addWidget(self.voltar_button)
+        self.voltar_button.clicked.connect(self.close)
+
+        self.layout.addWidget(self.buttons_container)
+
+
+
+class TelaPassageiros_Remover(QMainWindow): 
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Removendo Passageiros - Delta Airlines")
+        self.setFixedSize(1000, 600)
+        self.setStyleSheet("background-color: white;")
+
+        # Carregar a fonte Montserrat
+        font_path = os.path.abspath("./src/fonts/Montserrat-Bold.ttf")
+        if os.path.exists(font_path):
+            QFontDatabase.addApplicationFont(font_path)
+            montserrat_bold = QFont("Montserrat", 14, QFont.Bold)
+        else:
+            montserrat_bold = QFont("Arial", 14, QFont.Bold)
+
+        # Layout principal
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+        self.layout = QVBoxLayout(self.central_widget)
+
+        # Contêiner 1: Logo
+        self.logo_widget = QWidget()
+        self.logo_layout = QVBoxLayout(self.logo_widget)
+        self.logo_layout.setContentsMargins(0, 0, 0, 0)
+        self.logo_layout.setSpacing(0)
+
+        self.logo_label = QLabel(self.logo_widget)
+        logo_path = os.path.abspath("./src/images/image.png")
+        if os.path.exists(logo_path):
+            pixmap = QPixmap(logo_path)
+            resized_pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.logo_label.setPixmap(resized_pixmap)
+        else:
+            self.logo_label.setText("Imagem não encontrada.")
+
+        self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)  # Logo centralizada
+        self.layout.addWidget(self.logo_widget, alignment=Qt.AlignCenter)
+
+        # Adicionar a frase "Remover Passageiro" abaixo da logo
+        self.remove_passageiro_label = QLabel("Remover Passageiro")
+        self.remove_passageiro_label.setFont(montserrat_bold)
+        self.remove_passageiro_label.setAlignment(Qt.AlignCenter)
+        self.remove_passageiro_label.setStyleSheet("color: #333333; margin-top: 10px;")
+        self.logo_layout.addWidget(self.remove_passageiro_label)
+
+        self.layout.addWidget(self.logo_widget)
+
+        # Contêiner 2: Entrada de CPF e botão de busca
+        self.cpf_container = QWidget()
+        self.cpf_layout = QVBoxLayout(self.cpf_container)
+        self.cpf_layout.setSpacing(10)
+        self.cpf_container.setContentsMargins(100, 10, 100, 10)
+
+        self.cpf_input = QLineEdit()
+        self.cpf_input.setPlaceholderText("CPF do Passageiro")
+        self.cpf_input.setStyleSheet(line_edit_style)
+        self.cpf_layout.addWidget(self.cpf_input)
+
+        self.buscar_button = QPushButton("Buscar Passageiro")
+        self.buscar_button.setFixedSize(200, 50)
+        self.buscar_button.setStyleSheet(button_style)
+        self.cpf_layout.addWidget(self.buscar_button, alignment=Qt.AlignCenter)
+
+        self.layout.addWidget(self.cpf_container)
+
+        # Contêiner 3: Informações do passageiro
+        self.info_container = QWidget()
+        self.info_layout = QVBoxLayout(self.info_container)
+        self.info_container.setContentsMargins(100, 10, 100, 10)
+        self.info_layout.setSpacing(10)
+
+        self.passageiro_info_label = QLabel("Informações do passageiro a serem exibidas aqui")
+        self.passageiro_info_label.setStyleSheet("border: 1px solid #cccccc; padding: 10px; border-radius: 3px;")
+        self.passageiro_info_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.info_layout.addWidget(self.passageiro_info_label)
+
+        self.layout.addWidget(self.info_container)
+
+        # Contêiner 4: Botões de remover e voltar
+        self.button_container = QWidget()
+        self.button_layout = QVBoxLayout(self.button_container)
+        self.button_layout.setAlignment(Qt.AlignCenter)
+
+        self.remover_passageiro_button = QPushButton("Remover Passageiro")
+        self.remover_passageiro_button.setFixedSize(200, 50)
+        self.remover_passageiro_button.setStyleSheet(button_style)
+        self.remover_passageiro_button.setFont(montserrat_bold)
+        self.remover_passageiro_button.clicked.connect(self.close)  # Substitua por funcionalidade de remoção
+        self.button_layout.addWidget(self.remover_passageiro_button)
+
+        self.voltar_button = QPushButton("Voltar")
+        self.voltar_button.setFixedSize(200, 50)
+        self.voltar_button.setStyleSheet(button_style)
+        self.voltar_button.setFont(montserrat_bold)
+        self.voltar_button.clicked.connect(self.close)
+        self.button_layout.addWidget(self.voltar_button)
+
+        self.layout.addWidget(self.button_container)
+
+
+
+class TelaPassageiros_Listar(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Lista de Passageiros - Delta Airlines")
+        self.setFixedSize(1000, 600)
+        self.setStyleSheet("background-color: white;")
+
+        # Carregar a fonte Montserrat
+        font_path = os.path.abspath("./src/fonts/Montserrat-Bold.ttf")
+        if os.path.exists(font_path):
+            QFontDatabase.addApplicationFont(font_path)
+            montserrat_bold = QFont("Montserrat", 14, QFont.Bold)
+        else:
+            montserrat_bold = QFont("Arial", 14, QFont.Bold)
+
+        # Layout principal
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+        self.layout = QVBoxLayout(self.central_widget)
+
+        # Logo
+        self.logo_widget = QWidget()
+        self.logo_layout = QVBoxLayout(self.logo_widget)
+        self.logo_layout.setContentsMargins(0, 0, 0, 0)
+        self.logo_layout.setSpacing(0)
+
+        self.logo_label = QLabel(self.logo_widget)
+        logo_path = os.path.abspath("./src/images/image.png")
+        if os.path.exists(logo_path):
+            pixmap = QPixmap(logo_path)
+            resized_pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.logo_label.setPixmap(resized_pixmap)
+        else:
+            self.logo_label.setText("Imagem não encontrada.")
+
+        self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)  # Logo centralizada
+        self.layout.addWidget(self.logo_widget, alignment=Qt.AlignCenter)
+
+        # Contêiner "Lista de Passageiros"
+        self.label_container = QLabel("Lista de Passageiros")
+        self.label_container.setFont(montserrat_bold)
+        self.label_container.setAlignment(Qt.AlignCenter)
+        self.label_container.setStyleSheet("color: #333333;")
+        self.layout.addWidget(self.label_container, alignment=Qt.AlignCenter)
+
+        # Contêiner 3: Informações dos passageiros disponíveis
+        self.info_container = QWidget()
+        self.info_layout = QVBoxLayout(self.info_container)
+        self.info_container.setContentsMargins(100, 10, 100, 10)
+        self.info_layout.setSpacing(10)
+
+        self.passageiro_info_label = QLabel("Informações dos passageiros a serem exibidas aqui")
+        self.passageiro_info_label.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
+        self.passageiro_info_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.info_layout.addWidget(self.passageiro_info_label)
+
+        self.layout.addWidget(self.info_container)
+
+        # Contêiner com o botão "Voltar"
+        self.button_container = QWidget()
+        self.button_layout = QVBoxLayout(self.button_container)
+        self.button_layout.setAlignment(Qt.AlignCenter)
+
+        self.voltar_button = QPushButton("Voltar")
+        self.voltar_button.setFixedSize(200, 50)
+        self.voltar_button.setFont(montserrat_bold)
+        self.voltar_button.setStyleSheet(button_style)
+        self.voltar_button.clicked.connect(self.close)
+        self.button_layout.addWidget(self.voltar_button)
+
+        self.layout.addWidget(self.button_container)
+
+
+
+class TelaReservas_Reservar(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Reservar Voo - Delta Airlines")
+        self.setFixedSize(1000, 600)
+        self.setStyleSheet("background-color: white;")
+
+        # Carregar a fonte Montserrat
+        if os.path.exists(font_path):
+            QFontDatabase.addApplicationFont(font_path)
+            montserrat_bold = QFont("Montserrat", 14, QFont.Bold)
+        else:
+            montserrat_bold = QFont("Arial", 14, QFont.Bold)
+
+        # Layout principal
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+        self.layout = QVBoxLayout(self.central_widget)
+
+        # Contêiner 1: Logo
+        self.logo_widget = QWidget()
+        self.logo_layout = QVBoxLayout(self.logo_widget)
+        self.logo_layout.setContentsMargins(0, 0, 0, 0)
+        self.logo_layout.setSpacing(0)
+
+        self.logo_label = QLabel(self.logo_widget)
+        logo_path = os.path.abspath("./src/images/image.png")
+        if os.path.exists(logo_path):
+            pixmap = QPixmap(logo_path)
+            resized_pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.logo_label.setPixmap(resized_pixmap)
+        else:
+            self.logo_label.setText("Imagem não encontrada.")
+
+        self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignTop)
+        self.layout.addWidget(self.logo_widget, alignment=Qt.AlignCenter)
+
+        # Contêiner: Lista de voos disponíveis
+        self.voos_container = QWidget()
+        self.voos_layout = QVBoxLayout(self.voos_container)
+        self.voos_layout.setContentsMargins(100, 10, 100, 10)
+        self.voos_layout.setSpacing(15)
+
+        self.voos_label = QLabel("Voos disponíveis")
+        self.voos_label.setFont(montserrat_bold)
+        self.voos_label.setAlignment(Qt.AlignCenter)
+        self.voos_layout.addWidget(self.voos_label)
+
+        self.voos_lista_label = QLabel("Lista de voos a serem exibidos aqui")
+        self.voos_lista_label.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
+        self.voos_lista_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.voos_layout.addWidget(self.voos_lista_label)
+
+        self.layout.addWidget(self.voos_container)
+
+        # Contêiner: Seleção do voo
+        self.selecao_voo_container = QWidget()
+        self.selecao_voo_layout = QVBoxLayout(self.selecao_voo_container)
+        self.selecao_voo_layout.setContentsMargins(100, 10, 100, 10)
+        self.selecao_voo_layout.setSpacing(15)
+
+        self.sigla_input = QLineEdit()
+        self.sigla_input.setPlaceholderText("Sigla do voo para reserva")
+        self.sigla_input.setStyleSheet(line_edit_style)
+        self.selecao_voo_layout.addWidget(self.sigla_input)
+
+        self.confirmar_voo_button = QPushButton("Confirmar Voo")
+        self.confirmar_voo_button.setFixedSize(200, 50)
+        self.confirmar_voo_button.setFont(montserrat_bold)
+        self.confirmar_voo_button.setStyleSheet(button_style)
+        self.selecao_voo_layout.addWidget(self.confirmar_voo_button, alignment=Qt.AlignCenter)
+
+        self.layout.addWidget(self.selecao_voo_container)
+
+        # Contêiner: Lista de assentos disponíveis
+        self.assentos_container = QWidget()
+        self.assentos_layout = QVBoxLayout(self.assentos_container)
+        self.assentos_layout.setContentsMargins(100, 10, 100, 10)
+        self.assentos_layout.setSpacing(15)
+
+        self.assentos_label = QLabel("Assentos disponíveis")
+        self.assentos_label.setFont(montserrat_bold)
+        self.assentos_label.setAlignment(Qt.AlignCenter)
+        self.assentos_layout.addWidget(self.assentos_label)
+
+        self.assentos_lista_label = QLabel("Lista de assentos a serem exibidos aqui")
+        self.assentos_lista_label.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
+        self.assentos_lista_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.assentos_layout.addWidget(self.assentos_lista_label)
+
+        self.assento_input = QLineEdit()
+        self.assento_input.setPlaceholderText("Número do assento para reservar")
+        self.assento_input.setStyleSheet(line_edit_style)
+        self.assentos_layout.addWidget(self.assento_input)
+
+        self.layout.addWidget(self.assentos_container)
+
+        # Contêiner: Botões "Reservar Voo" e "Voltar"
+        self.buttons_container = QWidget()
+        self.buttons_layout = QHBoxLayout(self.buttons_container)
+        self.buttons_layout.setAlignment(Qt.AlignCenter)
+        self.buttons_layout.setSpacing(20)
+
+        self.reservar_button = QPushButton("Reservar Voo")
+        self.reservar_button.setFixedSize(200, 50)
+        self.reservar_button.setFont(montserrat_bold)
+        self.reservar_button.setStyleSheet(button_style)
+        self.buttons_layout.addWidget(self.reservar_button)
+
+        self.voltar_button = QPushButton("Voltar")
+        self.voltar_button.setFixedSize(200, 50)
+        self.voltar_button.setFont(montserrat_bold)
+        self.voltar_button.setStyleSheet(button_style)
+        self.voltar_button.clicked.connect(self.close)
+        self.buttons_layout.addWidget(self.voltar_button)
+
+        self.layout.addWidget(self.buttons_container)
+
+
+
+class TelaReservas_Remover(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Remover Voo - Delta Airlines")
+        self.setFixedSize(1000, 600)
+        self.setStyleSheet("background-color: white;")
+
+        # Carregar a fonte Montserrat
+        if os.path.exists(font_path):
+            QFontDatabase.addApplicationFont(font_path)
+            montserrat_bold = QFont("Montserrat", 14, QFont.Bold)
+        else:
+            montserrat_bold = QFont("Arial", 14, QFont.Bold)
+
+        # Layout principal
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+        self.layout = QVBoxLayout(self.central_widget)
+
+        # Contêiner 1: Logo
+        self.logo_widget = QWidget()
+        self.logo_layout = QVBoxLayout(self.logo_widget)
+        self.logo_layout.setContentsMargins(0, 0, 0, 0)
+        self.logo_layout.setSpacing(0)
+
+        self.logo_label = QLabel(self.logo_widget)
+        logo_path = os.path.abspath("./src/images/image.png")
+        if os.path.exists(logo_path):
+            pixmap = QPixmap(logo_path)
+            resized_pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.logo_label.setPixmap(resized_pixmap)
+        else:
+            self.logo_label.setText("Imagem não encontrada.")
+
+        self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignTop)
+        self.layout.addWidget(self.logo_widget, alignment=Qt.AlignCenter)
+
+        # Contêiner: Lista de voos disponíveis
+        self.voos_container = QWidget()
+        self.voos_layout = QVBoxLayout(self.voos_container)
+        self.voos_layout.setContentsMargins(100, 10, 100, 10)
+        self.voos_layout.setSpacing(15)
+
+        self.voos_label = QLabel("Voos disponíveis")
+        self.voos_label.setFont(montserrat_bold)
+        self.voos_label.setAlignment(Qt.AlignCenter)
+        self.voos_layout.addWidget(self.voos_label)
+
+        self.voos_lista_label = QLabel("Lista de voos a serem exibidos aqui")
+        self.voos_lista_label.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
+        self.voos_lista_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.voos_layout.addWidget(self.voos_lista_label)
+
+        self.layout.addWidget(self.voos_container)
+
+        # Contêiner: Seleção do voo
+        self.selecao_voo_container = QWidget()
+        self.selecao_voo_layout = QVBoxLayout(self.selecao_voo_container)
+        self.selecao_voo_layout.setContentsMargins(100, 10, 100, 10)
+        self.selecao_voo_layout.setSpacing(15)
+
+        self.sigla_input = QLineEdit()
+        self.sigla_input.setPlaceholderText("Sigla do voo para remover a reserva")
+        self.sigla_input.setStyleSheet(line_edit_style)
+        self.selecao_voo_layout.addWidget(self.sigla_input)
+
+        self.confirmar_voo_button = QPushButton("Confirmar Voo")
+        self.confirmar_voo_button.setFixedSize(200, 50)
+        self.confirmar_voo_button.setFont(montserrat_bold)
+        self.confirmar_voo_button.setStyleSheet(button_style)
+        self.selecao_voo_layout.addWidget(self.confirmar_voo_button, alignment=Qt.AlignCenter)
+
+        self.layout.addWidget(self.selecao_voo_container)
+
+        # Contêiner: Lista de assentos disponíveis
+        self.assentos_container = QWidget()
+        self.assentos_layout = QVBoxLayout(self.assentos_container)
+        self.assentos_layout.setContentsMargins(100, 10, 100, 10)
+        self.assentos_layout.setSpacing(15)
+
+        self.assentos_label = QLabel("Assentos Indisponíveis")
+        self.assentos_label.setFont(montserrat_bold)
+        self.assentos_label.setAlignment(Qt.AlignCenter)
+        self.assentos_layout.addWidget(self.assentos_label)
+
+        self.assentos_lista_label = QLabel("Lista de assentos a serem exibidos aqui")
+        self.assentos_lista_label.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
+        self.assentos_lista_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.assentos_layout.addWidget(self.assentos_lista_label)
+
+        self.assento_input = QLineEdit()
+        self.assento_input.setPlaceholderText("Número do assento para remover")
+        self.assento_input.setStyleSheet(line_edit_style)
+        self.assentos_layout.addWidget(self.assento_input)
+
+        self.layout.addWidget(self.assentos_container)
+
+        # Contêiner: Botões "Remover Voo" e "Voltar"
+        self.buttons_container = QWidget()
+        self.buttons_layout = QHBoxLayout(self.buttons_container)
+        self.buttons_layout.setAlignment(Qt.AlignCenter)
+        self.buttons_layout.setSpacing(20)
+
+        self.remover_button = QPushButton("Remover Reserva")
+        self.remover_button.setFixedSize(200, 50)
+        self.remover_button.setFont(montserrat_bold)
+        self.remover_button.setStyleSheet(button_style)
+        self.buttons_layout.addWidget(self.remover_button)
+
+        self.voltar_button = QPushButton("Voltar")
+        self.voltar_button.setFixedSize(200, 50)
+        self.voltar_button.setFont(montserrat_bold)
+        self.voltar_button.setStyleSheet(button_style)
+        self.voltar_button.clicked.connect(self.close)
+        self.buttons_layout.addWidget(self.voltar_button)
+
+        self.layout.addWidget(self.buttons_container)
+
 
 
 if __name__ == "__main__":
