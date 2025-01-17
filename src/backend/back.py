@@ -1,4 +1,5 @@
-import redis
+from psycopg2 import sql
+import psycopg2
 
 class Aviao():
     def __init__(self, modelo: str, quantidade_assentos: int, sigla_av: str):
@@ -184,43 +185,83 @@ class Autenticacao:
     def __init__(self, user: str, senha: str):
         self._user = user
         self._senha = senha
-        
+        try:
+            self.conn = psycopg2.connect(
+                dbname='credenciais',  # Nome do banco de dados especificado no Docker
+                user='poodois',        # Nome do usuário especificado no Docker
+                password='1234',       # Senha especificada no Docker
+                host='localhost',
+                port=5432
+            )
+            self.criar_tabela()
+        except psycopg2.OperationalError as e:
+            raise ConnectionError(f"Erro ao conectar ao banco de dados: {e}")
+
+    def criar_tabela(self):
+        with self.conn.cursor() as cur:
+            cur.execute('''
+                CREATE TABLE IF NOT EXISTS credenciais (
+                    user_name TEXT PRIMARY KEY,
+                    senha TEXT NOT NULL,
+                    tipo INT NOT NULL
+                );
+            ''')
+            self.conn.commit()
+
     @property
     def user(self):
         return self._user
-        
+
     @user.setter
     def user(self, user: str):
         self._user = user
-        
+
     @property
     def senha(self):
         return self._senha
-    
+
     @senha.setter
     def senha(self, senha: str):
         self._senha = senha
-        
+
     def cadastro(self, user: str, senha: str, tipo: int) -> tuple:
-        r = redis.Redis(host='localhost', port=6379, db=0)
-        if not r.exists('credenciais'):
-            r.hset('credenciais', mapping={user: f"{senha},{tipo}"})
-        else:
-            r.hset('credenciais', user, f"{senha},{tipo}")
-        return True, "Cadastro efetuado com sucesso"
-            
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    sql.SQL("""
+                        INSERT INTO credenciais (user_name, senha, tipo)
+                        VALUES (%s, %s, %s)
+                        ON CONFLICT (user_name) DO UPDATE
+                        SET senha = EXCLUDED.senha, tipo = EXCLUDED.tipo;
+                    """),
+                    (user, senha, tipo)
+                )
+                self.conn.commit()
+            return True, "Cadastro efetuado com sucesso"
+        except Exception as e:
+            return False, f"Erro no cadastro: {str(e)}"
+
     def login(self, user: str, senha: str) -> tuple:
-        r = redis.Redis(host='localhost', port=6379, db=0)
-        if r.exists('credenciais'):
-            dados = r.hget('credenciais', user)
-            if dados:
-                senha_armazenada, tipo = dados.decode('utf-8').split(',')
-                if senha_armazenada == senha:
-                    if int(tipo) == 1:
-                        return 1, "Login efetuado com sucesso, Gerente"
-                    elif int(tipo) == 2:
-                        return 2, "Login efetuado com sucesso, Atendente"
-        return False, "Login não foi efetuado com sucesso"
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    sql.SQL("""
+                        SELECT senha, tipo FROM credenciais WHERE user_name = %s;
+                    """),
+                    (user,)
+                )
+                resultado = cur.fetchone()
+
+                if resultado:
+                    senha_armazenada, tipo = resultado
+                    if senha_armazenada == senha:
+                        if tipo == 1:
+                            return 1, "Login efetuado com sucesso, Gerente"
+                        elif tipo == 2:
+                            return 2, "Login efetuado com sucesso, Atendente"
+                return False, "Login não foi efetuado com sucesso"
+        except Exception as e:
+            return False, f"Erro no login: {str(e)}"
     
 class CiaAerea():
     def __init__(self, nome: str, cnpj: int, telefone: int, endereco: str):
