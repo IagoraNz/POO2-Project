@@ -2037,8 +2037,6 @@ class TelaPassageiros_Cadastrar(QMainWindow):
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
 
-
-
 class TelaPassageiros_Alterar(QMainWindow): 
     def __init__(self):
         super().__init__()
@@ -2047,6 +2045,7 @@ class TelaPassageiros_Alterar(QMainWindow):
         self.setStyleSheet("background-color: white;")
 
         # Carregar a fonte Montserrat
+        font_path = "./src/fonts/Montserrat-Bold.ttf"
         if os.path.exists(font_path):
             QFontDatabase.addApplicationFont(font_path)
             montserrat_bold = QFont("Montserrat", 14, QFont.Bold)
@@ -2058,108 +2057,84 @@ class TelaPassageiros_Alterar(QMainWindow):
         self.setCentralWidget(self.central_widget)
         self.layout = QVBoxLayout(self.central_widget)
 
-        # Contêiner 1: Logo
-        self.logo_widget = QWidget()
-        self.logo_layout = QVBoxLayout(self.logo_widget)
-        self.logo_layout.setContentsMargins(0, 0, 0, 0)
-        self.logo_layout.setSpacing(0)
-
-        self.logo_label = QLabel(self.logo_widget)
-        logo_path = os.path.abspath("./src/images/image.png")
-        if os.path.exists(logo_path):
-            pixmap = QPixmap(logo_path)
-            resized_pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            self.logo_label.setPixmap(resized_pixmap)
-        else:
-            self.logo_label.setText("Imagem não encontrada.")
-
-        self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignTop)
-        self.layout.addWidget(self.logo_widget, alignment=Qt.AlignCenter)
-
-        # Botões e layout
-        button_width = 200
-        button_height = 50
-
-        # Contêiner de entrada para CPF
-        self.cpf_container = QWidget()
-        self.cpf_layout = QVBoxLayout(self.cpf_container)
-        self.cpf_layout.setContentsMargins(100, 10, 100, 10)
-        self.cpf_layout.setSpacing(15)
-
+        # Configuração de CPF
         self.cpf_input = QLineEdit()
         self.cpf_input.setPlaceholderText("Digite o CPF do passageiro")
         self.cpf_input.setStyleSheet(line_edit_style)
-        self.cpf_layout.addWidget(self.cpf_input)
+        self.layout.addWidget(self.cpf_input)
 
+        # Botão Buscar Passageiro
         self.buscar_button = QPushButton("Buscar Passageiro")
-        self.buscar_button.setFixedSize(button_width, button_height)
+        self.buscar_button.setFixedSize(200, 50)
         self.buscar_button.setFont(montserrat_bold)
         self.buscar_button.setStyleSheet(button_style)
-        self.cpf_layout.addWidget(self.buscar_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.buscar_button, alignment=Qt.AlignCenter)
+        self.buscar_button.clicked.connect(self.buscar_passageiro)
 
-        self.layout.addWidget(self.cpf_container)
-
-        # Contêiner 3: Informações do passageiro
-        self.info_container = QWidget()
-        self.info_layout = QVBoxLayout(self.info_container)
-        self.info_container.setContentsMargins(100, 10, 100, 10)
-        self.info_layout.setSpacing(10)
-
-        self.passageiro_info_label = QLabel("Informações do passageiro a serem exibidas aqui")
+        # Informações do passageiro
+        self.passageiro_info_label = QLabel("Informações do passageiro serão exibidas aqui")
         self.passageiro_info_label.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
-        self.passageiro_info_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-        self.info_layout.addWidget(self.passageiro_info_label)
+        self.layout.addWidget(self.passageiro_info_label)
 
-        self.layout.addWidget(self.info_container)
-
-        # Contêiner do título
-        self.title_container = QLabel("Alterar Passageiro")
-        self.title_container.setFont(montserrat_bold)
-        self.title_container.setAlignment(Qt.AlignCenter)
-        self.title_container.setStyleSheet(line_edit_style)
-        self.layout.addWidget(self.title_container)
-
-        # Contêiner para os campos de edição
-        self.edit_container = QWidget()
-        self.edit_layout = QVBoxLayout(self.edit_container)
-        self.edit_layout.setContentsMargins(100, 10, 100, 10)
-        self.edit_layout.setSpacing(15)
-
-        # Campo de Nome
+        # Campos de edição
         self.nome_input = QLineEdit()
         self.nome_input.setPlaceholderText("Digite o nome do passageiro")
-        self.nome_input.setStyleSheet(line_edit_style)
-        self.edit_layout.addWidget(self.nome_input)
+        self.layout.addWidget(self.nome_input)
 
-        # Campo de Telefone
         self.telefone_input = QLineEdit()
         self.telefone_input.setPlaceholderText("Digite o telefone do passageiro")
-        self.telefone_input.setStyleSheet(line_edit_style)
-        self.edit_layout.addWidget(self.telefone_input)
+        self.layout.addWidget(self.telefone_input)
 
-        self.layout.addWidget(self.edit_container)
-
-        # Contêiner para os botões "Alterar Passageiro" e "Voltar"
-        self.buttons_container = QWidget()
-        self.buttons_layout = QHBoxLayout(self.buttons_container)
-        self.buttons_layout.setAlignment(Qt.AlignCenter)
-        self.buttons_layout.setSpacing(20)  # Espaçamento entre os botões
-
+        # Botão Alterar Passageiro
         self.alterar_button = QPushButton("Alterar Passageiro")
-        self.alterar_button.setFixedSize(button_width, button_height)
+        self.alterar_button.setFixedSize(200, 50)
         self.alterar_button.setFont(montserrat_bold)
         self.alterar_button.setStyleSheet(button_style)
-        self.buttons_layout.addWidget(self.alterar_button)
-        self.alterar_button.clicked.connect(self.close)
+        self.layout.addWidget(self.alterar_button, alignment=Qt.AlignCenter)
+        self.alterar_button.clicked.connect(self.alterar_passageiro)
 
+        # Botão Voltar
         self.voltar_button = QPushButton("Voltar")
-        self.voltar_button.setFixedSize(button_width, button_height)
+        self.voltar_button.setFixedSize(200, 50)
         self.voltar_button.setFont(montserrat_bold)
         self.voltar_button.setStyleSheet(button_style)
-        self.buttons_layout.addWidget(self.voltar_button)
+        self.layout.addWidget(self.voltar_button, alignment=Qt.AlignCenter)
         self.voltar_button.clicked.connect(self.close)
 
-        self.layout.addWidget(self.buttons_container)
+    def buscar_passageiro(self):
+        cpf = self.cpf_input.text().strip()
+        if not cpf:
+            QMessageBox.warning(self, "Erro", "Digite o CPF do passageiro.")
+            return
+        
+        db = CadastroClientes()
+
+        cliente = db.buscar_cliente_por_cpf(cpf)
+        if cliente:
+            _, nome, cpf, telefone = cliente
+            self.passageiro_info_label.setText(f"Nome: {nome}\nTelefone: {telefone}")
+            self.nome_input.setText(nome)
+            self.telefone_input.setText(telefone)
+        else:
+            QMessageBox.warning(self, "Erro", "Passageiro não encontrado.")
+            self.passageiro_info_label.setText("")
+
+    def alterar_passageiro(self):
+        nome = self.nome_input.text().strip()
+        telefone = self.telefone_input.text().strip()
+        cpf = self.cpf_input.text().strip()
+
+        if not nome or not telefone or not cpf:
+            QMessageBox.warning(self, "Erro", "Preencha todos os campos.")
+            return
+
+        db = CadastroClientes()
+
+        sucesso, mensagem = db.alterar_cliente(cpf, nome, telefone)
+        if sucesso:
+            QMessageBox.information(self, "Sucesso", "Dados do passageiro alterados com sucesso!")
+        else:
+            QMessageBox.warning(self, "Erro", mensagem)
 
 
 
@@ -2225,6 +2200,7 @@ class TelaPassageiros_Remover(QMainWindow):
         self.buscar_button.setFixedSize(200, 50)
         self.buscar_button.setStyleSheet(button_style)
         self.cpf_layout.addWidget(self.buscar_button, alignment=Qt.AlignCenter)
+        self.buscar_button.clicked.connect(self.buscar_passageiro)
 
         self.layout.addWidget(self.cpf_container)
 
@@ -2250,7 +2226,7 @@ class TelaPassageiros_Remover(QMainWindow):
         self.remover_passageiro_button.setFixedSize(200, 50)
         self.remover_passageiro_button.setStyleSheet(button_style)
         self.remover_passageiro_button.setFont(montserrat_bold)
-        self.remover_passageiro_button.clicked.connect(self.close)  # Substitua por funcionalidade de remoção
+        self.remover_passageiro_button.clicked.connect(self.remover_passageiro)
         self.button_layout.addWidget(self.remover_passageiro_button)
 
         self.voltar_button = QPushButton("Voltar")
@@ -2261,6 +2237,53 @@ class TelaPassageiros_Remover(QMainWindow):
         self.button_layout.addWidget(self.voltar_button)
 
         self.layout.addWidget(self.button_container)
+    
+    def buscar_passageiro(self):
+        cpf = self.cpf_input.text().strip()
+        
+        if not cpf:
+            QMessageBox.warning(self, "Erro", "Digite o CPF do passageiro.")
+            return
+
+        try:
+            db = CadastroClientes()
+            cliente = db.buscar_cliente_por_cpf(cpf)
+
+            if cliente:
+                _, nome, cpf, telefone = cliente
+                self.passageiro_info_label.setText(f"Nome: {nome}\nCPF: {cpf}\nTelefone: {telefone}")
+            else:
+                QMessageBox.warning(self, "Erro", "Passageiro não encontrado.")
+                self.passageiro_info_label.setText("Informações do passageiro a serem exibidas aqui")
+
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao buscar passageiro: {str(e)}")
+
+    def remover_passageiro(self):
+        cpf = self.cpf_input.text().strip()
+
+        if not cpf:
+            QMessageBox.warning(self, "Erro", "Por favor, informe o CPF do passageiro.")
+            return
+
+        resposta = QMessageBox.question(
+            self, 
+            "Confirmação", 
+            f"Tem certeza que deseja remover o passageiro com CPF {cpf}?", 
+            QMessageBox.Yes | QMessageBox.No
+        )
+
+        if resposta == QMessageBox.Yes:
+            db = CadastroClientes()
+            sucesso, mensagem = db.excluir_cliente(cpf)
+
+            if sucesso:
+                QMessageBox.information(self, "Sucesso", "Passageiro removido com sucesso!")
+                self.cpf_input.clear()
+                self.passageiro_info_label.setText("Informações do passageiro a serem exibidas aqui")
+            else:
+                QMessageBox.warning(self, "Erro", mensagem)
+
 
 class TelaPassageiros_Listar(QMainWindow):
     def __init__(self):
