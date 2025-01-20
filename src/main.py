@@ -1963,17 +1963,17 @@ class TelaPassageiros_Cadastrar(QMainWindow):
 
         self.nome_input = QLineEdit(self)
         self.nome_input.setPlaceholderText("Nome")
-        self.nome_input.setStyleSheet("padding: 10px; border: 1px solid #ccc; border-radius: 5px;")
+        self.nome_input.setStyleSheet(line_edit_style)
         self.form_layout.addWidget(self.nome_input)
 
         self.cpf_input = QLineEdit(self)
         self.cpf_input.setPlaceholderText("CPF")
-        self.cpf_input.setStyleSheet("padding: 10px; border: 1px solid #ccc; border-radius: 5px;")
+        self.cpf_input.setStyleSheet(line_edit_style)
         self.form_layout.addWidget(self.cpf_input)
 
         self.telefone_input = QLineEdit(self)
         self.telefone_input.setPlaceholderText("Telefone")
-        self.telefone_input.setStyleSheet("padding: 10px; border: 1px solid #ccc; border-radius: 5px;")
+        self.telefone_input.setStyleSheet(line_edit_style)
         self.form_layout.addWidget(self.telefone_input)
 
         self.layout.addWidget(self.form_widget)
@@ -1989,7 +1989,7 @@ class TelaPassageiros_Cadastrar(QMainWindow):
 
         self.bt_cadastrar = QPushButton("Cadastrar")
         self.bt_cadastrar.setFixedSize(button_width, button_height)
-        self.bt_cadastrar.setStyleSheet("padding: 10px; background-color: #007BFF; color: white; border: none; border-radius: 5px;")
+        self.bt_cadastrar.setStyleSheet(button_style)
         self.bt_cadastrar.setFont(montserrat_bold)
         self.bt_cadastrar.clicked.connect(self.cadastrar_cliente)  # Conecta ao método de cadastro
         self.buttons_layout.addWidget(self.bt_cadastrar, alignment=Qt.AlignCenter)
@@ -1997,7 +1997,7 @@ class TelaPassageiros_Cadastrar(QMainWindow):
         # Botão "Voltar"
         self.bt_voltar = QPushButton("Voltar")
         self.bt_voltar.setFixedSize(button_width, button_height)
-        self.bt_voltar.setStyleSheet("padding: 10px; background-color: #6c757d; color: white; border: none; border-radius: 5px;")
+        self.bt_voltar.setStyleSheet(button_style)
         self.bt_voltar.setFont(montserrat_bold)
         self.bt_voltar.clicked.connect(self.close)  # Conecta ao método de fechar a janela
         self.buttons_layout.addWidget(self.bt_voltar, alignment=Qt.AlignCenter)
