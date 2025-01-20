@@ -409,15 +409,15 @@ class CadastroClientes:
         except Exception as e:
             return False, f"Erro ao cadastrar cliente: {str(e)}"
 
-    def listar_clientes(self):
-        """Retorna uma lista com todos os clientes cadastrados."""
-        try:
-            with self.conn.cursor() as cur:
-                cur.execute("SELECT id, nome, cpf, telefone FROM clientes;")
-                clientes = cur.fetchall()
-            return clientes
-        except Exception as e:
-            return []
+    # def listar_clientes(self):
+    #     """Retorna uma lista com todos os clientes cadastrados."""
+    #     try:
+    #         with self.conn.cursor() as cur:
+    #             cur.execute("SELECT id, nome, cpf, telefone FROM clientes;")
+    #             clientes = cur.fetchall()
+    #         return clientes
+    #     except Exception as e:
+    #         return []
 
     def buscar_cliente_por_cpf(self, cpf: str) -> tuple:
         """Busca um cliente pelo CPF."""

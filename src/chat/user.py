@@ -1,8 +1,8 @@
 import socket
 import threading
 
-SERVER_HOST = '127.0.0.1'
-SERVER_PORT = 12345
+SERVER_HOST = '26.7.161.228'
+SERVER_PORT = 5555
 
 def receber_mensagens(usuario_socket):
     while True:
