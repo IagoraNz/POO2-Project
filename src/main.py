@@ -1,6 +1,6 @@
 import sys
 import os
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QLineEdit, QStackedWidget
+from PyQt5.QtWidgets import QScrollArea, QTableWidgetItem, QApplication, QAbstractItemView, QTableWidget, QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QLineEdit, QStackedWidget
 from PyQt5.QtGui import QPixmap, QFontDatabase, QFont
 from PyQt5.QtCore import Qt
 from backend.back import Autenticacao
@@ -2262,14 +2262,16 @@ class TelaPassageiros_Remover(QMainWindow):
 
         self.layout.addWidget(self.button_container)
 
-
-
 class TelaPassageiros_Listar(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Lista de Passageiros - Delta Airlines")
         self.setFixedSize(1000, 600)
         self.setStyleSheet("background-color: white;")
+
+        # Conectar ao banco de dados para obter a lista de clientes
+        self.cadastro_clientes = CadastroClientes()  # Instancia a classe de cadastro de clientes
+        self.clientes = self.cadastro_clientes.listar_clientes()  # Busca os clientes cadastrados
 
         # Carregar a fonte Montserrat
         font_path = os.path.abspath("./src/fonts/Montserrat-Bold.ttf")
@@ -2306,21 +2308,57 @@ class TelaPassageiros_Listar(QMainWindow):
         self.label_container = QLabel("Lista de Passageiros")
         self.label_container.setFont(montserrat_bold)
         self.label_container.setAlignment(Qt.AlignCenter)
-        self.label_container.setStyleSheet("color: #333333;")
+        self.label_container.setStyleSheet("color: #333333; margin-top: 20px;")
         self.layout.addWidget(self.label_container, alignment=Qt.AlignCenter)
 
-        # Contêiner 3: Informações dos passageiros disponíveis
-        self.info_container = QWidget()
-        self.info_layout = QVBoxLayout(self.info_container)
-        self.info_container.setContentsMargins(100, 10, 100, 10)
-        self.info_layout.setSpacing(10)
+        # Tabela de clientes
+        self.tabela_clientes = QTableWidget()
+        self.tabela_clientes.setColumnCount(4)  # Quatro colunas: ID, Nome, CPF, Telefone
+        self.tabela_clientes.setHorizontalHeaderLabels(["ID", "Nome", "CPF", "Telefone"])
+        self.tabela_clientes.setSelectionMode(QAbstractItemView.NoSelection)  # Desativa seleção de células
+        self.tabela_clientes.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Impede edição das células
+        self.tabela_clientes.setStyleSheet("""
+            QTableWidget {
+                background-color: #f9f9f9;
+                font-size: 12px;
+                color: #333333;
+                border: 1px solid #dddddd;
+                border-radius: 5px;
+            }
+            QTableWidget::item {
+                padding: 8px;
+            }
+            QTableWidget::horizontalHeader {
+                background-color: #4CAF50;
+                color: white;
+                font-weight: bold;
+                font-size: 14px;
+                border: none;
+            }
+            QTableWidget::verticalHeader {
+                background-color: #f1f1f1;
+                border: none;
+            }
+            QScrollBar:vertical {
+                border: none;
+                background: #f1f1f1;
+                width: 10px;
+                margin: 0px 0px 0px 0px;
+            }
+            QScrollBar::handle:vertical {
+                background: #4CAF50;
+                border-radius: 5px;
+            }
+        """)
 
-        self.passageiro_info_label = QLabel("Informações dos passageiros a serem exibidas aqui")
-        self.passageiro_info_label.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
-        self.passageiro_info_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-        self.info_layout.addWidget(self.passageiro_info_label)
+        # Populando a tabela com dados
+        self.atualizar_tabela()
 
-        self.layout.addWidget(self.info_container)
+        # Scroll para a tabela
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidget(self.tabela_clientes)
+        self.scroll_area.setWidgetResizable(True)
+        self.layout.addWidget(self.scroll_area)
 
         # Contêiner com o botão "Voltar"
         self.button_container = QWidget()
@@ -2336,6 +2374,21 @@ class TelaPassageiros_Listar(QMainWindow):
 
         self.layout.addWidget(self.button_container)
 
+    def atualizar_tabela(self):
+        """Atualiza os dados na tabela de clientes"""
+        if self.clientes:
+            self.tabela_clientes.setRowCount(len(self.clientes))
+            for i, cliente in enumerate(self.clientes):
+                self.tabela_clientes.setItem(i, 0, QTableWidgetItem(str(cliente[0])))  # ID
+                self.tabela_clientes.setItem(i, 1, QTableWidgetItem(cliente[1]))  # Nome
+                self.tabela_clientes.setItem(i, 2, QTableWidgetItem(cliente[2]))  # CPF
+                self.tabela_clientes.setItem(i, 3, QTableWidgetItem(cliente[3]))  # Telefone
+        else:
+            # Se não houver clientes, exibe uma linha vazia com uma mensagem
+            self.tabela_clientes.setRowCount(1)
+            self.tabela_clientes.setItem(0, 0, QTableWidgetItem("Nenhum cliente cadastrado"))
+            for col in range(1, 4):
+                self.tabela_clientes.setItem(0, col, QTableWidgetItem(""))
 
 
 class TelaReservas_Reservar(QMainWindow):
