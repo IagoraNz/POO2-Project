@@ -448,3 +448,24 @@ class CadastroClientes:
                 return False, "Cliente não encontrado."
         except Exception as e:
             return False, f"Erro ao excluir cliente: {str(e)}"
+    
+    def alterar_cliente(self, cpf: str, novo_nome: str, novo_telefone: str) -> tuple:
+        """Altera os dados de um cliente existente pelo CPF."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    '''
+                    UPDATE clientes 
+                    SET nome = %s, telefone = %s 
+                    WHERE cpf = %s;
+                    ''',
+                    (novo_nome, novo_telefone, cpf)
+                )
+                self.conn.commit()
+
+                if cur.rowcount > 0:
+                    return True, "Dados do cliente alterados com sucesso."
+                else:
+                    return False, "Cliente não encontrado."
+        except Exception as e:
+            return False, f"Erro ao alterar cliente: {str(e)}"
