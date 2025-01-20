@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushBut
 from PyQt5.QtGui import QPixmap, QFontDatabase, QFont
 from PyQt5.QtCore import Qt
 from backend.back import Autenticacao
+from backend.back import CadastroClientes
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QSizePolicy, QSpacerItem
 
 # Caminho para a fonte
@@ -1916,9 +1917,12 @@ class TelaPassageiros_Cadastrar(QMainWindow):
         self.setFixedSize(1000, 600)
         self.setStyleSheet("background-color: white;")
 
+        # Inicializar conexão com o banco de dados
+        self.backend = CadastroClientes()
+
         # Carregar a fonte Montserrat
-        if os.path.exists(font_path):
-            QFontDatabase.addApplicationFont(font_path)
+        if os.path.exists("font_path"):
+            QFontDatabase.addApplicationFont("font_path")
             montserrat_bold = QFont("Montserrat", 14, QFont.Bold)
         else:
             montserrat_bold = QFont("Arial", 14, QFont.Bold)
@@ -1959,17 +1963,17 @@ class TelaPassageiros_Cadastrar(QMainWindow):
 
         self.nome_input = QLineEdit(self)
         self.nome_input.setPlaceholderText("Nome")
-        self.nome_input.setStyleSheet(line_edit_style)
+        self.nome_input.setStyleSheet("padding: 10px; border: 1px solid #ccc; border-radius: 5px;")
         self.form_layout.addWidget(self.nome_input)
 
         self.cpf_input = QLineEdit(self)
         self.cpf_input.setPlaceholderText("CPF")
-        self.cpf_input.setStyleSheet(line_edit_style)
+        self.cpf_input.setStyleSheet("padding: 10px; border: 1px solid #ccc; border-radius: 5px;")
         self.form_layout.addWidget(self.cpf_input)
 
         self.telefone_input = QLineEdit(self)
         self.telefone_input.setPlaceholderText("Telefone")
-        self.telefone_input.setStyleSheet(line_edit_style)
+        self.telefone_input.setStyleSheet("padding: 10px; border: 1px solid #ccc; border-radius: 5px;")
         self.form_layout.addWidget(self.telefone_input)
 
         self.layout.addWidget(self.form_widget)
@@ -1985,20 +1989,53 @@ class TelaPassageiros_Cadastrar(QMainWindow):
 
         self.bt_cadastrar = QPushButton("Cadastrar")
         self.bt_cadastrar.setFixedSize(button_width, button_height)
-        self.bt_cadastrar.setStyleSheet(button_style)
+        self.bt_cadastrar.setStyleSheet("padding: 10px; background-color: #007BFF; color: white; border: none; border-radius: 5px;")
         self.bt_cadastrar.setFont(montserrat_bold)
-        self.bt_cadastrar.clicked.connect(self.close)  # Conecta ao método de fechar a janela
+        self.bt_cadastrar.clicked.connect(self.cadastrar_cliente)  # Conecta ao método de cadastro
         self.buttons_layout.addWidget(self.bt_cadastrar, alignment=Qt.AlignCenter)
 
         # Botão "Voltar"
         self.bt_voltar = QPushButton("Voltar")
         self.bt_voltar.setFixedSize(button_width, button_height)
-        self.bt_voltar.setStyleSheet(button_style)
+        self.bt_voltar.setStyleSheet("padding: 10px; background-color: #6c757d; color: white; border: none; border-radius: 5px;")
         self.bt_voltar.setFont(montserrat_bold)
         self.bt_voltar.clicked.connect(self.close)  # Conecta ao método de fechar a janela
         self.buttons_layout.addWidget(self.bt_voltar, alignment=Qt.AlignCenter)
 
         self.layout.addWidget(self.buttons_widget)
+
+    def cadastrar_cliente(self):
+        """
+        Método chamado ao clicar no botão "Cadastrar".
+        Faz o cadastro do cliente no banco de dados.
+        """
+        nome = self.nome_input.text().strip()
+        cpf = self.cpf_input.text().strip()
+        telefone = self.telefone_input.text().strip()
+
+        if not nome or not cpf or not telefone:
+            self.show_message("Erro", "Todos os campos devem ser preenchidos!")
+            return
+
+        sucesso, mensagem = self.backend.cadastrar_cliente(nome, cpf, telefone)
+        self.show_message("Resultado do Cadastro", mensagem)
+
+        if sucesso:
+            # Limpar os campos após o cadastro bem-sucedido
+            self.nome_input.clear()
+            self.cpf_input.clear()
+            self.telefone_input.clear()
+
+    def show_message(self, titulo, mensagem):
+        """
+        Exibe uma mensagem em uma janela modal.
+        """
+        from PyQt5.QtWidgets import QMessageBox
+        msg = QMessageBox(self)
+        msg.setWindowTitle(titulo)
+        msg.setText(mensagem)
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
 
 
 

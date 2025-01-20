@@ -361,3 +361,90 @@ class CiaAerea():
             del self._funcionarios[cpf]
             return True, "Funcionário excluído com sucesso!"
         return False, "Funcionário não encontrado!"
+    
+
+class CadastroClientes:
+    def __init__(self):
+        try:
+            self.conn = psycopg2.connect(
+                dbname='credenciais',  # Nome do banco de dados
+                user='poodois',        # Nome do usuário
+                password='1234',       # Senha do usuário
+                host='localhost',
+                port=5432
+            )
+
+            self.criar_tabela()
+        except psycopg2.OperationalError as e:
+            raise ConnectionError(f"Erro ao conectar ao banco de dados: {e}")
+
+    def criar_tabela(self):
+        """Cria a tabela de clientes caso não exista."""
+        with self.conn.cursor() as cur:
+            cur.execute('''
+                CREATE TABLE IF NOT EXISTS clientes (
+                    id SERIAL PRIMARY KEY,
+                    nome TEXT NOT NULL,
+                    cpf TEXT UNIQUE NOT NULL,
+                    telefone TEXT NOT NULL
+                );
+            ''')
+            self.conn.commit()
+
+    def cadastrar_cliente(self, nome: str, cpf: str, telefone: str) -> tuple:
+        """Insere ou atualiza os dados de um cliente no banco de dados."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    sql.SQL('''
+                        INSERT INTO clientes (nome, cpf, telefone)
+                        VALUES (%s, %s, %s)
+                        ON CONFLICT (cpf) DO UPDATE
+                        SET nome = EXCLUDED.nome, telefone = EXCLUDED.telefone;
+                    '''),
+                    (nome, cpf, telefone)
+                )
+                self.conn.commit()
+            return True, "Cliente cadastrado com sucesso."
+        except Exception as e:
+            return False, f"Erro ao cadastrar cliente: {str(e)}"
+
+    def listar_clientes(self):
+        """Retorna uma lista com todos os clientes cadastrados."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute("SELECT id, nome, cpf, telefone FROM clientes;")
+                clientes = cur.fetchall()
+            return clientes
+        except Exception as e:
+            return []
+
+    def buscar_cliente_por_cpf(self, cpf: str) -> tuple:
+        """Busca um cliente pelo CPF."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    "SELECT id, nome, cpf, telefone FROM clientes WHERE cpf = %s;",
+                    (cpf,)
+                )
+                cliente = cur.fetchone()
+            if cliente:
+                return cliente
+            return None
+        except Exception as e:
+            return None
+
+    def excluir_cliente(self, cpf: str) -> tuple:
+        """Exclui um cliente pelo CPF."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    "DELETE FROM clientes WHERE cpf = %s;",
+                    (cpf,)
+                )
+                self.conn.commit()
+                if cur.rowcount > 0:
+                    return True, "Cliente excluído com sucesso."
+                return False, "Cliente não encontrado."
+        except Exception as e:
+            return False, f"Erro ao excluir cliente: {str(e)}"
