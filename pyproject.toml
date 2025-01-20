@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "listar-clientes"
+version = "0.1.0"
+description = "Biblioteca para listar todos os clientes cadastrados no PostgreSQL"
+authors = ["Daniel, Francinaldo, Luis, Rita, Iago, Cristina"]
+readme = "README.md"
+packages = [
+    { include = "src/POO2PROJECT" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

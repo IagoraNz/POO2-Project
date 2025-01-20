@@ -1,0 +1,8 @@
+README.md
+pyproject.toml
+setup.py
+listar_clientes.egg-info/PKG-INFO
+listar_clientes.egg-info/SOURCES.txt
+listar_clientes.egg-info/dependency_links.txt
+listar_clientes.egg-info/requires.txt
+listar_clientes.egg-info/top_level.txt

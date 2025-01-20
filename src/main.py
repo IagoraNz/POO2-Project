@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt
 from backend.back import Autenticacao
 from backend.back import CadastroClientes
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QSizePolicy, QSpacerItem
+from POO2PROJECT.listar_clientes import ListarClientes
 
 # Caminho para a fonte
 font_path = os.path.abspath("./src/fonts/Montserrat-SemiBold.ttf")
@@ -2284,16 +2285,24 @@ class TelaPassageiros_Remover(QMainWindow):
             else:
                 QMessageBox.warning(self, "Erro", mensagem)
 
-
 class TelaPassageiros_Listar(QMainWindow):
-    def __init__(self):
+    def __init__(self, db_config=None):
+        if db_config is None:
+            db_config = {
+                'dbname': 'credenciais',
+                'user': 'poodois',
+                'password': '1234',
+                'host': 'localhost',
+                'port': 5432
+            }
+
         super().__init__()
         self.setWindowTitle("Lista de Passageiros - Delta Airlines")
         self.setFixedSize(1000, 600)
         self.setStyleSheet("background-color: white;")
 
         # Conectar ao banco de dados para obter a lista de clientes
-        self.cadastro_clientes = CadastroClientes()  # Instancia a classe de cadastro de clientes
+        self.cadastro_clientes = ListarClientes(db_config)  # Instancia a classe de ListarClientes
         self.clientes = self.cadastro_clientes.listar_clientes()  # Busca os clientes cadastrados
 
         # Carregar a fonte Montserrat
@@ -2391,7 +2400,7 @@ class TelaPassageiros_Listar(QMainWindow):
         self.voltar_button = QPushButton("Voltar")
         self.voltar_button.setFixedSize(200, 50)
         self.voltar_button.setFont(montserrat_bold)
-        self.voltar_button.setStyleSheet(button_style)
+        self.voltar_button.setStyleSheet(button_style)  
         self.voltar_button.clicked.connect(self.close)
         self.button_layout.addWidget(self.voltar_button)
 
@@ -2412,7 +2421,6 @@ class TelaPassageiros_Listar(QMainWindow):
             self.tabela_clientes.setItem(0, 0, QTableWidgetItem("Nenhum cliente cadastrado"))
             for col in range(1, 4):
                 self.tabela_clientes.setItem(0, col, QTableWidgetItem(""))
-
 
 class TelaReservas_Reservar(QMainWindow):
     def __init__(self):
