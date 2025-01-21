@@ -515,7 +515,7 @@ class TelaVoos(QMainWindow):
         self.bt_remover.setStyleSheet(button_style)
         self.bt_remover.setFont(montserrat_bold)
         self.button_layout.addWidget(self.bt_remover)
-        self.bt_remover.clicked.connect(self.mostrar_tela_remover_voo)
+        self.bt_remover.clicked.connect(self.mostrar_tela_remover_reserva_voo)
 
         self.bt_listar = QPushButton("Listar")
         self.bt_listar.setFixedSize(button_width, button_height)
@@ -571,9 +571,9 @@ class TelaVoos(QMainWindow):
         self.tela_alterar_voo = TelaVoos_Alterar()
         self.tela_alterar_voo.show()
     
-    def mostrar_tela_remover_voo(self):
-        self.tela_remover_voo = TelaVoos_Remover()
-        self.tela_remover_voo.show()
+    def mostrar_tela_remover_reserva_voo(self):
+        self.tela_remover_reserva_voo = TelaVoos_Remover()
+        self.tela_remover_reserva_voo.show()
     
     def mostrar_tela_listar_voo(self):
         self.tela_listar_voo = TelaVoos_Listar()
@@ -800,6 +800,11 @@ class TelaVoos_Cadastrar(QMainWindow):
         self.modelo_input.setStyleSheet(line_edit_style)
         self.form_layout.addWidget(self.modelo_input)
 
+        self.assentos_input = QLineEdit(self)
+        self.assentos_input.setPlaceholderText("Quantidade de Assentos")
+        self.assentos_input.setStyleSheet(line_edit_style)
+        self.form_layout.addWidget(self.assentos_input)
+
         self.layout.addWidget(self.form_widget)
 
         # Contêiner 3: Botões
@@ -828,24 +833,22 @@ class TelaVoos_Cadastrar(QMainWindow):
         self.layout.addWidget(self.buttons_widget)
 
     def cadastrar_voo(self):
-        """Método para cadastrar o voo no banco de dados."""
         sigla = self.sigla_input.text()
         origem = self.origem_input.text()
         destino = self.destino_input.text()
-        modelo_aviao = self.modelo_input.text()
+        modelo = self.modelo_input.text()
+        assentos = self.assentos_input.text()  # Novo campo
 
-        # Validação dos campos
-        if not sigla or not origem or not destino or not modelo_aviao:
-            QMessageBox.warning(self, "Erro", "Por favor, preencha todos os campos.")
+        if not sigla or not origem or not destino or not modelo or not assentos:
+            QMessageBox.warning(self, "Erro", "Todos os campos devem ser preenchidos.")
             return
 
-        # Chamar o método do backend para cadastrar o voo
-        sucesso, mensagem = self.cadastro_voos.cadastrar_voo(sigla, origem, destino, modelo_aviao)
-        if sucesso:
-            QMessageBox.information(self, "Sucesso", mensagem)
-            self.close()  # Fecha a janela após o cadastro
-        else:
-            QMessageBox.critical(self, "Erro", mensagem)
+        if not assentos.isdigit():
+            QMessageBox.warning(self, "Erro", "Quantidade de assentos deve ser um número.")
+            return
+
+        sucesso, mensagem = self.cadastro_voos.cadastrar_voo(sigla, origem, destino, modelo, int(assentos))
+        QMessageBox.information(self, "Resultado", mensagem)
 
 class TelaAvioes_Cadastrar(QMainWindow):
     def __init__(self):
@@ -1338,12 +1341,12 @@ class TelaVoos_Remover(QMainWindow):
         self.button_layout = QVBoxLayout(self.button_container)
         self.button_layout.setAlignment(Qt.AlignCenter)
 
-        self.remover_voo_button = QPushButton("Remover Voo")
-        self.remover_voo_button.setFixedSize(200, 50)
-        self.remover_voo_button.setStyleSheet(button_style)
-        self.remover_voo_button.setFont(montserrat_bold)
-        self.remover_voo_button.clicked.connect(self.remover_voo)
-        self.button_layout.addWidget(self.remover_voo_button)
+        self.remover_reserva_voo_button = QPushButton("Remover Voo")
+        self.remover_reserva_voo_button.setFixedSize(200, 50)
+        self.remover_reserva_voo_button.setStyleSheet(button_style)
+        self.remover_reserva_voo_button.setFont(montserrat_bold)
+        self.remover_reserva_voo_button.clicked.connect(self.remover_reserva_voo)
+        self.button_layout.addWidget(self.remover_reserva_voo_button)
 
         self.voltar_button = QPushButton("Voltar")
         self.voltar_button.setFixedSize(200, 50)
@@ -1372,7 +1375,7 @@ class TelaVoos_Remover(QMainWindow):
         else:
             self.voo_info_label.setText("Por favor, insira a sigla do voo.")
 
-    def remover_voo(self):
+    def remover_reserva_voo(self):
         """Remove o voo usando a sigla informada"""
         sigla = self.sigla_input.text().strip()
         if sigla:
@@ -2614,12 +2617,16 @@ class TelaPassageiros_Listar(QMainWindow):
             for col in range(1, 4):
                 self.tabela_clientes.setItem(0, col, QTableWidgetItem(""))
 
+
 class TelaReservas_Reservar(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Reservar Voo - Delta Airlines")
         self.setFixedSize(1000, 600)
         self.setStyleSheet("background-color: white;")
+
+        # Backend connection
+        self.backend = BackendReservas()
 
         # Carregar a fonte Montserrat
         if os.path.exists(font_path):
@@ -2662,12 +2669,15 @@ class TelaReservas_Reservar(QMainWindow):
         self.voos_label.setAlignment(Qt.AlignCenter)
         self.voos_layout.addWidget(self.voos_label)
 
-        self.voos_lista_label = QLabel("Lista de voos a serem exibidos aqui")
+        self.voos_lista_label = QLabel()
         self.voos_lista_label.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
         self.voos_lista_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.voos_layout.addWidget(self.voos_lista_label)
 
         self.layout.addWidget(self.voos_container)
+
+        # Atualizar lista de voos disponíveis
+        self.atualizar_lista_voos()
 
         # Contêiner: Seleção do voo
         self.selecao_voo_container = QWidget()
@@ -2680,36 +2690,7 @@ class TelaReservas_Reservar(QMainWindow):
         self.sigla_input.setStyleSheet(line_edit_style)
         self.selecao_voo_layout.addWidget(self.sigla_input)
 
-        self.confirmar_voo_button = QPushButton("Confirmar Voo")
-        self.confirmar_voo_button.setFixedSize(200, 50)
-        self.confirmar_voo_button.setFont(montserrat_bold)
-        self.confirmar_voo_button.setStyleSheet(button_style)
-        self.selecao_voo_layout.addWidget(self.confirmar_voo_button, alignment=Qt.AlignCenter)
-
         self.layout.addWidget(self.selecao_voo_container)
-
-        # Contêiner: Lista de assentos disponíveis
-        self.assentos_container = QWidget()
-        self.assentos_layout = QVBoxLayout(self.assentos_container)
-        self.assentos_layout.setContentsMargins(100, 10, 100, 10)
-        self.assentos_layout.setSpacing(15)
-
-        self.assentos_label = QLabel("Assentos disponíveis")
-        self.assentos_label.setFont(montserrat_bold)
-        self.assentos_label.setAlignment(Qt.AlignCenter)
-        self.assentos_layout.addWidget(self.assentos_label)
-
-        self.assentos_lista_label = QLabel("Lista de assentos a serem exibidos aqui")
-        self.assentos_lista_label.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
-        self.assentos_lista_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-        self.assentos_layout.addWidget(self.assentos_lista_label)
-
-        self.assento_input = QLineEdit()
-        self.assento_input.setPlaceholderText("Número do assento para reservar")
-        self.assento_input.setStyleSheet(line_edit_style)
-        self.assentos_layout.addWidget(self.assento_input)
-
-        self.layout.addWidget(self.assentos_container)
 
         # Contêiner: Botões "Reservar Voo" e "Voltar"
         self.buttons_container = QWidget()
@@ -2721,6 +2702,7 @@ class TelaReservas_Reservar(QMainWindow):
         self.reservar_button.setFixedSize(200, 50)
         self.reservar_button.setFont(montserrat_bold)
         self.reservar_button.setStyleSheet(button_style)
+        self.reservar_button.clicked.connect(self.reservar_voo)
         self.buttons_layout.addWidget(self.reservar_button)
 
         self.voltar_button = QPushButton("Voltar")
@@ -2732,14 +2714,43 @@ class TelaReservas_Reservar(QMainWindow):
 
         self.layout.addWidget(self.buttons_container)
 
+    def atualizar_lista_voos(self):
+        voos = self.backend.listar_voos()
+        if voos:
+            texto_voos = "\n".join(
+                [f"Sigla: {voo[0]}, Origem: {voo[1]}, Destino: {voo[2]}, Modelo: {voo[3]}, Assentos disponíveis: {voo[4]}" for voo in voos]
+            )
+        else:
+            texto_voos = "Nenhum voo disponível."
+        self.voos_lista_label.setText(texto_voos)
+
+    def reservar_voo(self):
+        sigla = self.sigla_input.text().strip()
+
+        if not sigla:
+            self.voos_lista_label.setText("Por favor, insira uma sigla válida.")
+            return
+
+        mensagem = self.backend.reservar_voo(sigla, 1)
+        self.voos_lista_label.setText(mensagem)
+        self.atualizar_lista_voos()
+
+    def closeEvent(self, event):
+        self.backend.close_connection()
+        super().closeEvent(event)
+
+
 
 
 class TelaReservas_Remover(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Remover Voo - Delta Airlines")
+        self.setWindowTitle("Remover Reserva - Delta Airlines")
         self.setFixedSize(1000, 600)
         self.setStyleSheet("background-color: white;")
+
+        # Backend connection
+        self.backend = BackendRemoverReservas()
 
         # Carregar a fonte Montserrat
         if os.path.exists(font_path):
@@ -2782,12 +2793,15 @@ class TelaReservas_Remover(QMainWindow):
         self.voos_label.setAlignment(Qt.AlignCenter)
         self.voos_layout.addWidget(self.voos_label)
 
-        self.voos_lista_label = QLabel("Lista de voos a serem exibidos aqui")
+        self.voos_lista_label = QLabel()
         self.voos_lista_label.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
         self.voos_lista_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.voos_layout.addWidget(self.voos_lista_label)
 
         self.layout.addWidget(self.voos_container)
+
+        # Atualizar lista de voos disponíveis
+        self.atualizar_lista_voos()
 
         # Contêiner: Seleção do voo
         self.selecao_voo_container = QWidget()
@@ -2796,52 +2810,24 @@ class TelaReservas_Remover(QMainWindow):
         self.selecao_voo_layout.setSpacing(15)
 
         self.sigla_input = QLineEdit()
-        self.sigla_input.setPlaceholderText("Sigla do voo para remover a reserva")
+        self.sigla_input.setPlaceholderText("Sigla do voo para reserva")
         self.sigla_input.setStyleSheet(line_edit_style)
         self.selecao_voo_layout.addWidget(self.sigla_input)
 
-        self.confirmar_voo_button = QPushButton("Confirmar Voo")
-        self.confirmar_voo_button.setFixedSize(200, 50)
-        self.confirmar_voo_button.setFont(montserrat_bold)
-        self.confirmar_voo_button.setStyleSheet(button_style)
-        self.selecao_voo_layout.addWidget(self.confirmar_voo_button, alignment=Qt.AlignCenter)
-
         self.layout.addWidget(self.selecao_voo_container)
 
-        # Contêiner: Lista de assentos disponíveis
-        self.assentos_container = QWidget()
-        self.assentos_layout = QVBoxLayout(self.assentos_container)
-        self.assentos_layout.setContentsMargins(100, 10, 100, 10)
-        self.assentos_layout.setSpacing(15)
-
-        self.assentos_label = QLabel("Assentos Indisponíveis")
-        self.assentos_label.setFont(montserrat_bold)
-        self.assentos_label.setAlignment(Qt.AlignCenter)
-        self.assentos_layout.addWidget(self.assentos_label)
-
-        self.assentos_lista_label = QLabel("Lista de assentos a serem exibidos aqui")
-        self.assentos_lista_label.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
-        self.assentos_lista_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-        self.assentos_layout.addWidget(self.assentos_lista_label)
-
-        self.assento_input = QLineEdit()
-        self.assento_input.setPlaceholderText("Número do assento para remover")
-        self.assento_input.setStyleSheet(line_edit_style)
-        self.assentos_layout.addWidget(self.assento_input)
-
-        self.layout.addWidget(self.assentos_container)
-
-        # Contêiner: Botões "Remover Voo" e "Voltar"
+        # Contêiner: Botões "Reservar Voo" e "Voltar"
         self.buttons_container = QWidget()
         self.buttons_layout = QHBoxLayout(self.buttons_container)
         self.buttons_layout.setAlignment(Qt.AlignCenter)
         self.buttons_layout.setSpacing(20)
 
-        self.remover_button = QPushButton("Remover Reserva")
-        self.remover_button.setFixedSize(200, 50)
-        self.remover_button.setFont(montserrat_bold)
-        self.remover_button.setStyleSheet(button_style)
-        self.buttons_layout.addWidget(self.remover_button)
+        self.reservar_button = QPushButton("Remover Reserva do Voo")
+        self.reservar_button.setFixedSize(200, 50)
+        self.reservar_button.setFont(montserrat_bold)
+        self.reservar_button.setStyleSheet(button_style)
+        self.reservar_button.clicked.connect(self.remover_reserva_voo)
+        self.buttons_layout.addWidget(self.reservar_button)
 
         self.voltar_button = QPushButton("Voltar")
         self.voltar_button.setFixedSize(200, 50)
@@ -2852,6 +2838,33 @@ class TelaReservas_Remover(QMainWindow):
 
         self.layout.addWidget(self.buttons_container)
 
+    def atualizar_lista_voos(self):
+        voos = self.backend.listar_voos()
+        if voos:
+            texto_voos = "\n".join(
+                [f"Sigla: {voo[0]}, Origem: {voo[1]}, Destino: {voo[2]}, Modelo: {voo[3]}, Assentos disponíveis: {voo[4]}" for voo in voos]
+            )
+        else:
+            texto_voos = "Nenhum voo disponível."
+        self.voos_lista_label.setText(texto_voos)
+
+    def remover_reserva_voo(self):
+        sigla = self.sigla_input.text().strip()
+
+        if not sigla:
+            self.voos_lista_label.setText("Por favor, insira uma sigla válida.")
+            return
+
+        mensagem = self.backend.remover_reserva_voo(sigla, 1)
+        self.voos_lista_label.setText(mensagem)
+        self.atualizar_lista_voos()
+
+    def closeEvent(self, event):
+        self.backend.close_connection()
+        super().closeEvent(event)
+
+
+
 
 
 if __name__ == "__main__":
@@ -2859,3 +2872,58 @@ if __name__ == "__main__":
     tela = Tela()
     tela.show()
     sys.exit(app.exec_())
+
+    import psycopg2
+
+class GerenciadorDeReservas:
+    def __init__(self, dbname, user, password, host='localhost', port=5432):
+        try:
+            self.conn = psycopg2.connect(
+                dbname=dbname,
+                user=user,
+                password=password,
+                host=host,
+                port=port
+            )
+            self.cursor = self.conn.cursor()
+        except Exception as e:
+            print("Erro ao conectar ao banco de dados:", e)
+
+    def listar_voos(self):
+        """Retorna todos os voos disponíveis no banco."""
+        try:
+            self.cursor.execute("SELECT * FROM voos;")
+            voos = self.cursor.fetchall()
+            return voos
+        except Exception as e:
+            print("Erro ao listar voos:", e)
+            return []
+
+    def adicionar_voo(self, sigla, origem, destino, modelo_aviao):
+        """Adiciona um novo voo ao banco."""
+        try:
+            self.cursor.execute(
+                "INSERT INTO voos (sigla, origem, destino, modelo_aviao) VALUES (%s, %s, %s, %s);",
+                (sigla, origem, destino, modelo_aviao)
+            )
+            self.conn.commit()
+            print("Voo adicionado com sucesso.")
+        except Exception as e:
+            print("Erro ao adicionar voo:", e)
+
+    def remover_reserva_voo(self, id_voo):
+        """Remove um voo do banco com base no ID."""
+        try:
+            self.cursor.execute("DELETE FROM voos WHERE id = %s;", (id_voo,))
+            self.conn.commit()
+            print("Voo removido com sucesso.")
+        except Exception as e:
+            print("Erro ao remover voo:", e)
+
+    def fechar_conexao(self):
+        """Fecha a conexão com o banco de dados."""
+        try:
+            self.cursor.close()
+            self.conn.close()
+        except Exception as e:
+            print("Erro ao fechar a conexão:", e)
