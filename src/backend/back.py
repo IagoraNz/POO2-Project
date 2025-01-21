@@ -721,3 +721,108 @@ class BackendRemoverReservas:
     def close_connection(self):
         self.cur.close()
         self.conn.close()
+
+class MetodosGerente:
+    def __init__(self):
+        try:
+            self.conn = psycopg2.connect(
+                dbname='credenciais',  # Nome do banco de dados
+                user='poodois',        # Nome do usuário
+                password='1234',       # Senha do usuário
+                host='localhost',
+                port=5432
+            )
+
+            self.criar_tabela()
+        except psycopg2.OperationalError as e:
+            raise ConnectionError(f"Erro ao conectar ao banco de dados: {e}")
+
+    def criar_tabela(self):
+        """Cria a tabela de aviões caso não exista."""
+        with self.conn.cursor() as cur:
+            cur.execute('''
+                CREATE TABLE IF NOT EXISTS avioes (
+                    id SERIAL PRIMARY KEY,
+                    sigla TEXT UNIQUE NOT NULL,
+                    modelo TEXT NOT NULL,
+                    assentos INTEGER NOT NULL
+                );
+            ''')
+            self.conn.commit()
+
+    def cadastrar_aviao(self, sigla: str, modelo: str, assentos: int) -> tuple:
+        """Insere ou atualiza os dados de um avião no banco de dados."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    sql.SQL('''
+                        INSERT INTO avioes (sigla, modelo, assentos)
+                        VALUES (%s, %s, %s)
+                        ON CONFLICT (sigla) DO UPDATE
+                        SET modelo = EXCLUDED.modelo, assentos = EXCLUDED.assentos;
+                    '''),
+                    (sigla, modelo, assentos)
+                )
+                self.conn.commit()
+            return True, "Avião cadastrado com sucesso."
+        except Exception as e:
+            return False, f"Erro ao cadastrar avião: {str(e)}"
+
+    def listar_avioes(self):
+        """Retorna uma lista com todos os aviões cadastrados."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute("SELECT id, sigla, modelo, assentos FROM avioes;")
+                avioes = cur.fetchall()
+            return avioes
+        except Exception as e:
+            return []
+
+    def buscar_aviao_por_sigla(self, sigla: str) -> tuple:
+        """Busca um avião pela sigla."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    "SELECT id, sigla, modelo, assentos FROM avioes WHERE sigla = %s;",
+                    (sigla,)
+                )
+                aviao = cur.fetchone()
+            if aviao:
+                return aviao
+            return None
+        except Exception as e:
+            return None
+
+    def excluir_aviao(self, sigla: str) -> tuple:
+        """Exclui um avião pela sigla."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    "DELETE FROM avioes WHERE sigla = %s;",
+                    (sigla,)
+                )
+                self.conn.commit()
+                if cur.rowcount > 0:
+                    return True, "Avião excluído com sucesso."
+                return False, "Avião não encontrado."
+        except Exception as e:
+            return False, f"Erro ao excluir avião: {str(e)}"
+    
+    def alterar_aviao(self, sigla: str, novo_modelo: str, novos_assentos: int) -> tuple:
+        """Altera os dados de um avião existente no banco de dados."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    '''
+                    UPDATE avioes 
+                    SET modelo = %s, assentos = %s 
+                    WHERE sigla = %s;
+                    ''',
+                    (novo_modelo, novos_assentos, sigla)
+                )
+                self.conn.commit()
+                if cur.rowcount > 0:
+                    return True, "Avião atualizado com sucesso."
+                return False, "Avião não encontrado."
+        except Exception as e:
+            return False, f"Erro ao alterar avião: {str(e)}"
