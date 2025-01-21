@@ -939,15 +939,16 @@ class TelaAvioes_Cadastrar(QMainWindow):
 
         self.layout.addWidget(self.buttons_widget)
 
-
 class TelaVoos_Alterar(QMainWindow):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, conn=None, parent=None):
+        super().__init__(parent)
+        self.conn = conn or psycopg2.connect(dbname='credenciais', user='poodois', password='1234', host='localhost', port=5432)
         self.setWindowTitle("Alterar Voo - Delta Airlines")
         self.setFixedSize(1000, 600)
         self.setStyleSheet("background-color: white;")
 
         # Carregar a fonte Montserrat
+        font_path = "./src/fonts/Montserrat-Bold.ttf"
         if os.path.exists(font_path):
             QFontDatabase.addApplicationFont(font_path)
             montserrat_bold = QFont("Montserrat", 14, QFont.Bold)
@@ -977,10 +978,24 @@ class TelaVoos_Alterar(QMainWindow):
         self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignTop)
         self.layout.addWidget(self.logo_widget, alignment=Qt.AlignCenter)
 
-        # Botões e layout
+        # Definindo o estilo dos botões
         button_width = 200
         button_height = 50
-
+        button_style = """
+            QPushButton {
+                background-color: #f1f1f1;
+                border: none;
+                border-radius: 10px;
+                font-size: 14px;
+                padding: 10px;
+            }
+            QPushButton:hover {
+                background-color: #ffcccc;  /* Vermelho claro /
+            }
+            QPushButton:pressed {
+                background-color: #cce7ff;  / Azul claro */
+            }
+        """
         # Contêiner de entrada para sigla
         self.sigla_container = QWidget()
         self.sigla_layout = QVBoxLayout(self.sigla_container)
@@ -989,7 +1004,6 @@ class TelaVoos_Alterar(QMainWindow):
 
         self.sigla_input = QLineEdit()
         self.sigla_input.setPlaceholderText("Digite a sigla do voo")
-        self.sigla_input.setStyleSheet(line_edit_style)
         self.sigla_input.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
         self.sigla_layout.addWidget(self.sigla_input)
 
@@ -997,11 +1011,12 @@ class TelaVoos_Alterar(QMainWindow):
         self.buscar_button.setFixedSize(button_width, button_height)
         self.buscar_button.setFont(montserrat_bold)
         self.buscar_button.setStyleSheet(button_style)
+        self.buscar_button.clicked.connect(self.buscar_voo_handler)
         self.sigla_layout.addWidget(self.buscar_button, alignment=Qt.AlignCenter)
 
         self.layout.addWidget(self.sigla_container)
 
-        # Contêiner 3: Informações do voo
+        # Contêiner 2: Informações do voo
         self.info_container = QWidget()
         self.info_layout = QVBoxLayout(self.info_container)
         self.info_container.setContentsMargins(100, 10, 100, 10)
@@ -1027,24 +1042,18 @@ class TelaVoos_Alterar(QMainWindow):
         self.edit_layout.setContentsMargins(100, 10, 100, 10)
         self.edit_layout.setSpacing(15)
 
-        # Campo de Origem
         self.origem_input = QLineEdit()
         self.origem_input.setPlaceholderText("Digite a origem")
-        self.origem_input.setStyleSheet(line_edit_style)
         self.origem_input.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
         self.edit_layout.addWidget(self.origem_input)
 
-        # Campo de Destino
         self.destino_input = QLineEdit()
         self.destino_input.setPlaceholderText("Digite o destino")
-        self.destino_input.setStyleSheet(line_edit_style)
         self.destino_input.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
         self.edit_layout.addWidget(self.destino_input)
 
-        # Campo de Modelo do Avião
         self.modelo_input = QLineEdit()
         self.modelo_input.setPlaceholderText("Digite o modelo do avião")
-        self.modelo_input.setStyleSheet(line_edit_style)
         self.modelo_input.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
         self.edit_layout.addWidget(self.modelo_input)
 
@@ -1054,24 +1063,75 @@ class TelaVoos_Alterar(QMainWindow):
         self.buttons_container = QWidget()
         self.buttons_layout = QHBoxLayout(self.buttons_container)
         self.buttons_layout.setAlignment(Qt.AlignCenter)
-        self.buttons_layout.setSpacing(20)  # Espaçamento entre os botões
+        self.buttons_layout.setSpacing(20)
 
         self.alterar_button = QPushButton("Alterar Voo")
         self.alterar_button.setFixedSize(button_width, button_height)
         self.alterar_button.setFont(montserrat_bold)
         self.alterar_button.setStyleSheet(button_style)
+        self.alterar_button.clicked.connect(self.alterar_voo_handler)
         self.buttons_layout.addWidget(self.alterar_button)
-        self.alterar_button.clicked.connect(self.close)
 
         self.voltar_button = QPushButton("Voltar")
         self.voltar_button.setFixedSize(button_width, button_height)
         self.voltar_button.setFont(montserrat_bold)
         self.voltar_button.setStyleSheet(button_style)
-        self.buttons_layout.addWidget(self.voltar_button)
         self.voltar_button.clicked.connect(self.close)
+        self.buttons_layout.addWidget(self.voltar_button)
 
         self.layout.addWidget(self.buttons_container)
 
+    def buscar_voo_handler(self):
+        # Método para buscar o voo e exibir as informações
+        sigla = self.sigla_input.text().strip()
+        if not sigla:
+            self.voo_info_label.setText("Por favor, insira uma sigla.")
+            self.voo_info_label.setStyleSheet("color: red;")
+            return
+        
+        # Aqui você pode adicionar a lógica para buscar o voo no banco de dados
+        # Suponha que o voo seja encontrado, atualize o info_label com informações do voo.
+        self.voo_info_label.setText(f"Informações do voo {sigla} encontradas.")
+        self.voo_info_label.setStyleSheet("color: green;")
+
+    def alterar_voo_handler(self):
+        sigla = self.sigla_input.text().strip()
+        origem = self.origem_input.text().strip()
+        destino = self.destino_input.text().strip()
+        modelo_aviao = self.modelo_input.text().strip()
+
+        if not sigla or not origem or not destino or not modelo_aviao:
+            self.voo_info_label.setText("Todos os campos devem ser preenchidos.")
+            self.voo_info_label.setStyleSheet("color: red;")
+            return
+
+        sucesso, mensagem = self.alterar_voo(sigla, origem, destino, modelo_aviao)
+        self.voo_info_label.setText(mensagem)
+        if sucesso:
+            self.voo_info_label.setStyleSheet("color: green;")
+        else:
+            self.voo_info_label.setStyleSheet("color: red;")
+
+    def alterar_voo(self, sigla: str, origem: str, destino: str, modelo_aviao: str) -> tuple:
+        """Altera os dados de um voo existente pela sigla."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    '''
+                    UPDATE voos 
+                    SET origem = %s, destino = %s, modelo_aviao = %s
+                    WHERE sigla = %s;
+                    ''',
+                    (origem, destino, modelo_aviao, sigla)
+                )
+                self.conn.commit()
+
+                if cur.rowcount > 0:
+                    return True, "Dados do voo alterados com sucesso."
+                else:
+                    return False, "Voo não encontrado."
+        except Exception as e:
+            return False, f"Erro ao alterar voo: {str(e)}"
 
 class TelaAvioes_Alterar(QMainWindow):
     def __init__(self):
@@ -1192,13 +1252,14 @@ class TelaAvioes_Alterar(QMainWindow):
 
         self.layout.addWidget(self.buttons_container)
 
-
 class TelaVoos_Remover(QMainWindow):
-    def __init__(self):
+    def __init__(self, conn = psycopg2.connect(dbname='credenciais', user='poodois',  password='1234', host='localhost', port=5432)):
         super().__init__()
         self.setWindowTitle("Removendo Voos - Delta Airlines")
         self.setFixedSize(1000, 600)
         self.setStyleSheet("background-color: white;")
+
+        self.conn = conn  # Conexão com o banco de dados
 
         # Carregar a fonte Montserrat
         font_path = os.path.abspath("./src/fonts/Montserrat-Bold.ttf")
@@ -1254,6 +1315,7 @@ class TelaVoos_Remover(QMainWindow):
         self.buscar_button = QPushButton("Buscar Voo")
         self.buscar_button.setFixedSize(200, 50)
         self.buscar_button.setStyleSheet(button_style)
+        self.buscar_button.clicked.connect(self.buscar_voo)
         self.sigla_layout.addWidget(self.buscar_button, alignment=Qt.AlignCenter)
 
         self.layout.addWidget(self.sigla_container)
@@ -1280,7 +1342,7 @@ class TelaVoos_Remover(QMainWindow):
         self.remover_voo_button.setFixedSize(200, 50)
         self.remover_voo_button.setStyleSheet(button_style)
         self.remover_voo_button.setFont(montserrat_bold)
-        self.remover_voo_button.clicked.connect(self.close)  # Substitua por funcionalidade de remoção
+        self.remover_voo_button.clicked.connect(self.remover_voo)
         self.button_layout.addWidget(self.remover_voo_button)
 
         self.voltar_button = QPushButton("Voltar")
@@ -1292,6 +1354,49 @@ class TelaVoos_Remover(QMainWindow):
 
         self.layout.addWidget(self.button_container)
 
+    def buscar_voo(self):
+        """Busca informações do voo pela sigla e exibe as informações"""
+        sigla = self.sigla_input.text().strip()
+        if sigla:
+            try:
+                with self.conn.cursor() as cur:
+                    cur.execute("SELECT * FROM voos WHERE sigla = %s;", (sigla,))
+                    voo = cur.fetchone()
+                    if voo:
+                        voo_info = f"Sigla: {voo[0]}\nOrigem: {voo[1]}\nDestino: {voo[2]}\nData: {voo[3]}"
+                        self.voo_info_label.setText(voo_info)
+                    else:
+                        self.voo_info_label.setText("Voo não encontrado.")
+            except Exception as e:
+                self.voo_info_label.setText(f"Erro ao buscar voo: {str(e)}")
+        else:
+            self.voo_info_label.setText("Por favor, insira a sigla do voo.")
+
+    def remover_voo(self):
+        """Remove o voo usando a sigla informada"""
+        sigla = self.sigla_input.text().strip()
+        if sigla:
+            sucesso, mensagem = self.excluir_voo(sigla)
+            self.voo_info_label.setText(mensagem)
+            if sucesso:
+                self.sigla_input.clear()  # Limpa o campo de sigla após remoção
+        else:
+            self.voo_info_label.setText("Por favor, insira a sigla do voo.")
+
+    def excluir_voo(self, sigla: str) -> tuple:
+        """Exclui um voo pela sigla."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    "DELETE FROM voos WHERE sigla = %s;",
+                    (sigla,)
+                )
+                self.conn.commit()
+                if cur.rowcount > 0:
+                    return True, "Voo excluído com sucesso."
+                return False, "Voo não encontrado."
+        except Exception as e:
+            return False, f"Erro ao excluir voo: {str(e)}"
 
 class TelaAvioes_Remover(QMainWindow):
     def __init__(self):
@@ -1393,7 +1498,6 @@ class TelaAvioes_Remover(QMainWindow):
         self.layout.addWidget(self.button_container)
 
 
-
 class TelaVoos_Listar(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -1401,6 +1505,9 @@ class TelaVoos_Listar(QMainWindow):
         self.setFixedSize(1000, 600)
         self.setStyleSheet("background-color: white;")
 
+        # Conexão com o banco de dados
+        self.conn = psycopg2.connect("dbname=credenciais user=poodois password=1234 host=localhost")
+        
         # Carregar a fonte Montserrat
         font_path = os.path.abspath("./src/fonts/Montserrat-Bold.ttf")
         if os.path.exists(font_path):
@@ -1429,7 +1536,7 @@ class TelaVoos_Listar(QMainWindow):
         else:
             self.logo_label.setText("Imagem não encontrada.")
 
-        self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)  # Logo centralizada
+        self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)
         self.layout.addWidget(self.logo_widget, alignment=Qt.AlignCenter)
 
         # Contêiner "Lista de Voos"
@@ -1445,8 +1552,24 @@ class TelaVoos_Listar(QMainWindow):
         self.info_container.setContentsMargins(100, 10, 100, 10)
         self.info_layout.setSpacing(10)
 
+        button_style = """
+            QPushButton {
+                background-color: #f1f1f1;
+                border: none;
+                border-radius: 10px;
+                font-size: 14px;
+                padding: 10px;
+            }
+            QPushButton:hover {
+                background-color: #ffcccc;  /* Vermelho claro /
+            }
+            QPushButton:pressed {
+                background-color: #cce7ff;  / Azul claro */
+            }
+        """
+        # Criação de uma label para mostrar as informações dos voos
         self.voo_info_label = QLabel("Informações do voo a serem exibidas aqui")
-        self.voo_info_label.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
+        self.voo_info_label.setStyleSheet(button_style)
         self.voo_info_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.info_layout.addWidget(self.voo_info_label)
 
@@ -1465,6 +1588,28 @@ class TelaVoos_Listar(QMainWindow):
         self.button_layout.addWidget(self.voltar_button)
 
         self.layout.addWidget(self.button_container)
+
+        # Chamar o método para listar os voos ao inicializar
+        self.listar_voos()
+
+    def listar_voos(self) -> None:
+        """Atualiza a label com a lista de voos cadastrados no banco de dados."""
+        try:
+            # Consultar os voos no banco de dados
+            with self.conn.cursor() as cur:
+                cur.execute("SELECT id, sigla, origem, destino, modelo_aviao FROM voos;")
+                voos = cur.fetchall()
+            
+            # Formatar os dados dos voos para exibição
+            voo_info = ""
+            for voo in voos:
+                voo_info += f"ID: {voo[0]} | Sigla: {voo[1]} | Origem: {voo[2]} | Destino: {voo[3]} | Modelo: {voo[4]}\n"
+
+            # Atualizar a label com as informações dos voos
+            self.voo_info_label.setText(voo_info if voo_info else "Nenhum voo cadastrado.")
+        except Exception as e:
+            self.voo_info_label.setText(f"Erro ao carregar os voos: {str(e)}")
+
 
 class TelaAvioes_Listar(QMainWindow):
     def __init__(self):
