@@ -939,15 +939,16 @@ class TelaAvioes_Cadastrar(QMainWindow):
 
         self.layout.addWidget(self.buttons_widget)
 
-
 class TelaVoos_Alterar(QMainWindow):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, conn=None, parent=None):
+        super().__init__(parent)
+        self.conn = conn or psycopg2.connect(dbname='credenciais', user='poodois', password='1234', host='localhost', port=5432)
         self.setWindowTitle("Alterar Voo - Delta Airlines")
         self.setFixedSize(1000, 600)
         self.setStyleSheet("background-color: white;")
 
         # Carregar a fonte Montserrat
+        font_path = "./src/fonts/Montserrat-Bold.ttf"
         if os.path.exists(font_path):
             QFontDatabase.addApplicationFont(font_path)
             montserrat_bold = QFont("Montserrat", 14, QFont.Bold)
@@ -977,9 +978,10 @@ class TelaVoos_Alterar(QMainWindow):
         self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignTop)
         self.layout.addWidget(self.logo_widget, alignment=Qt.AlignCenter)
 
-        # Botões e layout
+        # Definindo o estilo dos botões
         button_width = 200
         button_height = 50
+        button_style = "background-color: #007bff; color: white; border-radius: 5px; padding: 10px;"
 
         # Contêiner de entrada para sigla
         self.sigla_container = QWidget()
@@ -989,7 +991,6 @@ class TelaVoos_Alterar(QMainWindow):
 
         self.sigla_input = QLineEdit()
         self.sigla_input.setPlaceholderText("Digite a sigla do voo")
-        self.sigla_input.setStyleSheet(line_edit_style)
         self.sigla_input.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
         self.sigla_layout.addWidget(self.sigla_input)
 
@@ -997,11 +998,12 @@ class TelaVoos_Alterar(QMainWindow):
         self.buscar_button.setFixedSize(button_width, button_height)
         self.buscar_button.setFont(montserrat_bold)
         self.buscar_button.setStyleSheet(button_style)
+        self.buscar_button.clicked.connect(self.buscar_voo_handler)
         self.sigla_layout.addWidget(self.buscar_button, alignment=Qt.AlignCenter)
 
         self.layout.addWidget(self.sigla_container)
 
-        # Contêiner 3: Informações do voo
+        # Contêiner 2: Informações do voo
         self.info_container = QWidget()
         self.info_layout = QVBoxLayout(self.info_container)
         self.info_container.setContentsMargins(100, 10, 100, 10)
@@ -1027,24 +1029,18 @@ class TelaVoos_Alterar(QMainWindow):
         self.edit_layout.setContentsMargins(100, 10, 100, 10)
         self.edit_layout.setSpacing(15)
 
-        # Campo de Origem
         self.origem_input = QLineEdit()
         self.origem_input.setPlaceholderText("Digite a origem")
-        self.origem_input.setStyleSheet(line_edit_style)
         self.origem_input.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
         self.edit_layout.addWidget(self.origem_input)
 
-        # Campo de Destino
         self.destino_input = QLineEdit()
         self.destino_input.setPlaceholderText("Digite o destino")
-        self.destino_input.setStyleSheet(line_edit_style)
         self.destino_input.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
         self.edit_layout.addWidget(self.destino_input)
 
-        # Campo de Modelo do Avião
         self.modelo_input = QLineEdit()
         self.modelo_input.setPlaceholderText("Digite o modelo do avião")
-        self.modelo_input.setStyleSheet(line_edit_style)
         self.modelo_input.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
         self.edit_layout.addWidget(self.modelo_input)
 
@@ -1054,24 +1050,75 @@ class TelaVoos_Alterar(QMainWindow):
         self.buttons_container = QWidget()
         self.buttons_layout = QHBoxLayout(self.buttons_container)
         self.buttons_layout.setAlignment(Qt.AlignCenter)
-        self.buttons_layout.setSpacing(20)  # Espaçamento entre os botões
+        self.buttons_layout.setSpacing(20)
 
         self.alterar_button = QPushButton("Alterar Voo")
         self.alterar_button.setFixedSize(button_width, button_height)
         self.alterar_button.setFont(montserrat_bold)
         self.alterar_button.setStyleSheet(button_style)
+        self.alterar_button.clicked.connect(self.alterar_voo_handler)
         self.buttons_layout.addWidget(self.alterar_button)
-        self.alterar_button.clicked.connect(self.close)
 
         self.voltar_button = QPushButton("Voltar")
         self.voltar_button.setFixedSize(button_width, button_height)
         self.voltar_button.setFont(montserrat_bold)
         self.voltar_button.setStyleSheet(button_style)
-        self.buttons_layout.addWidget(self.voltar_button)
         self.voltar_button.clicked.connect(self.close)
+        self.buttons_layout.addWidget(self.voltar_button)
 
         self.layout.addWidget(self.buttons_container)
 
+    def buscar_voo_handler(self):
+        # Método para buscar o voo e exibir as informações
+        sigla = self.sigla_input.text().strip()
+        if not sigla:
+            self.voo_info_label.setText("Por favor, insira uma sigla.")
+            self.voo_info_label.setStyleSheet("color: red;")
+            return
+        
+        # Aqui você pode adicionar a lógica para buscar o voo no banco de dados
+        # Suponha que o voo seja encontrado, atualize o info_label com informações do voo.
+        self.voo_info_label.setText(f"Informações do voo {sigla} encontradas.")
+        self.voo_info_label.setStyleSheet("color: green;")
+
+    def alterar_voo_handler(self):
+        sigla = self.sigla_input.text().strip()
+        origem = self.origem_input.text().strip()
+        destino = self.destino_input.text().strip()
+        modelo_aviao = self.modelo_input.text().strip()
+
+        if not sigla or not origem or not destino or not modelo_aviao:
+            self.voo_info_label.setText("Todos os campos devem ser preenchidos.")
+            self.voo_info_label.setStyleSheet("color: red;")
+            return
+
+        sucesso, mensagem = self.alterar_voo(sigla, origem, destino, modelo_aviao)
+        self.voo_info_label.setText(mensagem)
+        if sucesso:
+            self.voo_info_label.setStyleSheet("color: green;")
+        else:
+            self.voo_info_label.setStyleSheet("color: red;")
+
+    def alterar_voo(self, sigla: str, origem: str, destino: str, modelo_aviao: str) -> tuple:
+        """Altera os dados de um voo existente pela sigla."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    '''
+                    UPDATE voos 
+                    SET origem = %s, destino = %s, modelo_aviao = %s
+                    WHERE sigla = %s;
+                    ''',
+                    (origem, destino, modelo_aviao, sigla)
+                )
+                self.conn.commit()
+
+                if cur.rowcount > 0:
+                    return True, "Dados do voo alterados com sucesso."
+                else:
+                    return False, "Voo não encontrado."
+        except Exception as e:
+            return False, f"Erro ao alterar voo: {str(e)}"
 
 class TelaAvioes_Alterar(QMainWindow):
     def __init__(self):
