@@ -1393,7 +1393,6 @@ class TelaAvioes_Remover(QMainWindow):
         self.layout.addWidget(self.button_container)
 
 
-
 class TelaVoos_Listar(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -1401,6 +1400,9 @@ class TelaVoos_Listar(QMainWindow):
         self.setFixedSize(1000, 600)
         self.setStyleSheet("background-color: white;")
 
+        # Conexão com o banco de dados
+        self.conn = psycopg2.connect("dbname=credenciais user=poodois password=1234 host=localhost")
+        
         # Carregar a fonte Montserrat
         font_path = os.path.abspath("./src/fonts/Montserrat-Bold.ttf")
         if os.path.exists(font_path):
@@ -1429,7 +1431,7 @@ class TelaVoos_Listar(QMainWindow):
         else:
             self.logo_label.setText("Imagem não encontrada.")
 
-        self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)  # Logo centralizada
+        self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)
         self.layout.addWidget(self.logo_widget, alignment=Qt.AlignCenter)
 
         # Contêiner "Lista de Voos"
@@ -1445,6 +1447,7 @@ class TelaVoos_Listar(QMainWindow):
         self.info_container.setContentsMargins(100, 10, 100, 10)
         self.info_layout.setSpacing(10)
 
+        # Criação de uma label para mostrar as informações dos voos
         self.voo_info_label = QLabel("Informações do voo a serem exibidas aqui")
         self.voo_info_label.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
         self.voo_info_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
@@ -1460,11 +1463,33 @@ class TelaVoos_Listar(QMainWindow):
         self.voltar_button = QPushButton("Voltar")
         self.voltar_button.setFixedSize(200, 50)
         self.voltar_button.setFont(montserrat_bold)
-        self.voltar_button.setStyleSheet(button_style)
+        self.voltar_button.setStyleSheet("background-color: #007BFF; color: white; border-radius: 5px;")
         self.voltar_button.clicked.connect(self.close)
         self.button_layout.addWidget(self.voltar_button)
 
         self.layout.addWidget(self.button_container)
+
+        # Chamar o método para listar os voos ao inicializar
+        self.listar_voos()
+
+    def listar_voos(self) -> None:
+        """Atualiza a label com a lista de voos cadastrados no banco de dados."""
+        try:
+            # Consultar os voos no banco de dados
+            with self.conn.cursor() as cur:
+                cur.execute("SELECT id, sigla, origem, destino, modelo_aviao FROM voos;")
+                voos = cur.fetchall()
+            
+            # Formatar os dados dos voos para exibição
+            voo_info = ""
+            for voo in voos:
+                voo_info += f"ID: {voo[0]} | Sigla: {voo[1]} | Origem: {voo[2]} | Destino: {voo[3]} | Modelo: {voo[4]}\n"
+
+            # Atualizar a label com as informações dos voos
+            self.voo_info_label.setText(voo_info if voo_info else "Nenhum voo cadastrado.")
+        except Exception as e:
+            self.voo_info_label.setText(f"Erro ao carregar os voos: {str(e)}")
+
 
 class TelaAvioes_Listar(QMainWindow):
     def __init__(self):
