@@ -981,8 +981,21 @@ class TelaVoos_Alterar(QMainWindow):
         # Definindo o estilo dos botões
         button_width = 200
         button_height = 50
-        button_style = "background-color: #007bff; color: white; border-radius: 5px; padding: 10px;"
-
+        button_style = """
+            QPushButton {
+                background-color: #f1f1f1;
+                border: none;
+                border-radius: 10px;
+                font-size: 14px;
+                padding: 10px;
+            }
+            QPushButton:hover {
+                background-color: #ffcccc;  /* Vermelho claro /
+            }
+            QPushButton:pressed {
+                background-color: #cce7ff;  / Azul claro */
+            }
+        """
         # Contêiner de entrada para sigla
         self.sigla_container = QWidget()
         self.sigla_layout = QVBoxLayout(self.sigla_container)
@@ -1239,13 +1252,14 @@ class TelaAvioes_Alterar(QMainWindow):
 
         self.layout.addWidget(self.buttons_container)
 
-
 class TelaVoos_Remover(QMainWindow):
-    def __init__(self):
+    def __init__(self, conn = psycopg2.connect(dbname='credenciais', user='poodois',  password='1234', host='localhost', port=5432)):
         super().__init__()
         self.setWindowTitle("Removendo Voos - Delta Airlines")
         self.setFixedSize(1000, 600)
         self.setStyleSheet("background-color: white;")
+
+        self.conn = conn  # Conexão com o banco de dados
 
         # Carregar a fonte Montserrat
         font_path = os.path.abspath("./src/fonts/Montserrat-Bold.ttf")
@@ -1301,6 +1315,7 @@ class TelaVoos_Remover(QMainWindow):
         self.buscar_button = QPushButton("Buscar Voo")
         self.buscar_button.setFixedSize(200, 50)
         self.buscar_button.setStyleSheet(button_style)
+        self.buscar_button.clicked.connect(self.buscar_voo)
         self.sigla_layout.addWidget(self.buscar_button, alignment=Qt.AlignCenter)
 
         self.layout.addWidget(self.sigla_container)
@@ -1327,7 +1342,7 @@ class TelaVoos_Remover(QMainWindow):
         self.remover_voo_button.setFixedSize(200, 50)
         self.remover_voo_button.setStyleSheet(button_style)
         self.remover_voo_button.setFont(montserrat_bold)
-        self.remover_voo_button.clicked.connect(self.close)  # Substitua por funcionalidade de remoção
+        self.remover_voo_button.clicked.connect(self.remover_voo)
         self.button_layout.addWidget(self.remover_voo_button)
 
         self.voltar_button = QPushButton("Voltar")
@@ -1339,6 +1354,49 @@ class TelaVoos_Remover(QMainWindow):
 
         self.layout.addWidget(self.button_container)
 
+    def buscar_voo(self):
+        """Busca informações do voo pela sigla e exibe as informações"""
+        sigla = self.sigla_input.text().strip()
+        if sigla:
+            try:
+                with self.conn.cursor() as cur:
+                    cur.execute("SELECT * FROM voos WHERE sigla = %s;", (sigla,))
+                    voo = cur.fetchone()
+                    if voo:
+                        voo_info = f"Sigla: {voo[0]}\nOrigem: {voo[1]}\nDestino: {voo[2]}\nData: {voo[3]}"
+                        self.voo_info_label.setText(voo_info)
+                    else:
+                        self.voo_info_label.setText("Voo não encontrado.")
+            except Exception as e:
+                self.voo_info_label.setText(f"Erro ao buscar voo: {str(e)}")
+        else:
+            self.voo_info_label.setText("Por favor, insira a sigla do voo.")
+
+    def remover_voo(self):
+        """Remove o voo usando a sigla informada"""
+        sigla = self.sigla_input.text().strip()
+        if sigla:
+            sucesso, mensagem = self.excluir_voo(sigla)
+            self.voo_info_label.setText(mensagem)
+            if sucesso:
+                self.sigla_input.clear()  # Limpa o campo de sigla após remoção
+        else:
+            self.voo_info_label.setText("Por favor, insira a sigla do voo.")
+
+    def excluir_voo(self, sigla: str) -> tuple:
+        """Exclui um voo pela sigla."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    "DELETE FROM voos WHERE sigla = %s;",
+                    (sigla,)
+                )
+                self.conn.commit()
+                if cur.rowcount > 0:
+                    return True, "Voo excluído com sucesso."
+                return False, "Voo não encontrado."
+        except Exception as e:
+            return False, f"Erro ao excluir voo: {str(e)}"
 
 class TelaAvioes_Remover(QMainWindow):
     def __init__(self):
@@ -1494,9 +1552,24 @@ class TelaVoos_Listar(QMainWindow):
         self.info_container.setContentsMargins(100, 10, 100, 10)
         self.info_layout.setSpacing(10)
 
+        button_style = """
+            QPushButton {
+                background-color: #f1f1f1;
+                border: none;
+                border-radius: 10px;
+                font-size: 14px;
+                padding: 10px;
+            }
+            QPushButton:hover {
+                background-color: #ffcccc;  /* Vermelho claro /
+            }
+            QPushButton:pressed {
+                background-color: #cce7ff;  / Azul claro */
+            }
+        """
         # Criação de uma label para mostrar as informações dos voos
         self.voo_info_label = QLabel("Informações do voo a serem exibidas aqui")
-        self.voo_info_label.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
+        self.voo_info_label.setStyleSheet(button_style)
         self.voo_info_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.info_layout.addWidget(self.voo_info_label)
 
@@ -1510,7 +1583,7 @@ class TelaVoos_Listar(QMainWindow):
         self.voltar_button = QPushButton("Voltar")
         self.voltar_button.setFixedSize(200, 50)
         self.voltar_button.setFont(montserrat_bold)
-        self.voltar_button.setStyleSheet("background-color: #007BFF; color: white; border-radius: 5px;")
+        self.voltar_button.setStyleSheet(button_style)
         self.voltar_button.clicked.connect(self.close)
         self.button_layout.addWidget(self.voltar_button)
 
