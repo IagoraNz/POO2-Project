@@ -3,8 +3,7 @@ import os
 from PyQt5.QtWidgets import QScrollArea, QTableWidgetItem, QApplication, QAbstractItemView, QTableWidget, QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QLineEdit, QStackedWidget
 from PyQt5.QtGui import QPixmap, QFontDatabase, QFont
 from PyQt5.QtCore import Qt
-from backend.back import Autenticacao
-from backend.back import CadastroClientes
+from backend.back import *
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QSizePolicy, QSpacerItem
 from POO2PROJECT.listar_clientes import ListarClientes
 
@@ -560,7 +559,12 @@ class TelaVoos(QMainWindow):
         self.layout.addLayout(self.right_layout)
     
     def mostrar_tela_cadastrar_voo(self):
-        self.tela_cadastrar_voo = TelaVoos_Cadastrar()
+        # Certifique-se de ter uma instância de CadastroVoos disponível
+        if not hasattr(self, 'cadastro_voos'):
+            self.cadastro_voos = CadastroVoos()
+        
+        # Passe a instância de CadastroVoos para TelaVoos_Cadastrar
+        self.tela_cadastrar_voo = TelaVoos_Cadastrar(self.cadastro_voos)
         self.tela_cadastrar_voo.show()
 
     def mostrar_tela_alterar_voo(self):
@@ -700,27 +704,52 @@ class TelaAvioes(QMainWindow):
     
 
 
-
 class TelaVoos_Cadastrar(QMainWindow):
-    def __init__(self):
+    def __init__(self, cadastro_voos):
         super().__init__()
+        self.cadastro_voos = cadastro_voos  # Instância da classe CadastroVoos
+
         self.setWindowTitle("Cadastrar Voo - Delta Airlines")
         self.setFixedSize(1000, 600)
         self.setStyleSheet("background-color: white;")
 
         # Carregar a fonte Montserrat
+        font_path = os.path.abspath("./src/fonts/Montserrat-Bold.ttf")
         if os.path.exists(font_path):
             QFontDatabase.addApplicationFont(font_path)
             montserrat_bold = QFont("Montserrat", 14, QFont.Bold)
         else:
             montserrat_bold = QFont("Arial", 14, QFont.Bold)
 
+        # Estilo dos campos e botões
+        line_edit_style = """
+            QLineEdit {
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                padding: 10px;
+                font-size: 14px;
+            }
+        """
+        button_style = """
+            QPushButton {
+                background-color: #007BFF;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background-color: #0056b3;
+            }
+        """
+
         # Layout principal
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         self.layout = QVBoxLayout(self.central_widget)
 
-        # Contêiner 1: Logo e frase "Cadastrando Voos"
+        # Contêiner 1: Logo e título
         self.logo_widget = QWidget()
         self.logo_layout = QVBoxLayout(self.logo_widget)
         self.logo_layout.setContentsMargins(0, 0, 0, 0)
@@ -749,8 +778,6 @@ class TelaVoos_Cadastrar(QMainWindow):
         self.form_layout.setContentsMargins(50, 20, 50, 0)
         self.form_layout.setSpacing(20)
 
-        
-
         self.sigla_input = QLineEdit(self)
         self.sigla_input.setPlaceholderText("Sigla")
         self.sigla_input.setStyleSheet(line_edit_style)
@@ -775,9 +802,9 @@ class TelaVoos_Cadastrar(QMainWindow):
 
         # Contêiner 3: Botões
         self.buttons_widget = QWidget()
-        self.buttons_layout = QVBoxLayout(self.buttons_widget)  # Alterado para QVBoxLayout
+        self.buttons_layout = QVBoxLayout(self.buttons_widget)
         self.buttons_layout.setContentsMargins(0, 30, 0, 0)
-        self.buttons_layout.setSpacing(20)  # Ajustado o espaçamento
+        self.buttons_layout.setSpacing(20)
 
         button_width = 200
         button_height = 50
@@ -786,19 +813,37 @@ class TelaVoos_Cadastrar(QMainWindow):
         self.bt_cadastrar.setFixedSize(button_width, button_height)
         self.bt_cadastrar.setStyleSheet(button_style)
         self.bt_cadastrar.setFont(montserrat_bold)
-        self.bt_cadastrar.clicked.connect(self.close)  # Conecta ao método de fechar a janela
+        self.bt_cadastrar.clicked.connect(self.cadastrar_voo)  # Conecta ao método de cadastro
         self.buttons_layout.addWidget(self.bt_cadastrar, alignment=Qt.AlignCenter)
 
-        # Botão "Voltar"
         self.bt_voltar = QPushButton("Voltar")
         self.bt_voltar.setFixedSize(button_width, button_height)
         self.bt_voltar.setStyleSheet(button_style)
         self.bt_voltar.setFont(montserrat_bold)
-        self.bt_voltar.clicked.connect(self.close)  # Conecta ao método de fechar a janela
+        self.bt_voltar.clicked.connect(self.close)  # Fecha a janela
         self.buttons_layout.addWidget(self.bt_voltar, alignment=Qt.AlignCenter)
 
         self.layout.addWidget(self.buttons_widget)
 
+    def cadastrar_voo(self):
+        """Método para cadastrar o voo no banco de dados."""
+        sigla = self.sigla_input.text()
+        origem = self.origem_input.text()
+        destino = self.destino_input.text()
+        modelo_aviao = self.modelo_input.text()
+
+        # Validação dos campos
+        if not sigla or not origem or not destino or not modelo_aviao:
+            QMessageBox.warning(self, "Erro", "Por favor, preencha todos os campos.")
+            return
+
+        # Chamar o método do backend para cadastrar o voo
+        sucesso, mensagem = self.cadastro_voos.cadastrar_voo(sigla, origem, destino, modelo_aviao)
+        if sucesso:
+            QMessageBox.information(self, "Sucesso", mensagem)
+            self.close()  # Fecha a janela após o cadastro
+        else:
+            QMessageBox.critical(self, "Erro", mensagem)
 
 class TelaAvioes_Cadastrar(QMainWindow):
     def __init__(self):

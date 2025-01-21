@@ -469,3 +469,109 @@ class CadastroClientes:
                     return False, "Cliente não encontrado."
         except Exception as e:
             return False, f"Erro ao alterar cliente: {str(e)}"
+
+
+class CadastroVoos:
+    def __init__(self):
+        try:
+            self.conn = psycopg2.connect(
+                dbname='credenciais',         # Nome do banco de dados
+                user='poodois',        # Nome do usuário
+                password='1234',       # Senha do usuário
+                host='localhost',
+                port=5432
+            )
+            self.criar_tabela()
+        except psycopg2.OperationalError as e:
+            raise ConnectionError(f"Erro ao conectar ao banco de dados: {e}")
+
+    def criar_tabela(self):
+        """Cria a tabela de voos caso não exista."""
+        with self.conn.cursor() as cur:
+            cur.execute('''
+                CREATE TABLE IF NOT EXISTS voos (
+                    id SERIAL PRIMARY KEY,
+                    sigla TEXT NOT NULL,
+                    origem TEXT NOT NULL,
+                    destino TEXT NOT NULL,
+                    modelo_aviao TEXT NOT NULL
+                );
+            ''')
+            self.conn.commit()
+
+    def cadastrar_voo(self, sigla: str, origem: str, destino: str, modelo_aviao: str) -> tuple:
+        """Insere ou atualiza os dados de um voo no banco de dados."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    sql.SQL('''
+                        INSERT INTO voos (sigla, origem, destino, modelo_aviao)
+                        VALUES (%s, %s, %s, %s)
+                    '''),
+                    (sigla, origem, destino, modelo_aviao)
+                )
+                self.conn.commit()
+            return True, "Voo cadastrado com sucesso."
+        except Exception as e:
+            return False, f"Erro ao cadastrar voo: {str(e)}"
+            
+    def listar_voos(self) -> list:
+        """Retorna uma lista com todos os voos cadastrados."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute("SELECT id, sigla, origem, destino, modelo_aviao FROM voos;")
+                voos = cur.fetchall()
+            return voos
+        except Exception as e:
+            return []
+
+    def buscar_voo_por_sigla(self, sigla: str) -> tuple:
+        """Busca um voo pela sigla."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    "SELECT id, sigla, origem, destino, modelo_aviao FROM voos WHERE sigla = %s;",
+                    (sigla,)
+                )
+                voo = cur.fetchone()
+            if voo:
+                return voo
+            return None
+        except Exception as e:
+            return None
+
+    def excluir_voo(self, sigla: str) -> tuple:
+        """Exclui um voo pela sigla."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    "DELETE FROM voos WHERE sigla = %s;",
+                    (sigla,)
+                )
+                self.conn.commit()
+                if cur.rowcount > 0:
+                    return True, "Voo excluído com sucesso."
+                return False, "Voo não encontrado."
+        except Exception as e:
+            return False, f"Erro ao excluir voo: {str(e)}"
+
+    def alterar_voo(self, sigla: str, origem: str, destino: str, modelo_aviao: str) -> tuple:
+        """Altera os dados de um voo existente pela sigla."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    '''
+                    UPDATE voos 
+                    SET origem = %s, destino = %s, modelo_aviao = %s
+                    WHERE sigla = %s;
+                    ''',
+                    (origem, destino, modelo_aviao, sigla)
+                )
+                self.conn.commit()
+
+                if cur.rowcount > 0:
+                    return True, "Dados do voo alterados com sucesso."
+                else:
+                    return False, "Voo não encontrado."
+        except Exception as e:
+            return False, f"Erro ao alterar voo: {str(e)}"  
