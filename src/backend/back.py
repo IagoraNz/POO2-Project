@@ -494,32 +494,33 @@ class CadastroVoos:
                     sigla TEXT NOT NULL,
                     origem TEXT NOT NULL,
                     destino TEXT NOT NULL,
-                    modelo_aviao TEXT NOT NULL
+                    modelo_aviao TEXT NOT NULL,
+                    quantidade_assentos INTEGER NOT NULL
                 );
             ''')
             self.conn.commit()
 
-    def cadastrar_voo(self, sigla: str, origem: str, destino: str, modelo_aviao: str) -> tuple:
-        """Insere ou atualiza os dados de um voo no banco de dados."""
+    def cadastrar_voo(self, sigla: str, origem: str, destino: str, modelo_aviao: str, quantidade_assentos: int) -> tuple:
+        """Insere os dados de um voo no banco de dados."""
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
                     sql.SQL('''
-                        INSERT INTO voos (sigla, origem, destino, modelo_aviao)
-                        VALUES (%s, %s, %s, %s)
-                    '''),
-                    (sigla, origem, destino, modelo_aviao)
+                        INSERT INTO voos (sigla, origem, destino, modelo_aviao, quantidade_assentos)
+                        VALUES (%s, %s, %s, %s, %s)
+                    '''), 
+                    (sigla, origem, destino, modelo_aviao, quantidade_assentos)
                 )
                 self.conn.commit()
             return True, "Voo cadastrado com sucesso."
         except Exception as e:
             return False, f"Erro ao cadastrar voo: {str(e)}"
-            
+
     def listar_voos(self) -> list:
         """Retorna uma lista com todos os voos cadastrados."""
         try:
             with self.conn.cursor() as cur:
-                cur.execute("SELECT id, sigla, origem, destino, modelo_aviao FROM voos;")
+                cur.execute("SELECT id, sigla, origem, destino, modelo_aviao, quantidade_assentos FROM voos;")
                 voos = cur.fetchall()
             return voos
         except Exception as e:
@@ -555,17 +556,17 @@ class CadastroVoos:
         except Exception as e:
             return False, f"Erro ao excluir voo: {str(e)}"
 
-    def alterar_voo(self, sigla: str, origem: str, destino: str, modelo_aviao: str) -> tuple:
+    def alterar_voo(self, sigla: str, origem: str, destino: str, modelo_aviao: str, quantidade_assentos: int) -> tuple:
         """Altera os dados de um voo existente pela sigla."""
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
                     '''
                     UPDATE voos 
-                    SET origem = %s, destino = %s, modelo_aviao = %s
+                    SET origem = %s, destino = %s, modelo_aviao = %s, quantidade_assentos = %s
                     WHERE sigla = %s;
                     ''',
-                    (origem, destino, modelo_aviao, sigla)
+                    (origem, destino, modelo_aviao, quantidade_assentos, sigla)
                 )
                 self.conn.commit()
 
@@ -574,4 +575,149 @@ class CadastroVoos:
                 else:
                     return False, "Voo não encontrado."
         except Exception as e:
-            return False, f"Erro ao alterar voo: {str(e)}"  
+            return False, f"Erro ao alterar voo: {str(e)}"
+
+class BackendReservas:
+    def __init__(self):
+        try:
+            self.conn = psycopg2.connect(
+                dbname='credenciais',
+                user='poodois',
+                password='1234',
+                host='localhost',
+                port=5432
+            )
+            self.cur = self.conn.cursor()
+            self.create_table()
+        except Exception as e:
+            print(f"Erro ao conectar ao banco de dados: {e}")
+
+    def create_table(self):
+        try:
+            self.cur.execute('''
+                CREATE TABLE IF NOT EXISTS voos (
+                    id SERIAL PRIMARY KEY,
+                    sigla TEXT NOT NULL,
+                    origem TEXT NOT NULL,
+                    destino TEXT NOT NULL,
+                    modelo_aviao TEXT NOT NULL,
+                    quantidade_assentos INTEGER NOT NULL
+                );
+            ''')
+            self.conn.commit()
+        except Exception as e:
+            print(f"Erro ao criar tabela: {e}")
+
+    def listar_voos(self):
+        try:
+            self.cur.execute("SELECT sigla, origem, destino, modelo_aviao, quantidade_assentos FROM voos;")
+            voos = self.cur.fetchall()
+            return voos
+        except Exception as e:
+            print(f"Erro ao listar voos: {e}")
+            return []
+
+    def reservar_voo(self, sigla, assento):
+        try:
+            # Verificar se o voo existe e há assentos disponíveis
+            self.cur.execute(
+                "SELECT quantidade_assentos FROM voos WHERE sigla = %s;",
+                (sigla,)
+            )
+            result = self.cur.fetchone()
+
+            if result is None:
+                return "Voo não encontrado."
+
+            quantidade_assentos = result[0]
+
+            if quantidade_assentos <= 0:
+                return "Não há assentos disponíveis."
+
+            # Atualizar quantidade de assentos disponíveis
+            self.cur.execute(
+                "UPDATE voos SET quantidade_assentos = quantidade_assentos - 1 WHERE sigla = %s;",
+                (sigla,)
+            )
+            self.conn.commit()
+            return "Reserva confirmada!"
+        except Exception as e:
+            print(f"Erro ao reservar voo: {e}")
+            return "Erro ao realizar a reserva."
+
+    def close_connection(self):
+        self.cur.close()
+        self.conn.close()
+
+
+class BackendRemoverReservas:
+    def __init__(self):
+        try:
+            self.conn = psycopg2.connect(
+                dbname='credenciais',
+                user='poodois',
+                password='1234',
+                host='localhost',
+                port=5432
+            )
+            self.cur = self.conn.cursor()
+            self.create_table()
+        except Exception as e:
+            print(f"Erro ao conectar ao banco de dados: {e}")
+
+    def create_table(self):
+        try:
+            self.cur.execute('''
+                CREATE TABLE IF NOT EXISTS voos (
+                    id SERIAL PRIMARY KEY,
+                    sigla TEXT NOT NULL,
+                    origem TEXT NOT NULL,
+                    destino TEXT NOT NULL,
+                    modelo_aviao TEXT NOT NULL,
+                    quantidade_assentos INTEGER NOT NULL
+                );
+            ''')
+            self.conn.commit()
+        except Exception as e:
+            print(f"Erro ao criar tabela: {e}")
+
+    def listar_voos(self):
+        try:
+            self.cur.execute("SELECT sigla, origem, destino, modelo_aviao, quantidade_assentos FROM voos;")
+            voos = self.cur.fetchall()
+            return voos
+        except Exception as e:
+            print(f"Erro ao listar voos: {e}")
+            return []
+
+    def remover_reserva_voo(self, sigla, assento):
+        try:
+            # Verificar se o voo existe e há assentos disponíveis
+            self.cur.execute(
+                "SELECT quantidade_assentos FROM voos WHERE sigla = %s;",
+                (sigla,)
+            )
+            result = self.cur.fetchone()
+
+            if result is None:
+                return "Voo não encontrado."
+
+            quantidade_assentos = result[0]
+
+            if quantidade_assentos <= 0:
+                return "Não há assentos disponíveis."
+
+            # Atualizar quantidade de assentos disponíveis
+            self.cur.execute(
+                "UPDATE voos SET quantidade_assentos = quantidade_assentos + 1 WHERE sigla = %s;",
+                (sigla,)
+            )
+            self.conn.commit()
+            return "Reserva confirmada!"
+        except Exception as e:
+            print(f"Erro ao reservar voo: {e}")
+            return "Erro ao realizar a reserva."
+
+    def close_connection(self):
+        self.cur.close()
+        self.conn.close()
