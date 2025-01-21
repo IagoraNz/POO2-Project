@@ -732,15 +732,17 @@ class TelaVoos_Cadastrar(QMainWindow):
         """
         button_style = """
             QPushButton {
-                background-color: #007BFF;
-                color: white;
+                background-color: #f1f1f1;
                 border: none;
-                border-radius: 5px;
-                padding: 10px 20px;
+                border-radius: 10px;
                 font-size: 14px;
+                padding: 10px;
             }
             QPushButton:hover {
-                background-color: #0056b3;
+                background-color: #ffcccc;  /* Vermelho claro /
+            }
+            QPushButton:pressed {
+                background-color: #cce7ff;  / Azul claro */
             }
         """
 
