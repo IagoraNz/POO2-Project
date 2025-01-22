@@ -2,37 +2,77 @@ from psycopg2 import sql
 import psycopg2
 
 class Aviao():
+    """
+    Classe que representa um avião.
+
+    Atributos:
+        modelo (str): Modelo do avião.
+        quantidade_assentos (int): Quantidade de assentos disponíveis no avião.
+        sigla_av (str): Sigla identificadora do avião.
+    """
     def __init__(self, modelo: str, quantidade_assentos: int, sigla_av: str):
+        """
+        Inicializa a classe Aviao.
+
+        Args:
+            modelo (str): Modelo do avião.
+            quantidade_assentos (int): Quantidade de assentos disponíveis.
+            sigla_av (str): Sigla identificadora do avião.
+        """
         self._modelo = modelo
         self._quantidade_assentos = quantidade_assentos
         self._sigla_av = sigla_av
 
     @property
-    def modelo(self):
+    def modelo(self) -> str:
+        """Retorna o modelo do avião"""
         return self._modelo
     
     @modelo.setter
     def modelo(self, modelo: str):
+        """Define o modelo do avião"""
         self._modelo = modelo
 
     @property
-    def quantidade_assentos(self):
+    def quantidade_assentos(self) -> int:
+        """Retorna a quantidade de assentos do avião"""
         return self._quantidade_assentos
     
     @quantidade_assentos.setter
     def quantidade_assentos(self, quantidade_assentos: int):
+        """Define a quantidade de assentos do avião"""
         self._quantidade_assentos = quantidade_assentos
 
     @property
-    def sigla_av(self):
+    def sigla_av(self) -> str:
+        """Retorna a sigla identificadora do avião"""
         return self._sigla_av
 
     @sigla_av.setter
     def sigla_av(self, sigla_av: str):
+        """Define a sigla identificadora do avião."""
         self._sigla_av = sigla_av
 
 class Voo():
+    """
+    Classe que representa um voo.
+
+    Atributos:
+        sigla (str): Identificador único do voo.
+        origem (str): Cidade de origem do voo.
+        destino (str): Cidade de destino do voo.
+        aviao (Aviao): Avião associado ao voo.
+    """
     def __init__(self, sigla: str, origem: str, destino: str, aviao: object) -> None:
+        """
+        Inicializa a classe Voo.
+
+        Args:
+            sigla (str): Identificador do voo.
+            origem (str): Cidade de origem.
+            destino (str): Cidade de destino.
+            aviao (Aviao): Avião utilizado no voo.
+        """
         self._sigla = sigla
         self._origem = origem
         self._destino = destino
@@ -41,43 +81,69 @@ class Voo():
         self._reservados = []
         
     @property
-    def sigla(self):
+    def sigla(self) -> str:
+        """Retorna a sigla do voo."""
         return self._sigla
     
     @sigla.setter
     def sigla(self, sigla: str):
+        """Define a sigla do voo."""
         self._sigla = sigla
     
     @property 
-    def origem(self):
+    def origem(self) -> str:
+        """Retorna a cidade de origem do voo."""
         return self._origem
     
     @origem.setter
     def origem(self, origem: str):
+        """Define a cidade de origem do voo."""
         self._origem = origem
     
     @property
-    def destino(self):
+    def destino(self) ->  str:
+        """Retorna a cidade de destino do voo."""
         return self._destino
     
     @destino.setter
     def destino(self, destino: str):
+        """Define a cidade de destino do voo."""
         self._destino = destino
     
     @property
-    def aviao(self):
+    def aviao(self) -> Aviao:
+        """Retorna o avião associado ao voo."""
         return self._aviao
     
     @aviao.setter
-    def aviao(self, aviao: object):
+    def aviao(self, aviao: Aviao):
+        """Define o avião associado ao voo."""
         self._aviao = aviao
         
-    def preenche_assentos(self, quantidade) -> tuple:
+    def preenche_assentos(self, quantidade: int) -> tuple:
+        """
+        Preenche a lista de assentos disponíveis no voo.
+
+        Args:
+            quantidade (int): Quantidade de assentos a preencher.
+
+        Returns:
+            tuple: (bool, str) indicando o sucesso e uma mensagem.
+        """
         for i in range(i, quantidade - 1):
             self._assentos.append(i)
         return True, 'Assentos preenchidos com sucesso'
     
-    def reservar_assento(self, numero) -> tuple:
+    def reservar_assento(self, numero: int) -> tuple:
+        """
+        Reserva um assento no voo.
+
+        Args:
+            numero (int): Número do assento a ser reservado.
+
+        Returns:
+            tuple: (bool, str) indicando o sucesso e uma mensagem.
+        """
         if numero in self._assentos:
             self._assentos.remove(numero)
             self._reservados.append(numero)
@@ -87,56 +153,94 @@ class Voo():
         return False, 'O número solicitado não existe'
     
 class Passageiro:
+    """
+    Classe que representa um passageiro.
+
+    Atributos:
+        nome (str): Nome do passageiro.
+        cpf (int): CPF do passageiro.
+        telefone (int): Número de telefone do passageiro.
+    """
     def __init__(self, nome: str, cpf: int, telefone: int) -> None:
+        """
+        Inicializa a classe Passageiro.
+
+        Args:
+            nome (str): Nome do passageiro.
+            cpf (int): CPF do passageiro.
+            telefone (int): Número de telefone do passageiro.
+        """
         self._nome = nome
         self._cpf = cpf
         self._telefone = telefone
 
     @property
-    def nome(self):
+    def nome(self) -> str:
+        """Retorna o nome do passageiro."""
         return self._nome
     
     @nome.setter
     def set_nome(self, nome: str):
+        """Define o nome do passageiro"""
         self._nome = nome
 
     @property
-    def cpf(self):
+    def cpf(self) -> int:
+        """Obtém o CPF do passageiro"""
         return self._cpf
     
     @cpf.setter
     def set_cpf(self, cpf: int):
+        """Define o CPF do passageiro"""
         self._cpf = cpf
 
     @property
-    def telefone(self):
+    def telefone(self) -> int:
+        """Obtém o telefone do passageiro."""
         return self._telefone
     
     @telefone.setter
     def set_telefone(self, telefone: int):
+        """Define o telefone do passageiro."""
         self._telefone = telefone  
         
 class Funcionario():
+    """
+    Representa um funcionário com nome, CPF, salário e senha.
+    """
     def __init__(self, nome: str, cpf: int, salario: float, senha: str) -> None:
+        """
+        Inicializa um objeto Funcionario.
+
+        Args:
+            nome (str): Nome do funcionário.
+            cpf (int): CPF do funcionário.
+            salario (float): Salário do funcionário.
+            senha (str): Senha do funcionário.
+        """
         self._nome = nome
         self._cpf = cpf
         self._salario = salario
         self._senha = senha
 
     @property
-    def nome(self):
+    def nome(self) -> str:
+        """Obtém o nome do funcionário."""
         return self._nome
     
     @nome.setter
-    def nome(self, nome):
+    def nome(self, nome : str):
+        """Define o nome do funcionário."""
         self._nome = nome
 
     @property
-    def cpf(self):
+    def cpf(self) -> int:
+        """Obtém o CPF do funcionário."""
         return self._cpf
     
     @cpf.setter
-    def cpf(self, cpf):
+    def cpf(self, cpf) -> int:
+        """Define o CPF do funcionário."""
         self._cpf = cpf
 
     @property
