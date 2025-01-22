@@ -153,12 +153,6 @@ class Tela(QWidget):
 
         # Criar os campos de cadastro (verifica se já foram criados antes)
         if not hasattr(self, 'usuario_input'):
-            # Texto de boas-vindas com tamanho considerável
-            welcome_message = QLabel("Venha fazer parte da nossa equipe!", self)
-            welcome_message.setAlignment(Qt.AlignHCenter)
-            welcome_message.setFont(QFont("Montserrat", 12, QFont.Bold))
-            self.layout.addWidget(welcome_message, alignment=Qt.AlignHCenter)
-
             # Legenda abaixo da mensagem de boas-vindas
             tipo_funcionario_label = QLabel("Na última sessão digite 1 para Gerente ou 2 para Atendente.", self)
             tipo_funcionario_label.setAlignment(Qt.AlignHCenter)
@@ -198,8 +192,6 @@ class Tela(QWidget):
         self.layout.itemAt(7).widget().setVisible(True)
         self.layout.itemAt(8).widget().setVisible(True)
         self.layout.itemAt(9).widget().setVisible(True)
-
-
         
     def efetuar_cadastro(self):
         usuario = self.usuario_input.text()
