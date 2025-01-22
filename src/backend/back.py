@@ -239,54 +239,98 @@ class Funcionario():
         return self._cpf
     
     @cpf.setter
-    def cpf(self, cpf) -> int:
+    def cpf(self, cpf: int):
         """Define o CPF do funcionário."""
         self._cpf = cpf
 
     @property
-    def salario(self):
+    def salario(self) -> float:
+        """Obtém o salário do funcionário."""
         return self._salario
     
     @salario.setter
-    def salario(self, salario):
+    def salario(self, salario: float):
+        """Define o salário do funcionário."""
         self._salario = salario
 
     @property
-    def senha(self):
+    def senha(self) -> str:
+        """Obtém a senha do funcionário."""
         return self._senha
     
     @senha.setter
-    def senha(self, senha):
+    def senha(self, senha: str):
+        """Define a senha do funcionário."""
         self._senha = senha 
         
 class Gerente(Funcionario):
+    """
+    Representa um gerente que herda de Funcionario, com atributo adicional expediente.
+    """
     def __init__(self, nome: str, cpf: int, salario: float, senha: str, expediente: str):
+        """
+        Inicializa um objeto Gerente.
+
+        Args:
+            nome (str): Nome do gerente.
+            cpf (int): CPF do gerente.
+            salario (float): Salário do gerente.
+            senha (str): Senha do gerente.
+            expediente (str): Horário de expediente do gerente.
+        """
         super().__init__(nome, cpf, salario, senha)
         self._expediente = expediente
 
     @property
-    def expediente(self):
+    def expediente(self) -> str:
+        """Obtém o horário de expediente do gerente."""
         return self._expediente
     
     @expediente.setter
     def expediente(self, expediente: str):
+        """Define o horário de expediente do gerente."""
         self._expediente = expediente
         
 class Atendente(Funcionario):
+    """
+    Representa um atendente que herda de Funcionario, com atributo adicional terminal.
+    """
     def __init__(self, nome: str, cpf: int, salario: float, senha: str, terminal: int):
+        """
+        Inicializa um objeto Atendente.
+
+        Args:
+            nome (str): Nome do atendente.
+            cpf (int): CPF do atendente.
+            salario (float): Salário do atendente.
+            senha (str): Senha do atendente.
+            terminal (int): Terminal atribuído ao atendente.
+        """
         super().__init__(nome, cpf, salario, senha)
         self._terminal = terminal
 
     @property
-    def terminal(self):
+    def terminal(self) -> int:
+        """Obtém o terminal atribuído ao atendente."""
         return self._terminal
     
     @terminal.setter
     def terminal(self, terminal: int):
+        """Define o terminal atribuído ao atendente."""
         self._terminal = terminal
 
 class Autenticacao:
+    """
+    Responsável pela autenticação de usuários e gerenciamento de credenciais no banco de dados.
+    """
     def __init__(self, user: str, senha: str):
+        """
+        Inicializa um objeto Autenticacao.
+
+        Args:
+            user (str): Nome de usuário.
+            senha (str): Senha do usuário.
+        """
         self._user = user
         self._senha = senha
         try:
@@ -302,6 +346,9 @@ class Autenticacao:
             raise ConnectionError(f"Erro ao conectar ao banco de dados: {e}")
 
     def criar_tabela(self):
+        """
+        Cria a tabela de credenciais no banco de dados, se ela não existir.
+        """
         with self.conn.cursor() as cur:
             cur.execute('''
                 CREATE TABLE IF NOT EXISTS credenciais (
@@ -313,22 +360,37 @@ class Autenticacao:
             self.conn.commit()
 
     @property
-    def user(self):
+    def user(self) -> str:
+        """Obtém o nome de usuário."""
         return self._user
 
     @user.setter
     def user(self, user: str):
+        """Define o nome de usuário."""
         self._user = user
 
     @property
-    def senha(self):
+    def senha(self) -> str:
+        """Obtém a senha do usuário."""
         return self._senha
 
     @senha.setter
     def senha(self, senha: str):
+        """Define a senha do usuário."""
         self._senha = senha
 
     def cadastro(self, user: str, senha: str, tipo: int) -> tuple:
+        """
+        Cadastra ou atualiza um usuário no banco de dados.
+
+        Args:
+            user (str): Nome de usuário.
+            senha (str): Senha do usuário.
+            tipo (int): Tipo de usuário (1 para gerente, 2 para atendente).
+
+        Returns:
+            tuple: Status e mensagem de sucesso ou erro.
+        """
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
@@ -346,6 +408,16 @@ class Autenticacao:
             return False, f"Erro no cadastro: {str(e)}"
 
     def login(self, user: str, senha: str) -> tuple:
+        """
+        Realiza o login de um usuário.
+
+        Args:
+            user (str): Nome de usuário.
+            senha (str): Senha do usuário.
+
+        Returns:
+            tuple: Status e mensagem indicando o tipo de usuário ou erro.
+        """
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
@@ -368,7 +440,19 @@ class Autenticacao:
             return False, f"Erro no login: {str(e)}"
     
 class CiaAerea():
+    """
+    Representa uma companhia aérea, com atributos para gerenciar aviões, voos, passageiros e funcionários.
+    """
     def __init__(self, nome: str, cnpj: int, telefone: int, endereco: str):
+        """
+        Inicializa um objeto CiaAerea.
+
+        Args:
+            nome (str): Nome da companhia aérea.
+            cnpj (int): CNPJ da companhia aérea.
+            telefone (int): Telefone da companhia aérea.
+            endereco (str): Endereço da companhia aérea.
+        """
         self._nome = nome
         self._cnpj = cnpj
         self._telefone = telefone
@@ -379,38 +463,55 @@ class CiaAerea():
         self._funcionarios = {}
 
     @property
-    def nome(self):
+    def nome(self) -> str:
+        """Obtém o nome da companhia aérea."""
         return self._nome
     
     @nome.setter
     def nome(self, nome: str):
+        """Define o nome da companhia aérea."""
         self._nome = nome
 
     @property
-    def cnpj(self):
+    def cnpj(self) -> int:
+        """Obtém o CNPJ da companhia aérea."""
         return self._cnpj
     
     @cnpj.setter
     def cnpj(self, cnpj: int):
+        """Define o CNPJ da companhia aérea."""
         self._cnpj = cnpj
 
     @property
-    def telefone(self):
+    def telefone(self) -> int:
+        """Obtém o telefone da companhia aérea."""
         return self._telefone
     
     @telefone.setter
     def telefone(self, telefone: int):
+        """Define o telefone da companhia aérea."""
         self._telefone = telefone
 
     @property
-    def endereco(self):
+    def endereco(self) -> str:
+        """Obtém o endereço da companhia aérea."""
         return self._endereco
     
     @endereco.setter
     def endereco(self, endereco: str):
+        """Define o endereço da companhia aérea."""
         self._endereco = endereco
         
     def add_aviao(self, aviao: object) -> tuple:
+        """
+        Adiciona um avião à companhia aérea.
+
+        Args:
+            aviao (object): Objeto da classe Aviao.
+
+        Returns:
+            tuple: Status e mensagem indicando sucesso ou erro.
+        """
         if isinstance(aviao, Aviao):
             if aviao._sigla_av not in self._avioes.keys():
                 self._avioes[aviao.sigla_av] = aviao
