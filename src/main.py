@@ -2116,6 +2116,7 @@ class TelaAtendente(QMainWindow):
 
         button_layout.addWidget(self.bt_clientes)
         button_layout.addWidget(self.bt_reservas)
+        button_layout.addWidget(self.bt_chat)
         button_layout.addWidget(self.bt_sair)
 
         # Espaçador abaixo dos botões
