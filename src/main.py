@@ -1,9 +1,10 @@
 import sys
 import os
+import psycopg2
 import socket
 from PyQt5.QtWidgets import QScrollArea, QTableWidgetItem, QApplication, QAbstractItemView, QTableWidget, QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QLineEdit, QStackedWidget
-from PyQt5.QtGui import QPixmap, QFontDatabase, QFont
-from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap, QFontDatabase, QFont, QIcon
+from PyQt5.QtCore import Qt, QSize
 from backend.back import *
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QSizePolicy, QSpacerItem
 from POO2PROJECT.listar_clientes import ListarClientes
@@ -155,7 +156,7 @@ class Tela(QWidget):
         # Criar os campos de cadastro (verifica se já foram criados antes)
         if not hasattr(self, 'usuario_input'):
             # Legenda abaixo da mensagem de boas-vindas
-            tipo_funcionario_label = QLabel("Na última sessão digite 1 para Gerente ou 2 para Atendente.", self)
+            tipo_funcionario_label = QLabel("Caso deseje voltar, deixe os campos vazios e clique no botão", self)
             tipo_funcionario_label.setAlignment(Qt.AlignHCenter)
             tipo_funcionario_label.setStyleSheet("color: darkgray;")
             self.layout.addWidget(tipo_funcionario_label, alignment=Qt.AlignHCenter)
@@ -175,7 +176,7 @@ class Tela(QWidget):
 
             # Campo de entrada para o tipo de funcionário
             self.tipo_input = QLineEdit(self)
-            self.tipo_input.setPlaceholderText("Tipo de Funcionário")
+            self.tipo_input.setPlaceholderText("1 para Gerente ou 2 para Atendente")
             self.tipo_input.setStyleSheet(line_edit_style)
             self.layout.addWidget(self.tipo_input, alignment=Qt.AlignHCenter)
 
@@ -184,7 +185,13 @@ class Tela(QWidget):
             bt_efetuar_cadastro.setFixedSize(200, 50)
             bt_efetuar_cadastro.setStyleSheet(button_style)
             bt_efetuar_cadastro.setFont(QFont("Montserrat", 10, QFont.Bold))
-            bt_efetuar_cadastro.clicked.connect(self.efetuar_cadastro)
+
+            # Verificar se os campos estão vazios e conectar o botão corretamente
+            if not self.usuario_input.text() or not self.senha_input.text() or not self.tipo_input.text():
+                bt_efetuar_cadastro.clicked.connect(self.voltar_inicial_pelo_cadastro)  # Se algum campo estiver vazio, vai voltar à tela inicial
+            else:
+                bt_efetuar_cadastro.clicked.connect(self.efetuar_cadastro)  # Caso contrário, efetua o cadastro
+
             self.layout.addWidget(bt_efetuar_cadastro, alignment=Qt.AlignHCenter)
 
         # Mostrar a tela de cadastro
@@ -242,11 +249,40 @@ class Tela(QWidget):
             msg.setText(f"Erro: Usuário {usuario} já existe.")
             msg.exec_()
 
-    def voltar_tela_inicial(self):
+    def voltar_inicial_pelo_cadastro(self):
         # Limpar os campos de cadastro
-        self.usuario_input.setText("")
-        self.senha_input.setText("")
-        self.tipo_input.setText("")
+        if hasattr(self, 'usuario_input') and self.usuario_input.isVisible():
+            if self.usuario_input.text():
+                self.usuario_input.setText("")
+            if hasattr(self, 'senha_input') and self.senha_input.text():
+                self.senha_input.setText("")
+            if hasattr(self, 'tipo_input') and self.tipo_input.isVisible() and self.tipo_input.text():
+                self.tipo_input.setText("")
+
+        # Remover os campos de login
+        self.layout.itemAt(5).widget().setVisible(False)
+        self.layout.itemAt(6).widget().setVisible(False)
+        self.layout.itemAt(7).widget().setVisible(False)
+        self.layout.itemAt(8).widget().setVisible(False)
+        self.layout.itemAt(9).widget().setVisible(False)
+
+        # Limpar a tela de boas-vindas e botões
+        self.welcome_label.setText("<b>Bem-vindo ao sistema gerenciador da Delta Airlines</b>")
+        self.layout.itemAt(3).widget().setVisible(True)
+        self.layout.itemAt(4).widget().setVisible(True)
+        
+        # Fechar a tela atual e abrir a tela inicial
+        self.close()
+        self.tela_inicial = Tela()  # Crie uma nova instância da tela inicial
+        self.tela_inicial.show()
+
+    def voltar_inicial_pelo_login(self):                
+        # Limpar os campos de login
+        if hasattr(self, 'login_usuario_input') and self.login_usuario_input.isVisible():
+            if self.login_usuario_input.text():
+                self.login_usuario_input.setText("")
+            if hasattr(self, 'login_senha_input') and self.login_senha_input.text():
+                self.login_senha_input.setText("")
 
         # Remover os campos de cadastro
         self.layout.itemAt(5).widget().setVisible(False)
@@ -254,11 +290,16 @@ class Tela(QWidget):
         self.layout.itemAt(7).widget().setVisible(False)
         self.layout.itemAt(8).widget().setVisible(False)
 
-        # Recriar a tela inicial
+        # Limpar a tela de boas-vindas e botões
         self.welcome_label.setText("<b>Bem-vindo ao sistema gerenciador da Delta Airlines</b>")
         self.layout.itemAt(3).widget().setVisible(True)
         self.layout.itemAt(4).widget().setVisible(True)
-        
+
+        # Fechar a tela atual e abrir a tela inicial
+        self.close()
+        self.tela_inicial = Tela()  # Crie uma nova instância da tela inicial
+        self.tela_inicial.show()
+      
     def mostrar_formulario_login(self):
         # Limpar a tela de boas-vindas e botões
         self.welcome_label.setText("")
@@ -286,10 +327,32 @@ class Tela(QWidget):
             bt_efetuar_login.clicked.connect(self.efetuar_login)
             self.layout.addWidget(bt_efetuar_login, alignment=Qt.AlignHCenter)
 
+            # Adicionar botão de voltar
+            bt_voltar = QPushButton()
+            bt_voltar.setFixedSize(50, 50)  # Tornar o botão quadrado para suportar um círculo
+            bt_voltar.setStyleSheet("border: none;")
+
+            # Configurar imagem para o botão
+            voltar_icon_path = os.path.abspath("./src/images/seta-para-a-esquerda.png")
+            if os.path.exists(voltar_icon_path):
+                bt_voltar.setIcon(QIcon(voltar_icon_path))
+                bt_voltar.setIconSize(QSize(20, 20))
+                # Estilo para hover com círculo azul claro
+                bt_voltar.setStyleSheet(
+                    "QPushButton { border: none; border-radius: 25px; background-color: transparent; }"
+                    "QPushButton:hover { border: 2px solid #cce7ff; border-radius: 25px; background-color: #f0faff; }"
+                )
+            else:
+                bt_voltar.setText("Voltar")  # Texto alternativo caso a imagem não seja encontrada
+
+            bt_voltar.clicked.connect(self.voltar_inicial_pelo_login)
+            self.layout.addWidget(bt_voltar, alignment=Qt.AlignHCenter)
+
         # Mostrar a tela de login
         self.layout.itemAt(5).widget().setVisible(True)
         self.layout.itemAt(6).widget().setVisible(True)
         self.layout.itemAt(7).widget().setVisible(True)
+        self.layout.itemAt(8).widget().setVisible(True)
 
     def efetuar_login(self):
         usuario = self.login_usuario_input.text()
@@ -446,7 +509,6 @@ class TelaGerente(QMainWindow):
         self.tela_chat_gerente = TelaChat_Gerente()
         self.tela_chat_gerente.show()
 
-
 SERVER_HOST = '26.7.161.228'
 SERVER_PORT = 5555
 
@@ -568,8 +630,6 @@ class TelaChat_Gerente(QMainWindow):
         else:
             self.usuario_socket.send(messagem.encode('utf-8'))
             self.message_input.clear()  # Limpa o campo de entrada
-
-
     
 class TelaVoos(QMainWindow):
     def __init__(self):
@@ -710,7 +770,6 @@ class TelaVoos(QMainWindow):
         self.tela_marcar_voo = TelaVoos_Marcar()
         self.tela_marcar_voo.show()
 
-
 class TelaAvioes(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -829,8 +888,6 @@ class TelaAvioes(QMainWindow):
         self.tela_listar_aviao = TelaAvioes_Listar()
         self.tela_listar_aviao.show()
     
-
-
 class TelaVoos_Cadastrar(QMainWindow):
     def __init__(self, cadastro_voos):
         super().__init__()
@@ -1449,7 +1506,6 @@ class TelaAvioes_Alterar(QMainWindow):
         else:
             QMessageBox.critical(self, "Erro", "Erro ao alterar o avião.")
 
-
 class TelaVoos_Remover(QMainWindow):
     def __init__(self, conn = psycopg2.connect(dbname='credenciais', user='poodois',  password='1234', host='localhost', port=5432)):
         super().__init__()
@@ -1737,7 +1793,6 @@ class TelaAvioes_Remover(QMainWindow):
             else:
                 QMessageBox.critical(self, "Erro", "Erro ao remover o avião.")
 
-
 class TelaVoos_Listar(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -1850,7 +1905,6 @@ class TelaVoos_Listar(QMainWindow):
         except Exception as e:
             self.voo_info_label.setText(f"Erro ao carregar os voos: {str(e)}")
 
-
 class TelaAvioes_Listar(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -1940,7 +1994,6 @@ class TelaAvioes_Listar(QMainWindow):
             self.aviao_info_label.setText(info_text)
         except Exception as e:
             self.aviao_info_label.setText(f"Erro ao carregar aviões: {str(e)}")
-
 
 class TelaVoos_Marcar(QMainWindow):
     def __init__(self):
@@ -2039,13 +2092,6 @@ class TelaVoos_Marcar(QMainWindow):
         self.button_layout.addWidget(self.voltar_button)
 
         self.layout.addWidget(self.button_container)
-
-
-
-
-
-
-
 
 class TelaAtendente(QMainWindow):
     def __init__(self):
@@ -2273,7 +2319,6 @@ class TelaChat_Atendente(QMainWindow):
             self.message_input.clear()  # Limpa o campo de entrada
 
 
-
 class TelaPassageiros(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -2490,7 +2535,6 @@ class TelaReservas(QMainWindow):
         self.tela_reservas_remover = TelaReservas_Remover()
         self.tela_reservas_remover.show()
         self.close()
-
 
 class TelaPassageiros_Cadastrar(QMainWindow):
     def __init__(self):
@@ -2717,8 +2761,6 @@ class TelaPassageiros_Alterar(QMainWindow):
             QMessageBox.information(self, "Sucesso", "Dados do passageiro alterados com sucesso!")
         else:
             QMessageBox.warning(self, "Erro", mensagem)
-
-
 
 class TelaPassageiros_Remover(QMainWindow): 
     def __init__(self):
@@ -3003,7 +3045,6 @@ class TelaPassageiros_Listar(QMainWindow):
             for col in range(1, 4):
                 self.tabela_clientes.setItem(0, col, QTableWidgetItem(""))
 
-
 class TelaReservas_Reservar(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -3124,9 +3165,6 @@ class TelaReservas_Reservar(QMainWindow):
     def closeEvent(self, event):
         self.backend.close_connection()
         super().closeEvent(event)
-
-
-
 
 class TelaReservas_Remover(QMainWindow):
     def __init__(self):
@@ -3249,18 +3287,6 @@ class TelaReservas_Remover(QMainWindow):
         self.backend.close_connection()
         super().closeEvent(event)
 
-
-
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    tela = Tela()
-    tela.show()
-    sys.exit(app.exec_())
-
-    import psycopg2
-
 class GerenciadorDeReservas:
     def __init__(self, dbname, user, password, host='localhost', port=5432):
         try:
@@ -3313,3 +3339,9 @@ class GerenciadorDeReservas:
             self.conn.close()
         except Exception as e:
             print("Erro ao fechar a conexão:", e)
+            
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    tela = Tela()
+    tela.show()
+    sys.exit(app.exec_())
