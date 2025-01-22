@@ -1,7 +1,8 @@
 import sys
 import os
 import socket
-from PyQt5.QtWidgets import QScrollArea, QTableWidgetItem, QApplication, QAbstractItemView, QTableWidget, QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QLineEdit, QStackedWidget
+import threading
+from PyQt5.QtWidgets import QScrollArea, QTableWidgetItem, QApplication, QAbstractItemView, QTableWidget, QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QLineEdit, QStackedWidget, QTextEdit
 from PyQt5.QtGui import QPixmap, QFontDatabase, QFont
 from PyQt5.QtCore import Qt
 from backend.back import *
@@ -499,15 +500,12 @@ class TelaChat_Gerente(QMainWindow):
         self.messages_layout.setContentsMargins(50, 20, 50, 0)
         self.messages_layout.setSpacing(10)
 
-        # Caixa para as mensagens (usando QLabel dentro de um QScrollArea)
-        self.scroll_area = QScrollArea(self)
-        self.scroll_area.setWidgetResizable(True)
-
-        self.messages_box = QLabel()
+        # Caixa para as mensagens (usando QTextEdit)
+        self.messages_box = QTextEdit()
+        self.messages_box.setReadOnly(True)
         self.messages_box.setStyleSheet("background-color: #f5f5f5; padding: 15px; border-radius: 10px; border: 1px solid #ccc; height: 300px;")
-        self.scroll_area.setWidget(self.messages_box)
-        self.messages_layout.addWidget(self.scroll_area)
-        
+        self.messages_layout.addWidget(self.messages_box)
+
         self.layout.addWidget(self.messages_widget)
 
         # Contêiner 3: Campo de mensagem e botão
@@ -525,7 +523,7 @@ class TelaChat_Gerente(QMainWindow):
         # Botão de enviar
         self.bt_enviar = QPushButton("Enviar")
         self.bt_enviar.setFixedSize(100, 40)
-        self.bt_enviar.setStyleSheet("background-color: #4CAF50; color: white;")
+        self.bt_enviar.setStyleSheet(button_style)
         self.bt_enviar.setFont(montserrat_bold)
         self.input_layout.addWidget(self.bt_enviar)
 
@@ -545,30 +543,30 @@ class TelaChat_Gerente(QMainWindow):
     def receber_mensagens(self, usuario_socket):
         while True:
             try:
-                messagem = usuario_socket.recv(1024).decode('utf-8')
-                if messagem:
-                    self.exibir_mensagem(messagem)
+                mensagem = usuario_socket.recv(1024).decode("utf-8")
+                if mensagem:
+                    self.exibir_mensagem(mensagem, enviado=False)
             except:
                 print("[ERRO] Conexão com o servidor perdida.")
                 usuario_socket.close()
                 break
 
-    def exibir_mensagem(self, mensagem):
-        """Exibir mensagens recebidas na caixa de mensagens."""
-        current_text = self.messages_box.text()
-        self.messages_box.setText(current_text + "\n" + mensagem)
+    def exibir_mensagem(self, mensagem, enviado):
+        """Exibir mensagens na caixa de mensagens."""
+        cor = "blue" if enviado else "black"
+        self.messages_box.append(f'<p style="color: {cor};">{mensagem}</p>')
 
     def enviar_mensagem(self):
         """Enviar mensagem digitada pelo usuário."""
-        messagem = self.message_input.text()
-        if messagem.lower() == 'sair':
+        mensagem = self.message_input.text()
+        if mensagem.lower() == "sair":
             print("[DESCONECTANDO] Encerrando a conexão.")
             self.usuario_socket.close()
             self.close()  # Fecha a janela
-        else:
-            self.usuario_socket.send(messagem.encode('utf-8'))
+        elif mensagem:
+            self.usuario_socket.send(mensagem.encode("utf-8"))
+            self.exibir_mensagem(mensagem, enviado=True)
             self.message_input.clear()  # Limpa o campo de entrada
-
 
     
 class TelaVoos(QMainWindow):
@@ -2197,21 +2195,17 @@ class TelaChat_Atendente(QMainWindow):
         self.layout.addWidget(self.logo_widget)
 
         # Contêiner 2: Caixa de Mensagens
-        self.messages_widget = QWidget()
-        self.messages_layout = QVBoxLayout(self.messages_widget)
-        self.messages_layout.setContentsMargins(50, 20, 50, 0)
-        self.messages_layout.setSpacing(10)
-
-        # Caixa para as mensagens (usando QLabel dentro de um QScrollArea)
         self.scroll_area = QScrollArea(self)
         self.scroll_area.setWidgetResizable(True)
 
-        self.messages_box = QLabel()
-        self.messages_box.setStyleSheet("background-color: #f5f5f5; padding: 15px; border-radius: 10px; border: 1px solid #ccc; height: 300px;")
-        self.scroll_area.setWidget(self.messages_box)
-        self.messages_layout.addWidget(self.scroll_area)
-        
-        self.layout.addWidget(self.messages_widget)
+        self.messages_container = QWidget()
+        self.messages_layout = QVBoxLayout(self.messages_container)
+        self.messages_layout.setAlignment(Qt.AlignTop)
+
+        self.scroll_area.setWidget(self.messages_container)
+        self.scroll_area.setStyleSheet("background-color: #f5f5f5; border-radius: 10px; padding: 10px;")
+
+        self.layout.addWidget(self.scroll_area)
 
         # Contêiner 3: Campo de mensagem e botão
         self.input_widget = QWidget()
@@ -2219,16 +2213,14 @@ class TelaChat_Atendente(QMainWindow):
         self.input_layout.setContentsMargins(50, 20, 50, 0)
         self.input_layout.setSpacing(10)
 
-        # Campo de entrada para a mensagem
         self.message_input = QLineEdit(self)
         self.message_input.setPlaceholderText("Digite sua mensagem...")
         self.message_input.setStyleSheet("padding: 10px; border-radius: 10px; border: 1px solid #ccc;")
         self.input_layout.addWidget(self.message_input)
 
-        # Botão de enviar
         self.bt_enviar = QPushButton("Enviar")
         self.bt_enviar.setFixedSize(100, 40)
-        self.bt_enviar.setStyleSheet("background-color: #4CAF50; color: white;")
+        self.bt_enviar.setStyleSheet(button_style)
         self.bt_enviar.setFont(montserrat_bold)
         self.input_layout.addWidget(self.bt_enviar)
 
@@ -2248,29 +2240,32 @@ class TelaChat_Atendente(QMainWindow):
     def receber_mensagens(self, usuario_socket):
         while True:
             try:
-                messagem = usuario_socket.recv(1024).decode('utf-8')
-                if messagem:
-                    self.exibir_mensagem(messagem)
+                mensagem = usuario_socket.recv(1024).decode('utf-8')
+                if mensagem:
+                    self.adicionar_mensagem(mensagem, recebido=True)
             except:
                 print("[ERRO] Conexão com o servidor perdida.")
                 usuario_socket.close()
                 break
 
-    def exibir_mensagem(self, mensagem):
-        """Exibir mensagens recebidas na caixa de mensagens."""
-        current_text = self.messages_box.text()
-        self.messages_box.setText(current_text + "\n" + mensagem)
+    def adicionar_mensagem(self, mensagem, recebido):
+        """Adicionar mensagem na interface com cores diferentes para enviadas e recebidas."""
+        label = QLabel(mensagem)
+        if recebido:
+            label.setStyleSheet("background-color: #e0e0e0; border-radius: 10px; padding: 10px;")
+        else:
+            label.setStyleSheet("background-color: #add8e6; color: black; border-radius: 10px; padding: 10px;")
+        label.setWordWrap(True)
+        self.messages_layout.addWidget(label)
 
     def enviar_mensagem(self):
         """Enviar mensagem digitada pelo usuário."""
-        messagem = self.message_input.text()
-        if messagem.lower() == 'sair':
-            print("[DESCONECTANDO] Encerrando a conexão.")
-            self.usuario_socket.close()
-            self.close()  # Fecha a janela
-        else:
-            self.usuario_socket.send(messagem.encode('utf-8'))
-            self.message_input.clear()  # Limpa o campo de entrada
+        mensagem = self.message_input.text()
+        if mensagem:
+            self.adicionar_mensagem(mensagem, recebido=False)
+            self.usuario_socket.send(mensagem.encode('utf-8'))
+            self.message_input.clear()
+
 
 
 
