@@ -186,11 +186,7 @@ class Tela(QWidget):
             bt_efetuar_cadastro.setStyleSheet(button_style)
             bt_efetuar_cadastro.setFont(QFont("Montserrat", 10, QFont.Bold))
 
-            # Verificar se os campos estão vazios e conectar o botão corretamente
-            if not self.usuario_input.text() or not self.senha_input.text() or not self.tipo_input.text():
-                bt_efetuar_cadastro.clicked.connect(self.voltar_inicial_pelo_cadastro)  # Se algum campo estiver vazio, vai voltar à tela inicial
-            else:
-                bt_efetuar_cadastro.clicked.connect(self.efetuar_cadastro)  # Caso contrário, efetua o cadastro
+            bt_efetuar_cadastro.clicked.connect(self.efetuar_cadastro)
 
             self.layout.addWidget(bt_efetuar_cadastro, alignment=Qt.AlignHCenter)
 
@@ -240,7 +236,7 @@ class Tela(QWidget):
             msg.setWindowTitle("Sucesso")
             msg.setText(f"Usuário {usuario} cadastrado com sucesso!")
             msg.exec_()
-            self.voltar_tela_inicial()
+            self.voltar_inicial_pelo_cadastro()
         else:
             print(f"Erro: Usuário {usuario} já existe.")
             msg = QMessageBox()
