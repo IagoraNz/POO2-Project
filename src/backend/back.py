@@ -520,12 +520,30 @@ class CiaAerea():
         return False, 'Avião inválido!'
     
     def excluir_aviao(self, sigla: str) -> tuple:
+        """
+        Exclui um avião do sistema.
+
+        Args:
+            sigla (str): A sigla identificadora do avião.
+
+        Returns:
+            tuple: (bool, str) indicando o sucesso da operação e uma mensagem.
+        """
         if sigla in self._avioes.keys():
             del self._avioes[sigla]
             return True, 'Avião excluído com sucesso!'
         return False, 'Avião não encontrado!'
 
     def add_voo(self, voo: object) -> tuple:
+        """
+        Adiciona um voo ao sistema.
+
+        Args:
+            voo (object): Objeto do tipo `Voo` representando o voo a ser adicionado.
+
+        Returns:
+            tuple: (bool, str) indicando o sucesso da operação e uma mensagem.
+        """
         if isinstance(voo, Voo):
             if voo.sigla not in self._voos:
                 self._voos[voo.sigla] = voo
@@ -534,12 +552,30 @@ class CiaAerea():
         return False, 'Voo inválido!'
     
     def excluir_voo(self, sigla: str) -> tuple:
+        """
+        Exclui um voo do sistema.
+
+        Args:
+            sigla (str): A sigla identificadora do voo.
+
+        Returns:
+            tuple: (bool, str) indicando o sucesso da operação e uma mensagem.
+        """
         if sigla in self._voos.keys():
             del self._voos[sigla]
             return True, 'Voo excluído com sucesso!'
         return False, 'Voo não encontrado!'
     
     def add_passageiro(self, passageiro: object) -> tuple:
+        """
+        Adiciona um passageiro ao sistema.
+
+        Args:
+            passageiro (object): Objeto do tipo `Passageiro` representando o passageiro.
+
+        Returns:
+            tuple: (bool, str) indicando o sucesso da operação e uma mensagem.
+        """
         if isinstance(passageiro, Passageiro):
             if passageiro.cpf not in self._passageiros:
                 self._passageiros[passageiro.cpf] = passageiro
@@ -548,12 +584,30 @@ class CiaAerea():
         return False, 'Passageiro inválido!'
     
     def excluir_passageiro(self, cpf: int) -> tuple:
+        """
+        Exclui um passageiro do sistema.
+
+        Args:
+            cpf (int): O CPF do passageiro.
+
+        Returns:
+            tuple: (bool, str) indicando o sucesso da operação e uma mensagem.
+        """
         if cpf in self._passageiros.keys():
             del self._passageiros[cpf]
             return True, 'Passageiro excluído com sucesso!'
         return False, 'Passageiro não encontrado!'
     
     def add_funcionario(self, funcionario: object) -> tuple:
+        """
+        Adiciona um funcionário ao sistema.
+
+        Args:
+            funcionario (object): Objeto do tipo `Funcionario` representando o funcionário.
+
+        Returns:
+            tuple: (bool, str) indicando o sucesso da operação e uma mensagem.
+        """
         if isinstance(funcionario, Funcionario):
             if funcionario.cpf not in self._funcionarios:
                 self._funcionarios[funcionario.cpf] = funcionario
@@ -562,6 +616,15 @@ class CiaAerea():
         return False, "Funcionário inválido!"
     
     def excluir_funcionario(self, cpf: object) -> tuple:
+        """
+        Exclui um funcionário do sistema.
+
+        Args:
+            cpf (int): O CPF do funcionário.
+
+        Returns:
+            tuple: (bool, str) indicando o sucesso da operação e uma mensagem.
+        """
         if cpf in self._funcionarios.keys():
             del self._funcionarios[cpf]
             return True, "Funcionário excluído com sucesso!"
@@ -569,7 +632,16 @@ class CiaAerea():
     
 
 class CadastroClientes:
+    """
+    Classe responsável por gerenciar o cadastro de clientes em um banco de dados PostgreSQL.
+    """
     def __init__(self):
+        """
+        Inicializa a conexão com o banco de dados e cria a tabela de clientes se ela não existir.
+        
+        Raises:
+            ConnectionError: Caso ocorra um erro ao conectar ao banco de dados.
+        """
         try:
             self.conn = psycopg2.connect(
                 dbname='credenciais',  # Nome do banco de dados
@@ -597,7 +669,18 @@ class CadastroClientes:
             self.conn.commit()
 
     def cadastrar_cliente(self, nome: str, cpf: str, telefone: str) -> tuple:
-        """Insere ou atualiza os dados de um cliente no banco de dados."""
+        """
+        Insere ou atualiza os dados de um cliente no banco de dados.
+
+        Args:
+            nome (str): Nome do cliente.
+            cpf (str): CPF do cliente.
+            telefone (str): Telefone do cliente.
+
+        Returns:
+            tuple: Um par (bool, str), onde o bool indica sucesso (True) ou falha (False),
+                   e a string contém uma mensagem descritiva.
+        """
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
@@ -625,7 +708,16 @@ class CadastroClientes:
     #         return []
 
     def buscar_cliente_por_cpf(self, cpf: str) -> tuple:
-        """Busca um cliente pelo CPF."""
+        """
+        Busca um cliente no banco de dados pelo CPF.
+
+        Args:
+            cpf (str): CPF do cliente.
+
+        Returns:
+            tuple: Uma tupla contendo os dados do cliente (id, nome, cpf, telefone), 
+                   ou None caso o cliente não seja encontrado.
+        """
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
@@ -640,7 +732,16 @@ class CadastroClientes:
             return None
 
     def excluir_cliente(self, cpf: str) -> tuple:
-        """Exclui um cliente pelo CPF."""
+        """
+        Exclui um cliente do banco de dados pelo CPF.
+
+        Args:
+            cpf (str): CPF do cliente a ser excluído.
+
+        Returns:
+            tuple: Um par (bool, str), onde o bool indica sucesso (True) ou falha (False),
+                   e a string contém uma mensagem descritiva.
+        """
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
@@ -655,7 +756,18 @@ class CadastroClientes:
             return False, f"Erro ao excluir cliente: {str(e)}"
     
     def alterar_cliente(self, cpf: str, novo_nome: str, novo_telefone: str) -> tuple:
-        """Altera os dados de um cliente existente pelo CPF."""
+        """
+        Altera os dados de um cliente existente no banco de dados pelo CPF.
+
+        Args:
+            cpf (str): CPF do cliente a ser alterado.
+            novo_nome (str): Novo nome do cliente.
+            novo_telefone (str): Novo telefone do cliente.
+
+        Returns:
+            tuple: Um par (bool, str), onde o bool indica sucesso (True) ou falha (False),
+                   e a string contém uma mensagem descritiva.
+        """
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
@@ -677,7 +789,16 @@ class CadastroClientes:
 
 
 class CadastroVoos:
+    """
+    Classe responsável por gerenciar o cadastro de voos em um banco de dados PostgreSQL.
+    """
     def __init__(self):
+        """
+        Inicializa a conexão com o banco de dados e cria a tabela de voos, caso não exista.
+        
+        Raises:
+            ConnectionError: Caso ocorra um erro ao conectar ao banco de dados.
+        """
         try:
             self.conn = psycopg2.connect(
                 dbname='credenciais',         # Nome do banco de dados
@@ -707,6 +828,20 @@ class CadastroVoos:
 
     def cadastrar_voo(self, sigla: str, origem: str, destino: str, modelo_aviao: str, quantidade_assentos: int) -> tuple:
         """Insere os dados de um voo no banco de dados."""
+        """
+        Insere os dados de um voo no banco de dados.
+
+        Args:
+            sigla (str): Identificação única do voo (exemplo: código do voo).
+            origem (str): Local de origem do voo.
+            destino (str): Local de destino do voo.
+            modelo_aviao (str): Modelo do avião.
+            quantidade_assentos (int): Quantidade total de assentos disponíveis no avião.
+
+        Returns:
+            tuple: Um par (bool, str), onde o bool indica sucesso (True) ou falha (False),
+                   e a string contém uma mensagem descritiva.
+        """
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
@@ -722,7 +857,12 @@ class CadastroVoos:
             return False, f"Erro ao cadastrar voo: {str(e)}"
 
     def listar_voos(self) -> list:
-        """Retorna uma lista com todos os voos cadastrados."""
+        """
+        Retorna uma lista com todos os voos cadastrados.
+
+        Returns:
+            list: Uma lista contendo tuplas com os dados de cada voo.
+        """
         try:
             with self.conn.cursor() as cur:
                 cur.execute("SELECT id, sigla, origem, destino, modelo_aviao, quantidade_assentos FROM voos;")
@@ -732,7 +872,16 @@ class CadastroVoos:
             return []
 
     def buscar_voo_por_sigla(self, sigla: str) -> tuple:
-        """Busca um voo pela sigla."""
+        """
+        Busca os dados de um voo no banco de dados pela sigla.
+
+        Args:
+            sigla (str): Identificação única do voo.
+
+        Returns:
+            tuple: Uma tupla contendo os dados do voo (id, sigla, origem, destino, modelo_aviao),
+                   ou None caso o voo não seja encontrado.
+        """
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
@@ -747,7 +896,16 @@ class CadastroVoos:
             return None
 
     def excluir_voo(self, sigla: str) -> tuple:
-        """Exclui um voo pela sigla."""
+        """
+        Exclui um voo do banco de dados pela sigla.
+
+        Args:
+            sigla (str): Identificação única do voo a ser excluído.
+
+        Returns:
+            tuple: Um par (bool, str), onde o bool indica sucesso (True) ou falha (False),
+                   e a string contém uma mensagem descritiva.
+        """
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
@@ -762,7 +920,20 @@ class CadastroVoos:
             return False, f"Erro ao excluir voo: {str(e)}"
 
     def alterar_voo(self, sigla: str, origem: str, destino: str, modelo_aviao: str, quantidade_assentos: int) -> tuple:
-        """Altera os dados de um voo existente pela sigla."""
+        """
+        Altera os dados de um voo existente no banco de dados pela sigla.
+
+        Args:
+            sigla (str): Identificação única do voo a ser alterado.
+            origem (str): Novo local de origem do voo.
+            destino (str): Novo local de destino do voo.
+            modelo_aviao (str): Novo modelo do avião.
+            quantidade_assentos (int): Nova quantidade total de assentos disponíveis.
+
+        Returns:
+            tuple: Um par (bool, str), onde o bool indica sucesso (True) ou falha (False),
+                   e a string contém uma mensagem descritiva.
+        """
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
@@ -783,7 +954,14 @@ class CadastroVoos:
             return False, f"Erro ao alterar voo: {str(e)}"
 
 class BackendReservas:
+    """
+    Classe responsável por gerenciar reservas de voos em um banco de dados PostgreSQL.
+    """
+
     def __init__(self):
+        """
+        Inicializa a conexão com o banco de dados e cria a tabela de voos, se não existir.
+        """
         try:
             self.conn = psycopg2.connect(
                 dbname='credenciais',
@@ -798,6 +976,9 @@ class BackendReservas:
             print(f"Erro ao conectar ao banco de dados: {e}")
 
     def create_table(self):
+        """
+        Cria a tabela de voos no banco de dados, caso ela ainda não exista.
+        """
         try:
             self.cur.execute('''
                 CREATE TABLE IF NOT EXISTS voos (
@@ -813,7 +994,13 @@ class BackendReservas:
         except Exception as e:
             print(f"Erro ao criar tabela: {e}")
 
-    def listar_voos(self):
+    def listar_voos(self) -> list:
+        """
+        Lista todos os voos disponíveis no banco de dados.
+
+        Returns:
+            list: Lista de tuplas contendo os dados dos voos.
+        """
         try:
             self.cur.execute("SELECT sigla, origem, destino, modelo_aviao, quantidade_assentos FROM voos;")
             voos = self.cur.fetchall()
@@ -822,7 +1009,17 @@ class BackendReservas:
             print(f"Erro ao listar voos: {e}")
             return []
 
-    def reservar_voo(self, sigla, assento):
+    def reservar_voo(self, sigla: str, assento: int) -> str:
+        """
+        Realiza a reserva de um assento para um voo específico.
+
+        Args:
+            sigla (str): Sigla do voo a ser reservado.
+            assento (int): Número do assento a ser reservado.
+
+        Returns:
+            str: Mensagem indicando o status da reserva.
+        """
         try:
             # Verificar se o voo existe e há assentos disponíveis
             self.cur.execute(
@@ -851,12 +1048,28 @@ class BackendReservas:
             return "Erro ao realizar a reserva."
 
     def close_connection(self):
+        """
+        Fecha a conexão com o banco de dados.
+        """
         self.cur.close()
         self.conn.close()
 
 
 class BackendRemoverReservas:
+    """
+    Classe para gerenciar remoção de reservas de voos no banco de dados.
+    
+    Atributos:
+        conn (psycopg2.connection): Conexão com o banco de dados.
+        cur (psycopg2.cursor): Cursor para executar comandos SQL.
+    """
     def __init__(self):
+        """
+        Inicializa a conexão com o banco de dados e cria a tabela de voos, se não existir.
+
+        Raises:
+            Exception: Erro ao conectar ao banco de dados.
+        """
         try:
             self.conn = psycopg2.connect(
                 dbname='credenciais',
@@ -871,6 +1084,9 @@ class BackendRemoverReservas:
             print(f"Erro ao conectar ao banco de dados: {e}")
 
     def create_table(self):
+        """
+        Cria a tabela de voos no banco de dados, caso não exista.
+        """
         try:
             self.cur.execute('''
                 CREATE TABLE IF NOT EXISTS voos (
@@ -887,6 +1103,12 @@ class BackendRemoverReservas:
             print(f"Erro ao criar tabela: {e}")
 
     def listar_voos(self):
+        """
+        Lista todos os voos cadastrados no banco de dados.
+        
+        Returns:
+            list: Lista de tuplas contendo os dados dos voos (sigla, origem, destino, modelo_aviao, quantidade_assentos).
+        """
         try:
             self.cur.execute("SELECT sigla, origem, destino, modelo_aviao, quantidade_assentos FROM voos;")
             voos = self.cur.fetchall()
@@ -895,7 +1117,17 @@ class BackendRemoverReservas:
             print(f"Erro ao listar voos: {e}")
             return []
 
-    def remover_reserva_voo(self, sigla, assento):
+    def remover_reserva_voo(self, sigla: str, assento: int) -> str:
+        """
+        Remove a reserva de um assento para um voo específico.
+
+        Args:
+            sigla (str): Sigla do voo cuja reserva será removida.
+            assento (int): Número do assento a ser removido.
+
+        Returns:
+            str: Mensagem indicando o status da remoção.
+        """
         try:
             # Verificar se o voo existe e há assentos disponíveis
             self.cur.execute(
@@ -924,11 +1156,27 @@ class BackendRemoverReservas:
             return "Erro ao realizar a reserva."
 
     def close_connection(self):
+        """
+        Fecha a conexão com o banco de dados.
+        """
+
         self.cur.close()
         self.conn.close()
 
 class MetodosGerente:
+    """
+    Classe responsável por gerenciar aviões em um banco de dados PostgreSQL.
+    
+    Atributos:
+        conn: Conexão com o banco de dados PostgreSQL.
+    """
     def __init__(self):
+        """
+        Inicializa a conexão com o banco de dados e cria a tabela de aviões se ela não existir.
+        
+        Raise:
+            ConnectionError: Se ocorrer um erro ao conectar ao banco de dados.
+        """
         try:
             self.conn = psycopg2.connect(
                 dbname='credenciais',  # Nome do banco de dados
@@ -956,7 +1204,19 @@ class MetodosGerente:
             self.conn.commit()
 
     def cadastrar_aviao(self, sigla: str, modelo: str, assentos: int) -> tuple:
-        """Insere ou atualiza os dados de um avião no banco de dados."""
+        """
+        Insere ou atualiza os dados de um avião no banco de dados.
+
+        Parâmetros:
+            sigla (str): Código único do avião.
+            modelo (str): Modelo do avião.
+            assentos (int): Número de assentos do avião.
+
+        Retorno:
+            tuple[bool, str]: 
+                - `True` e mensagem de sucesso se o avião foi cadastrado ou atualizado com sucesso.
+                - `False` e mensagem de erro em caso de falha.
+        """
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
@@ -973,8 +1233,15 @@ class MetodosGerente:
         except Exception as e:
             return False, f"Erro ao cadastrar avião: {str(e)}"
 
-    def listar_avioes(self):
-        """Retorna uma lista com todos os aviões cadastrados."""
+    def listar_avioes(self) -> list[tuple]:
+        """
+        Retorna uma lista com todos os aviões cadastrados.
+
+        Retorno:
+            list[tuple]: Lista contendo os aviões no formato 
+                         (id, sigla, modelo, assentos). 
+                         Retorna uma lista vazia em caso de erro.
+        """
         try:
             with self.conn.cursor() as cur:
                 cur.execute("SELECT id, sigla, modelo, assentos FROM avioes;")
@@ -983,8 +1250,17 @@ class MetodosGerente:
         except Exception as e:
             return []
 
-    def buscar_aviao_por_sigla(self, sigla: str) -> tuple:
-        """Busca um avião pela sigla."""
+    def buscar_aviao_por_sigla(self, sigla: str) -> tuple | None:
+        """Busca um avião pela sigla.
+        
+         Parâmetros:
+            sigla (str): Código único do avião.
+
+        Retorno:
+            tuple | None:
+                - Um tupla contendo (id, sigla, modelo, assentos) se o avião for encontrado.
+                - `None` se o avião não existir ou em caso de erro.
+        """
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
@@ -998,8 +1274,16 @@ class MetodosGerente:
         except Exception as e:
             return None
 
-    def excluir_aviao(self, sigla: str) -> tuple:
-        """Exclui um avião pela sigla."""
+    def excluir_aviao(self, sigla: str) -> tuple[bool, str]:
+        """Exclui um avião pela sigla.
+         Parâmetros:
+            sigla (str): Código único do avião a ser excluído.
+
+        Retorno:
+            tuple[bool, str]: 
+                - `True` e mensagem de sucesso se o avião foi excluído.
+                - `False` e mensagem de erro ou avião não encontrado.
+        """
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
@@ -1013,8 +1297,18 @@ class MetodosGerente:
         except Exception as e:
             return False, f"Erro ao excluir avião: {str(e)}"
     
-    def alterar_aviao(self, sigla: str, novo_modelo: str, novos_assentos: int) -> tuple:
-        """Altera os dados de um avião existente no banco de dados."""
+    def alterar_aviao(self, sigla: str, novo_modelo: str, novos_assentos: int) -> tuple[bool|str]:
+        """Altera os dados de um avião existente no banco de dados.
+            Parâmetros:
+                sigla (str): Código único do avião.
+                novo_modelo (str): Novo modelo do avião.
+                novos_assentos (int): Novo número de assentos.
+
+            Retorno:
+                tuple[bool, str]: 
+                    - `True` e mensagem de sucesso se o avião foi atualizado.
+                    - `False` e mensagem de erro ou avião não encontrado.
+        """
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
