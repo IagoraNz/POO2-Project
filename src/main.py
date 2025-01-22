@@ -447,7 +447,6 @@ class TelaGerente(QMainWindow):
         self.tela_chat_gerente = TelaChat_Gerente()
         self.tela_chat_gerente.show()
 
-
 SERVER_HOST = '26.7.161.228'
 SERVER_PORT = 5555
 
@@ -568,7 +567,6 @@ class TelaChat_Gerente(QMainWindow):
             self.exibir_mensagem(mensagem, enviado=True)
             self.message_input.clear()  # Limpa o campo de entrada
 
-    
 class TelaVoos(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -708,7 +706,6 @@ class TelaVoos(QMainWindow):
         self.tela_marcar_voo = TelaVoos_Marcar()
         self.tela_marcar_voo.show()
 
-
 class TelaAvioes(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -827,8 +824,6 @@ class TelaAvioes(QMainWindow):
         self.tela_listar_aviao = TelaAvioes_Listar()
         self.tela_listar_aviao.show()
     
-
-
 class TelaVoos_Cadastrar(QMainWindow):
     def __init__(self, cadastro_voos):
         super().__init__()
@@ -1447,7 +1442,6 @@ class TelaAvioes_Alterar(QMainWindow):
         else:
             QMessageBox.critical(self, "Erro", "Erro ao alterar o avião.")
 
-
 class TelaVoos_Remover(QMainWindow):
     def __init__(self, conn = psycopg2.connect(dbname='credenciais', user='poodois',  password='1234', host='localhost', port=5432)):
         super().__init__()
@@ -1735,7 +1729,6 @@ class TelaAvioes_Remover(QMainWindow):
             else:
                 QMessageBox.critical(self, "Erro", "Erro ao remover o avião.")
 
-
 class TelaVoos_Listar(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -1848,7 +1841,6 @@ class TelaVoos_Listar(QMainWindow):
         except Exception as e:
             self.voo_info_label.setText(f"Erro ao carregar os voos: {str(e)}")
 
-
 class TelaAvioes_Listar(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -1938,7 +1930,6 @@ class TelaAvioes_Listar(QMainWindow):
             self.aviao_info_label.setText(info_text)
         except Exception as e:
             self.aviao_info_label.setText(f"Erro ao carregar aviões: {str(e)}")
-
 
 class TelaVoos_Marcar(QMainWindow):
     def __init__(self):
@@ -2037,13 +2028,6 @@ class TelaVoos_Marcar(QMainWindow):
         self.button_layout.addWidget(self.voltar_button)
 
         self.layout.addWidget(self.button_container)
-
-
-
-
-
-
-
 
 class TelaAtendente(QMainWindow):
     def __init__(self):
@@ -2150,7 +2134,6 @@ class TelaAtendente(QMainWindow):
     def mostrar_tela_chat_atendente(self):
         self.tela_chat_atendente = TelaChat_Atendente()
         self.tela_chat_atendente.show()
-
 
 class TelaChat_Atendente(QMainWindow):
     def __init__(self):
@@ -2266,9 +2249,6 @@ class TelaChat_Atendente(QMainWindow):
             self.adicionar_mensagem(mensagem, recebido=False)
             self.usuario_socket.send(mensagem.encode('utf-8'))
             self.message_input.clear()
-
-
-
 
 class TelaPassageiros(QMainWindow):
     def __init__(self):
@@ -2486,7 +2466,6 @@ class TelaReservas(QMainWindow):
         self.tela_reservas_remover = TelaReservas_Remover()
         self.tela_reservas_remover.show()
         self.close()
-
 
 class TelaPassageiros_Cadastrar(QMainWindow):
     def __init__(self):
@@ -2713,8 +2692,6 @@ class TelaPassageiros_Alterar(QMainWindow):
             QMessageBox.information(self, "Sucesso", "Dados do passageiro alterados com sucesso!")
         else:
             QMessageBox.warning(self, "Erro", mensagem)
-
-
 
 class TelaPassageiros_Remover(QMainWindow): 
     def __init__(self):
@@ -2999,7 +2976,6 @@ class TelaPassageiros_Listar(QMainWindow):
             for col in range(1, 4):
                 self.tabela_clientes.setItem(0, col, QTableWidgetItem(""))
 
-
 class TelaReservas_Reservar(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -3120,9 +3096,6 @@ class TelaReservas_Reservar(QMainWindow):
     def closeEvent(self, event):
         self.backend.close_connection()
         super().closeEvent(event)
-
-
-
 
 class TelaReservas_Remover(QMainWindow):
     def __init__(self):
@@ -3245,18 +3218,6 @@ class TelaReservas_Remover(QMainWindow):
         self.backend.close_connection()
         super().closeEvent(event)
 
-
-
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    tela = Tela()
-    tela.show()
-    sys.exit(app.exec_())
-
-    import psycopg2
-
 class GerenciadorDeReservas:
     def __init__(self, dbname, user, password, host='localhost', port=5432):
         try:
@@ -3309,3 +3270,11 @@ class GerenciadorDeReservas:
             self.conn.close()
         except Exception as e:
             print("Erro ao fechar a conexão:", e)
+            
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    tela = Tela()
+    tela.show()
+    sys.exit(app.exec_())
+
+    import psycopg2
