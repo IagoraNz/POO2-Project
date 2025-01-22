@@ -2,7 +2,7 @@ import socket
 import threading
 
 HOST = '127.0.0.1'
-PORTA = 12345
+PORTA = 5555
 MAXUSUARIOS = 3
 
 usuarios = {}
@@ -67,7 +67,7 @@ def iniciar_servidor():
     servidor.bind((HOST, PORTA))
     servidor.listen(MAXUSUARIOS)
     rodando = True
-    print(f"[INICIADO] Servidor escutando em {HOST}:{PORTA}")
+    print(f"\n[INICIADO] Servidor escutando em {HOST}:{PORTA}")
 
     while rodando:
         try:
