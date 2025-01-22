@@ -1,6 +1,7 @@
 import sys
 import os
 import psycopg2
+import socket
 from PyQt5.QtWidgets import QScrollArea, QTableWidgetItem, QApplication, QAbstractItemView, QTableWidget, QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QLineEdit, QStackedWidget
 from PyQt5.QtGui import QPixmap, QFontDatabase, QFont, QIcon
 from PyQt5.QtCore import Qt, QSize
@@ -459,6 +460,12 @@ class TelaGerente(QMainWindow):
         self.bt_avioes.setFont(montserrat_bold)
         self.bt_avioes.clicked.connect(self.mostrar_tela_avioes)
 
+        self.bt_chat = QPushButton("Chat")
+        self.bt_chat.setFixedSize(200, 50)
+        self.bt_chat.setStyleSheet(button_style)
+        self.bt_chat.setFont(montserrat_bold)
+        self.bt_chat.clicked.connect(self.mostrar_tela_chat_gerente)
+
         self.bt_sair = QPushButton("Sair")
         self.bt_sair.setFixedSize(200, 50)
         self.bt_sair.setStyleSheet(button_style)
@@ -467,6 +474,7 @@ class TelaGerente(QMainWindow):
 
         button_layout.addWidget(self.bt_voos)
         button_layout.addWidget(self.bt_avioes)
+        button_layout.addWidget(self.bt_chat)
         button_layout.addWidget(self.bt_sair)
 
         # Espaçador abaixo dos botões
@@ -496,6 +504,132 @@ class TelaGerente(QMainWindow):
     def mostrar_tela_inicial(self):
         self.tela_inicial = Tela()
         self.tela_inicial.show()
+    
+    def mostrar_tela_chat_gerente(self):
+        self.tela_chat_gerente = TelaChat_Gerente()
+        self.tela_chat_gerente.show()
+
+SERVER_HOST = '26.7.161.228'
+SERVER_PORT = 5555
+
+class TelaChat_Gerente(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Chat - Delta Airlines")
+        self.setFixedSize(1000, 600)
+        self.setStyleSheet("background-color: white;")
+
+        # Carregar a fonte Montserrat
+        font_path = "path/to/your/font.ttf"  # Substitua pelo caminho correto da sua fonte
+        if os.path.exists(font_path):
+            QFontDatabase.addApplicationFont(font_path)
+            montserrat_bold = QFont("Montserrat", 14, QFont.Bold)
+        else:
+            montserrat_bold = QFont("Arial", 14, QFont.Bold)
+
+        # Layout principal
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+        self.layout = QVBoxLayout(self.central_widget)
+
+        # Contêiner 1: Logo
+        self.logo_widget = QWidget()
+        self.logo_layout = QVBoxLayout(self.logo_widget)
+        self.logo_layout.setContentsMargins(0, 0, 0, 0)
+        self.logo_layout.setSpacing(10)
+
+        self.logo_label = QLabel(self.logo_widget)
+        logo_path = os.path.abspath("./src/images/image.png")
+        if os.path.exists(logo_path):
+            pixmap = QPixmap(logo_path)
+            resized_pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.logo_label.setPixmap(resized_pixmap)
+        else:
+            self.logo_label.setText("Imagem não encontrada.")
+        self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)
+
+        self.title_label = QLabel("Chat")
+        self.title_label.setFont(montserrat_bold)
+        self.title_label.setAlignment(Qt.AlignCenter)
+        self.logo_layout.addWidget(self.title_label)
+
+        self.layout.addWidget(self.logo_widget)
+
+        # Contêiner 2: Caixa de Mensagens
+        self.messages_widget = QWidget()
+        self.messages_layout = QVBoxLayout(self.messages_widget)
+        self.messages_layout.setContentsMargins(50, 20, 50, 0)
+        self.messages_layout.setSpacing(10)
+
+        # Caixa para as mensagens (usando QLabel dentro de um QScrollArea)
+        self.scroll_area = QScrollArea(self)
+        self.scroll_area.setWidgetResizable(True)
+
+        self.messages_box = QLabel()
+        self.messages_box.setStyleSheet("background-color: #f5f5f5; padding: 15px; border-radius: 10px; border: 1px solid #ccc; height: 300px;")
+        self.scroll_area.setWidget(self.messages_box)
+        self.messages_layout.addWidget(self.scroll_area)
+        
+        self.layout.addWidget(self.messages_widget)
+
+        # Contêiner 3: Campo de mensagem e botão
+        self.input_widget = QWidget()
+        self.input_layout = QHBoxLayout(self.input_widget)
+        self.input_layout.setContentsMargins(50, 20, 50, 0)
+        self.input_layout.setSpacing(10)
+
+        # Campo de entrada para a mensagem
+        self.message_input = QLineEdit(self)
+        self.message_input.setPlaceholderText("Digite sua mensagem...")
+        self.message_input.setStyleSheet("padding: 10px; border-radius: 10px; border: 1px solid #ccc;")
+        self.input_layout.addWidget(self.message_input)
+
+        # Botão de enviar
+        self.bt_enviar = QPushButton("Enviar")
+        self.bt_enviar.setFixedSize(100, 40)
+        self.bt_enviar.setStyleSheet("background-color: #4CAF50; color: white;")
+        self.bt_enviar.setFont(montserrat_bold)
+        self.input_layout.addWidget(self.bt_enviar)
+
+        self.layout.addWidget(self.input_widget)
+
+        # Inicializar a conexão
+        self.usuario_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.usuario_socket.connect((SERVER_HOST, SERVER_PORT))
+
+        # Criar e iniciar thread para receber mensagens
+        self.thread_recebida = threading.Thread(target=self.receber_mensagens, args=(self.usuario_socket,))
+        self.thread_recebida.start()
+
+        # Conectar o botão de enviar
+        self.bt_enviar.clicked.connect(self.enviar_mensagem)
+
+    def receber_mensagens(self, usuario_socket):
+        while True:
+            try:
+                messagem = usuario_socket.recv(1024).decode('utf-8')
+                if messagem:
+                    self.exibir_mensagem(messagem)
+            except:
+                print("[ERRO] Conexão com o servidor perdida.")
+                usuario_socket.close()
+                break
+
+    def exibir_mensagem(self, mensagem):
+        """Exibir mensagens recebidas na caixa de mensagens."""
+        current_text = self.messages_box.text()
+        self.messages_box.setText(current_text + "\n" + mensagem)
+
+    def enviar_mensagem(self):
+        """Enviar mensagem digitada pelo usuário."""
+        messagem = self.message_input.text()
+        if messagem.lower() == 'sair':
+            print("[DESCONECTANDO] Encerrando a conexão.")
+            self.usuario_socket.close()
+            self.close()  # Fecha a janela
+        else:
+            self.usuario_socket.send(messagem.encode('utf-8'))
+            self.message_input.clear()  # Limpa o campo de entrada
     
 class TelaVoos(QMainWindow):
     def __init__(self):
@@ -2016,6 +2150,12 @@ class TelaAtendente(QMainWindow):
         self.bt_reservas.setFont(montserrat_bold)
         self.bt_reservas.clicked.connect(self.mostrar_tela_reservas)
 
+        self.bt_chat = QPushButton("Chat")
+        self.bt_chat.setFixedSize(200, 50)
+        self.bt_chat.setStyleSheet(button_style)
+        self.bt_chat.setFont(montserrat_bold)
+        self.bt_chat.clicked.connect(self.mostrar_tela_chat_atendente)
+
         self.bt_sair = QPushButton("Sair")
         self.bt_sair.setFixedSize(200, 50)
         self.bt_sair.setStyleSheet(button_style)
@@ -2053,6 +2193,131 @@ class TelaAtendente(QMainWindow):
     def mostrar_tela_inicial(self):
         self.tela_inicial = Tela()
         self.tela_inicial.show()
+    
+    def mostrar_tela_chat_atendente(self):
+        self.tela_chat_atendente = TelaChat_Atendente()
+        self.tela_chat_atendente.show()
+
+
+class TelaChat_Atendente(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Chat - Delta Airlines")
+        self.setFixedSize(1000, 600)
+        self.setStyleSheet("background-color: white;")
+
+        # Carregar a fonte Montserrat
+        font_path = "path/to/your/font.ttf"  # Substitua pelo caminho correto da sua fonte
+        if os.path.exists(font_path):
+            QFontDatabase.addApplicationFont(font_path)
+            montserrat_bold = QFont("Montserrat", 14, QFont.Bold)
+        else:
+            montserrat_bold = QFont("Arial", 14, QFont.Bold)
+
+        # Layout principal
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+        self.layout = QVBoxLayout(self.central_widget)
+
+        # Contêiner 1: Logo
+        self.logo_widget = QWidget()
+        self.logo_layout = QVBoxLayout(self.logo_widget)
+        self.logo_layout.setContentsMargins(0, 0, 0, 0)
+        self.logo_layout.setSpacing(10)
+
+        self.logo_label = QLabel(self.logo_widget)
+        logo_path = os.path.abspath("./src/images/image.png")
+        if os.path.exists(logo_path):
+            pixmap = QPixmap(logo_path)
+            resized_pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.logo_label.setPixmap(resized_pixmap)
+        else:
+            self.logo_label.setText("Imagem não encontrada.")
+        self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)
+
+        self.title_label = QLabel("Chat")
+        self.title_label.setFont(montserrat_bold)
+        self.title_label.setAlignment(Qt.AlignCenter)
+        self.logo_layout.addWidget(self.title_label)
+
+        self.layout.addWidget(self.logo_widget)
+
+        # Contêiner 2: Caixa de Mensagens
+        self.messages_widget = QWidget()
+        self.messages_layout = QVBoxLayout(self.messages_widget)
+        self.messages_layout.setContentsMargins(50, 20, 50, 0)
+        self.messages_layout.setSpacing(10)
+
+        # Caixa para as mensagens (usando QLabel dentro de um QScrollArea)
+        self.scroll_area = QScrollArea(self)
+        self.scroll_area.setWidgetResizable(True)
+
+        self.messages_box = QLabel()
+        self.messages_box.setStyleSheet("background-color: #f5f5f5; padding: 15px; border-radius: 10px; border: 1px solid #ccc; height: 300px;")
+        self.scroll_area.setWidget(self.messages_box)
+        self.messages_layout.addWidget(self.scroll_area)
+        
+        self.layout.addWidget(self.messages_widget)
+
+        # Contêiner 3: Campo de mensagem e botão
+        self.input_widget = QWidget()
+        self.input_layout = QHBoxLayout(self.input_widget)
+        self.input_layout.setContentsMargins(50, 20, 50, 0)
+        self.input_layout.setSpacing(10)
+
+        # Campo de entrada para a mensagem
+        self.message_input = QLineEdit(self)
+        self.message_input.setPlaceholderText("Digite sua mensagem...")
+        self.message_input.setStyleSheet("padding: 10px; border-radius: 10px; border: 1px solid #ccc;")
+        self.input_layout.addWidget(self.message_input)
+
+        # Botão de enviar
+        self.bt_enviar = QPushButton("Enviar")
+        self.bt_enviar.setFixedSize(100, 40)
+        self.bt_enviar.setStyleSheet("background-color: #4CAF50; color: white;")
+        self.bt_enviar.setFont(montserrat_bold)
+        self.input_layout.addWidget(self.bt_enviar)
+
+        self.layout.addWidget(self.input_widget)
+
+        # Inicializar a conexão
+        self.usuario_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.usuario_socket.connect((SERVER_HOST, SERVER_PORT))
+
+        # Criar e iniciar thread para receber mensagens
+        self.thread_recebida = threading.Thread(target=self.receber_mensagens, args=(self.usuario_socket,))
+        self.thread_recebida.start()
+
+        # Conectar o botão de enviar
+        self.bt_enviar.clicked.connect(self.enviar_mensagem)
+
+    def receber_mensagens(self, usuario_socket):
+        while True:
+            try:
+                messagem = usuario_socket.recv(1024).decode('utf-8')
+                if messagem:
+                    self.exibir_mensagem(messagem)
+            except:
+                print("[ERRO] Conexão com o servidor perdida.")
+                usuario_socket.close()
+                break
+
+    def exibir_mensagem(self, mensagem):
+        """Exibir mensagens recebidas na caixa de mensagens."""
+        current_text = self.messages_box.text()
+        self.messages_box.setText(current_text + "\n" + mensagem)
+
+    def enviar_mensagem(self):
+        """Enviar mensagem digitada pelo usuário."""
+        messagem = self.message_input.text()
+        if messagem.lower() == 'sair':
+            print("[DESCONECTANDO] Encerrando a conexão.")
+            self.usuario_socket.close()
+            self.close()  # Fecha a janela
+        else:
+            self.usuario_socket.send(messagem.encode('utf-8'))
+            self.message_input.clear()  # Limpa o campo de entrada
+
 
 class TelaPassageiros(QMainWindow):
     def __init__(self):
