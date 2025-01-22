@@ -57,7 +57,7 @@ def mensagem_privada(transmissor, nome_destino, message):
     nome_transmissor = usuarios[transmissor]
     for usuario_socket, usuario_name in usuarios.items():
         if usuario_name == nome_destino:
-            usuario_socket.send(f"[PRIVADO de {nome_transmissor}]: {message}".encode('utf-8'))
+            usuario_socket.send(f"@{nome_transmissor}: {message}".encode('utf-8'))
             return
     transmissor.send(f"Usuário '{nome_destino}' não encontrado.".encode('utf-8'))
 
