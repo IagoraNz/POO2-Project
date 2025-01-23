@@ -32,9 +32,9 @@ def test_login_gerente(server) -> None:
     """
 
     connection = psycopg2.connect(
-        dbname="testdb",
-        user="postgres",
-        password="your_password",
+        dbname="credenciais",
+        user="poodois",
+        password="1234",
         host="localhost",
         port=5432
     )
@@ -73,9 +73,9 @@ def test_login_atendente(server) -> None:
     """
 
     connection = psycopg2.connect(
-        dbname="testdb",
-        user="postgres",
-        password="your_password",
+        dbname="credenciais",
+        user="poodois",
+        password="1234",
         host="localhost",
         port=5432
     )
