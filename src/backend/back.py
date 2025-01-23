@@ -1085,6 +1085,7 @@ class CadastroVoos:
                     ''',
                     (sigla, origem, destino, modelo_aviao, quantidade_assentos)
                 )
+
                 self.conn.commit()
             return True, "Voo cadastrado com sucesso."
         except Exception as e:
