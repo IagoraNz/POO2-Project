@@ -1,5 +1,15 @@
 import pytest
-import redis
+import psycopg2
+
+
+@pytest.fixture
+def server():
+    """
+    Fixture que retorna uma instância de Autenticacao.
+    """
+    from backend.back import Autenticacao
+    return Autenticacao(user="default_user", senha="default_senha")
+
 
 def test_login_gerente(server) -> None:
     """
@@ -20,13 +30,30 @@ def test_login_gerente(server) -> None:
         status: (int) 1, indicando sucesso no login do gerente.
         mensagem: (str) Mensagem indicando o sucesso do login para o gerente.
     """
-    r = redis.Redis(host='localhost', port=6379, db=0)
-    r.flushdb()  
-    r.hset('credenciais', mapping={'gerente': 'senha123,1'})  
-    
-    status, mensagem = server.login('gerente', 'senha123')
+
+    connection = psycopg2.connect(
+        dbname="testdb",
+        user="postgres",
+        password="your_password",
+        host="localhost",
+        port=5432
+    )
+    cursor = connection.cursor()
+
+    # Inserir credenciais do gerente no banco
+    cursor.execute(
+        "INSERT INTO credenciais (usuario, senha, tipo) VALUES (%s, %s, %s);",
+        ("gerente", "senha123", 1)
+    )
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+    status, mensagem = server.login("gerente", "senha123")
     assert status == 1
     assert mensagem == "Login efetuado com sucesso, Gerente"
+
 
 def test_login_atendente(server) -> None:
     """
@@ -44,13 +71,30 @@ def test_login_atendente(server) -> None:
         status: (int) 2, indicando sucesso no login do atendente.
         mensagem: (str) Mensagem indicando o sucesso do login para o atendente.
     """
-    r = redis.Redis(host='localhost', port=6379, db=0)
-    r.flushdb()  
-    r.hset('credenciais', mapping={'atendente': 'senha456,2'})  
-    
-    status, mensagem = server.login('atendente', 'senha456')
+
+    connection = psycopg2.connect(
+        dbname="testdb",
+        user="postgres",
+        password="your_password",
+        host="localhost",
+        port=5432
+    )
+    cursor = connection.cursor()
+
+    # Inserir credenciais do atendente no banco
+    cursor.execute(
+        "INSERT INTO credenciais (usuario, senha, tipo) VALUES (%s, %s, %s);",
+        ("atendente", "senha456", 2)
+    )
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+    status, mensagem = server.login("atendente", "senha456")
     assert status == 2
     assert mensagem == "Login efetuado com sucesso, Atendente"
+
 
 def test_login_falha(server) -> None:
     """
@@ -70,9 +114,7 @@ def test_login_falha(server) -> None:
         status: (bool) False, indicando falha no login.
         mensagem: (str) Mensagem indicando falha no login.
     """
-    r = redis.Redis(host='localhost', port=6379, db=0)
-    r.flushdb()  
-    
-    status, mensagem = server.login('usuario_inexistente', 'senha_errada')
+
+    status, mensagem = server.login("usuario_inexistente", "senha_errada")
     assert status == False
     assert mensagem == "Login não foi efetuado com sucesso"
