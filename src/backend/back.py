@@ -820,10 +820,10 @@ class CadastroVoos:
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
-                    sql.SQL('''
-                        INSERT INTO voos (sigla, origem, destino, modelo_aviao, quantidade_assentos)
-                        VALUES (%s, %s, %s, %s, %s)
-                    '''), 
+                    '''
+                    INSERT INTO voos (sigla, origem, destino, modelo_aviao, quantidade_assentos)
+                    VALUES (%s, %s, %s, %s, %s)
+                    ''',
                     (sigla, origem, destino, modelo_aviao, quantidade_assentos)
                 )
                 self.conn.commit()
@@ -925,6 +925,20 @@ class CadastroVoos:
                     return False, "Voo não encontrado."
         except Exception as e:
             return False, f"Erro ao alterar voo: {str(e)}"
+    
+    def buscar_assentos_por_aviao(self, sigla_aviao: str) -> int:
+        """Busca a quantidade de assentos de um avião pelo campo sigla."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    "SELECT assentos FROM avioes WHERE sigla = %s;",
+                    (sigla_aviao,)
+                )
+                result = cur.fetchone()
+            return result[0] if result else None
+        except Exception as e:
+            return None
+
 
 class BackendReservas:
     """

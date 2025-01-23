@@ -1,10 +1,10 @@
 import sys
 import os
-import psycopg2
 import socket
-from PyQt5.QtWidgets import QScrollArea, QTableWidgetItem, QApplication, QAbstractItemView, QTableWidget, QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QLineEdit, QStackedWidget
-from PyQt5.QtGui import QPixmap, QFontDatabase, QFont, QIcon
-from PyQt5.QtCore import Qt, QSize
+import threading
+from PyQt5.QtWidgets import QScrollArea, QTableWidgetItem, QApplication, QAbstractItemView, QTableWidget, QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QLineEdit, QStackedWidget, QTextEdit
+from PyQt5.QtGui import QPixmap, QFontDatabase, QFont
+from PyQt5.QtCore import Qt
 from backend.back import *
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QSizePolicy, QSpacerItem
 from POO2PROJECT.listar_clientes import ListarClientes
@@ -156,7 +156,7 @@ class Tela(QWidget):
         # Criar os campos de cadastro (verifica se já foram criados antes)
         if not hasattr(self, 'usuario_input'):
             # Legenda abaixo da mensagem de boas-vindas
-            tipo_funcionario_label = QLabel("Caso deseje voltar, deixe os campos vazios e clique no botão", self)
+            tipo_funcionario_label = QLabel("Na última sessão digite 1 para Gerente ou 2 para Atendente.", self)
             tipo_funcionario_label.setAlignment(Qt.AlignHCenter)
             tipo_funcionario_label.setStyleSheet("color: darkgray;")
             self.layout.addWidget(tipo_funcionario_label, alignment=Qt.AlignHCenter)
@@ -176,7 +176,7 @@ class Tela(QWidget):
 
             # Campo de entrada para o tipo de funcionário
             self.tipo_input = QLineEdit(self)
-            self.tipo_input.setPlaceholderText("1 para Gerente ou 2 para Atendente")
+            self.tipo_input.setPlaceholderText("Tipo de Funcionário")
             self.tipo_input.setStyleSheet(line_edit_style)
             self.layout.addWidget(self.tipo_input, alignment=Qt.AlignHCenter)
 
@@ -185,13 +185,7 @@ class Tela(QWidget):
             bt_efetuar_cadastro.setFixedSize(200, 50)
             bt_efetuar_cadastro.setStyleSheet(button_style)
             bt_efetuar_cadastro.setFont(QFont("Montserrat", 10, QFont.Bold))
-
-            # Verificar se os campos estão vazios e conectar o botão corretamente
-            if not self.usuario_input.text() or not self.senha_input.text() or not self.tipo_input.text():
-                bt_efetuar_cadastro.clicked.connect(self.voltar_inicial_pelo_cadastro)  # Se algum campo estiver vazio, vai voltar à tela inicial
-            else:
-                bt_efetuar_cadastro.clicked.connect(self.efetuar_cadastro)  # Caso contrário, efetua o cadastro
-
+            bt_efetuar_cadastro.clicked.connect(self.efetuar_cadastro)
             self.layout.addWidget(bt_efetuar_cadastro, alignment=Qt.AlignHCenter)
 
         # Mostrar a tela de cadastro
@@ -249,40 +243,11 @@ class Tela(QWidget):
             msg.setText(f"Erro: Usuário {usuario} já existe.")
             msg.exec_()
 
-    def voltar_inicial_pelo_cadastro(self):
+    def voltar_tela_inicial(self):
         # Limpar os campos de cadastro
-        if hasattr(self, 'usuario_input') and self.usuario_input.isVisible():
-            if self.usuario_input.text():
-                self.usuario_input.setText("")
-            if hasattr(self, 'senha_input') and self.senha_input.text():
-                self.senha_input.setText("")
-            if hasattr(self, 'tipo_input') and self.tipo_input.isVisible() and self.tipo_input.text():
-                self.tipo_input.setText("")
-
-        # Remover os campos de login
-        self.layout.itemAt(5).widget().setVisible(False)
-        self.layout.itemAt(6).widget().setVisible(False)
-        self.layout.itemAt(7).widget().setVisible(False)
-        self.layout.itemAt(8).widget().setVisible(False)
-        self.layout.itemAt(9).widget().setVisible(False)
-
-        # Limpar a tela de boas-vindas e botões
-        self.welcome_label.setText("<b>Bem-vindo ao sistema gerenciador da Delta Airlines</b>")
-        self.layout.itemAt(3).widget().setVisible(True)
-        self.layout.itemAt(4).widget().setVisible(True)
-        
-        # Fechar a tela atual e abrir a tela inicial
-        self.close()
-        self.tela_inicial = Tela()  # Crie uma nova instância da tela inicial
-        self.tela_inicial.show()
-
-    def voltar_inicial_pelo_login(self):                
-        # Limpar os campos de login
-        if hasattr(self, 'login_usuario_input') and self.login_usuario_input.isVisible():
-            if self.login_usuario_input.text():
-                self.login_usuario_input.setText("")
-            if hasattr(self, 'login_senha_input') and self.login_senha_input.text():
-                self.login_senha_input.setText("")
+        self.usuario_input.setText("")
+        self.senha_input.setText("")
+        self.tipo_input.setText("")
 
         # Remover os campos de cadastro
         self.layout.itemAt(5).widget().setVisible(False)
@@ -290,16 +255,11 @@ class Tela(QWidget):
         self.layout.itemAt(7).widget().setVisible(False)
         self.layout.itemAt(8).widget().setVisible(False)
 
-        # Limpar a tela de boas-vindas e botões
+        # Recriar a tela inicial
         self.welcome_label.setText("<b>Bem-vindo ao sistema gerenciador da Delta Airlines</b>")
         self.layout.itemAt(3).widget().setVisible(True)
         self.layout.itemAt(4).widget().setVisible(True)
-
-        # Fechar a tela atual e abrir a tela inicial
-        self.close()
-        self.tela_inicial = Tela()  # Crie uma nova instância da tela inicial
-        self.tela_inicial.show()
-      
+        
     def mostrar_formulario_login(self):
         # Limpar a tela de boas-vindas e botões
         self.welcome_label.setText("")
@@ -327,32 +287,10 @@ class Tela(QWidget):
             bt_efetuar_login.clicked.connect(self.efetuar_login)
             self.layout.addWidget(bt_efetuar_login, alignment=Qt.AlignHCenter)
 
-            # Adicionar botão de voltar
-            bt_voltar = QPushButton()
-            bt_voltar.setFixedSize(50, 50)  # Tornar o botão quadrado para suportar um círculo
-            bt_voltar.setStyleSheet("border: none;")
-
-            # Configurar imagem para o botão
-            voltar_icon_path = os.path.abspath("./src/images/seta-para-a-esquerda.png")
-            if os.path.exists(voltar_icon_path):
-                bt_voltar.setIcon(QIcon(voltar_icon_path))
-                bt_voltar.setIconSize(QSize(20, 20))
-                # Estilo para hover com círculo azul claro
-                bt_voltar.setStyleSheet(
-                    "QPushButton { border: none; border-radius: 25px; background-color: transparent; }"
-                    "QPushButton:hover { border: 2px solid #cce7ff; border-radius: 25px; background-color: #f0faff; }"
-                )
-            else:
-                bt_voltar.setText("Voltar")  # Texto alternativo caso a imagem não seja encontrada
-
-            bt_voltar.clicked.connect(self.voltar_inicial_pelo_login)
-            self.layout.addWidget(bt_voltar, alignment=Qt.AlignHCenter)
-
         # Mostrar a tela de login
         self.layout.itemAt(5).widget().setVisible(True)
         self.layout.itemAt(6).widget().setVisible(True)
         self.layout.itemAt(7).widget().setVisible(True)
-        self.layout.itemAt(8).widget().setVisible(True)
 
     def efetuar_login(self):
         usuario = self.login_usuario_input.text()
@@ -561,15 +499,12 @@ class TelaChat_Gerente(QMainWindow):
         self.messages_layout.setContentsMargins(50, 20, 50, 0)
         self.messages_layout.setSpacing(10)
 
-        # Caixa para as mensagens (usando QLabel dentro de um QScrollArea)
-        self.scroll_area = QScrollArea(self)
-        self.scroll_area.setWidgetResizable(True)
-
-        self.messages_box = QLabel()
+        # Caixa para as mensagens (usando QTextEdit)
+        self.messages_box = QTextEdit()
+        self.messages_box.setReadOnly(True)
         self.messages_box.setStyleSheet("background-color: #f5f5f5; padding: 15px; border-radius: 10px; border: 1px solid #ccc; height: 300px;")
-        self.scroll_area.setWidget(self.messages_box)
-        self.messages_layout.addWidget(self.scroll_area)
-        
+        self.messages_layout.addWidget(self.messages_box)
+
         self.layout.addWidget(self.messages_widget)
 
         # Contêiner 3: Campo de mensagem e botão
@@ -587,7 +522,7 @@ class TelaChat_Gerente(QMainWindow):
         # Botão de enviar
         self.bt_enviar = QPushButton("Enviar")
         self.bt_enviar.setFixedSize(100, 40)
-        self.bt_enviar.setStyleSheet("background-color: #4CAF50; color: white;")
+        self.bt_enviar.setStyleSheet(button_style)
         self.bt_enviar.setFont(montserrat_bold)
         self.input_layout.addWidget(self.bt_enviar)
 
@@ -607,30 +542,31 @@ class TelaChat_Gerente(QMainWindow):
     def receber_mensagens(self, usuario_socket):
         while True:
             try:
-                messagem = usuario_socket.recv(1024).decode('utf-8')
-                if messagem:
-                    self.exibir_mensagem(messagem)
+                mensagem = usuario_socket.recv(1024).decode("utf-8")
+                if mensagem:
+                    self.exibir_mensagem(mensagem, enviado=False)
             except:
                 print("[ERRO] Conexão com o servidor perdida.")
                 usuario_socket.close()
                 break
 
-    def exibir_mensagem(self, mensagem):
-        """Exibir mensagens recebidas na caixa de mensagens."""
-        current_text = self.messages_box.text()
-        self.messages_box.setText(current_text + "\n" + mensagem)
+    def exibir_mensagem(self, mensagem, enviado):
+        """Exibir mensagens na caixa de mensagens."""
+        cor = "#003d79" if enviado else "black"
+        self.messages_box.append(f'<p style="color: {cor};">{mensagem}</p>')
 
     def enviar_mensagem(self):
         """Enviar mensagem digitada pelo usuário."""
-        messagem = self.message_input.text()
-        if messagem.lower() == 'sair':
+        mensagem = self.message_input.text()
+        if mensagem.lower() == "sair":
             print("[DESCONECTANDO] Encerrando a conexão.")
             self.usuario_socket.close()
             self.close()  # Fecha a janela
-        else:
-            self.usuario_socket.send(messagem.encode('utf-8'))
+        elif mensagem:
+            self.usuario_socket.send(mensagem.encode("utf-8"))
+            self.exibir_mensagem(mensagem, enviado=True)
             self.message_input.clear()  # Limpa o campo de entrada
-    
+
 class TelaVoos(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -888,6 +824,7 @@ class TelaAvioes(QMainWindow):
         self.tela_listar_aviao = TelaAvioes_Listar()
         self.tela_listar_aviao.show()
     
+
 class TelaVoos_Cadastrar(QMainWindow):
     def __init__(self, cadastro_voos):
         super().__init__()
@@ -923,10 +860,10 @@ class TelaVoos_Cadastrar(QMainWindow):
                 padding: 10px;
             }
             QPushButton:hover {
-                background-color: #ffcccc;  /* Vermelho claro /
+                background-color: #ffcccc;
             }
             QPushButton:pressed {
-                background-color: #cce7ff;  / Azul claro */
+                background-color: #cce7ff;
             }
         """
 
@@ -964,8 +901,24 @@ class TelaVoos_Cadastrar(QMainWindow):
         self.form_layout.setContentsMargins(50, 20, 50, 0)
         self.form_layout.setSpacing(20)
 
+        self.nome_aviao_input = QLineEdit(self)
+        self.nome_aviao_input.setPlaceholderText("Sigla do Avião")
+        self.nome_aviao_input.setStyleSheet(line_edit_style)
+        self.form_layout.addWidget(self.nome_aviao_input)
+
+        self.bt_buscar_aviao = QPushButton("Buscar Avião")
+        self.bt_buscar_aviao.setStyleSheet(button_style)
+        self.bt_buscar_aviao.setFont(montserrat_bold)
+        self.bt_buscar_aviao.clicked.connect(self.buscar_aviao)
+        self.form_layout.addWidget(self.bt_buscar_aviao)
+
+        self.assentos_label = QLabel("Quantidade de Assentos: Não informado")
+        self.assentos_label.setFont(QFont("Arial", 12))
+        self.assentos_label.setStyleSheet("color: #333;")
+        self.form_layout.addWidget(self.assentos_label)
+
         self.sigla_input = QLineEdit(self)
-        self.sigla_input.setPlaceholderText("Sigla")
+        self.sigla_input.setPlaceholderText("Sigla do Voo")
         self.sigla_input.setStyleSheet(line_edit_style)
         self.form_layout.addWidget(self.sigla_input)
 
@@ -984,11 +937,6 @@ class TelaVoos_Cadastrar(QMainWindow):
         self.modelo_input.setStyleSheet(line_edit_style)
         self.form_layout.addWidget(self.modelo_input)
 
-        self.assentos_input = QLineEdit(self)
-        self.assentos_input.setPlaceholderText("Quantidade de Assentos")
-        self.assentos_input.setStyleSheet(line_edit_style)
-        self.form_layout.addWidget(self.assentos_input)
-
         self.layout.addWidget(self.form_widget)
 
         # Contêiner 3: Botões
@@ -1004,35 +952,54 @@ class TelaVoos_Cadastrar(QMainWindow):
         self.bt_cadastrar.setFixedSize(button_width, button_height)
         self.bt_cadastrar.setStyleSheet(button_style)
         self.bt_cadastrar.setFont(montserrat_bold)
-        self.bt_cadastrar.clicked.connect(self.cadastrar_voo)  # Conecta ao método de cadastro
+        self.bt_cadastrar.clicked.connect(self.cadastrar_voo)
         self.buttons_layout.addWidget(self.bt_cadastrar, alignment=Qt.AlignCenter)
 
         self.bt_voltar = QPushButton("Voltar")
         self.bt_voltar.setFixedSize(button_width, button_height)
         self.bt_voltar.setStyleSheet(button_style)
         self.bt_voltar.setFont(montserrat_bold)
-        self.bt_voltar.clicked.connect(self.close)  # Fecha a janela
+        self.bt_voltar.clicked.connect(self.close)
         self.buttons_layout.addWidget(self.bt_voltar, alignment=Qt.AlignCenter)
 
         self.layout.addWidget(self.buttons_widget)
 
+    def buscar_aviao(self):
+        nome_aviao = self.nome_aviao_input.text()
+        if not nome_aviao:
+            QMessageBox.warning(self, "Erro", "Informe o nome do avião.")
+            return
+
+        quantidade_assentos = self.cadastro_voos.buscar_assentos_por_aviao(nome_aviao)
+        if quantidade_assentos is None:
+            QMessageBox.warning(self, "Erro", f"Avião com nome '{nome_aviao}' não encontrado.")
+            self.assentos_label.setText("Quantidade de Assentos: Não informado")
+        else:
+            self.assentos_label.setText(f"Quantidade de Assentos: {quantidade_assentos}")
+
     def cadastrar_voo(self):
-        sigla = self.sigla_input.text()
+        sigla_voo = self.sigla_input.text()
         origem = self.origem_input.text()
         destino = self.destino_input.text()
         modelo = self.modelo_input.text()
-        assentos = self.assentos_input.text()  # Novo campo
+        nome_aviao = self.nome_aviao_input.text()
 
-        if not sigla or not origem or not destino or not modelo or not assentos:
+        # Validar se todos os campos estão preenchidos
+        if not sigla_voo or not origem or not destino or not modelo or not nome_aviao:
             QMessageBox.warning(self, "Erro", "Todos os campos devem ser preenchidos.")
             return
 
-        if not assentos.isdigit():
-            QMessageBox.warning(self, "Erro", "Quantidade de assentos deve ser um número.")
+        # Verificar se o avião existe no cadastro
+        quantidade_assentos = self.cadastro_voos.buscar_assentos_por_aviao(nome_aviao)
+        if quantidade_assentos is None:
+            QMessageBox.warning(self, "Erro", f"Avião com sigla '{nome_aviao}' não encontrado.")
             return
 
-        sucesso, mensagem = self.cadastro_voos.cadastrar_voo(sigla, origem, destino, modelo, int(assentos))
+        # Realizar o cadastro do voo
+        sucesso, mensagem = self.cadastro_voos.cadastrar_voo(sigla_voo, origem, destino, modelo, quantidade_assentos)
         QMessageBox.information(self, "Resultado", mensagem)
+
+
 
 class TelaAvioes_Cadastrar(QMainWindow):
     def __init__(self):
@@ -1041,8 +1008,8 @@ class TelaAvioes_Cadastrar(QMainWindow):
         self.setFixedSize(1000, 600)
         self.setStyleSheet("background-color: white;")
 
-        # Instância da classe MetodosGerente
-        self.gerente = MetodosGerente()
+        # Instância da classe MetodosAvioes
+        self.gerente = MetodosAvioes()
 
         # Carregar a fonte Montserrat
         if os.path.exists(font_path):
@@ -1138,7 +1105,7 @@ class TelaAvioes_Cadastrar(QMainWindow):
             print("Preencha todos os campos corretamente.")
             return
 
-        # Chamando o método de cadastro da classe MetodosGerente
+        # Chamando o método de cadastro da classe MetodosAvioes
         sucesso = self.gerente.cadastrar_aviao(sigla, modelo, int(assentos))
 
         if sucesso:
@@ -1469,7 +1436,7 @@ class TelaAvioes_Alterar(QMainWindow):
             QMessageBox.warning(self, "Atenção", "Digite a sigla do avião.")
             return
 
-        metodos_gerente = MetodosGerente()
+        metodos_gerente = MetodosAvioes()
         aviao = metodos_gerente.buscar_aviao_por_sigla(sigla)
 
         if aviao:
@@ -1494,7 +1461,7 @@ class TelaAvioes_Alterar(QMainWindow):
             QMessageBox.warning(self, "Erro", "Quantidade de assentos deve ser um número válido.")
             return
 
-        metodos_gerente = MetodosGerente()
+        metodos_gerente = MetodosAvioes()
         sucesso = metodos_gerente.alterar_aviao(sigla, novo_modelo, nova_qtd_assentos)
 
         if sucesso:
@@ -1757,7 +1724,7 @@ class TelaAvioes_Remover(QMainWindow):
             QMessageBox.warning(self, "Atenção", "Digite a sigla do avião.")
             return
 
-        metodos_gerente = MetodosGerente()
+        metodos_gerente = MetodosAvioes()
         aviao = metodos_gerente.buscar_aviao_por_sigla(sigla)
 
         if aviao:
@@ -1782,7 +1749,7 @@ class TelaAvioes_Remover(QMainWindow):
         )
 
         if resposta == QMessageBox.Yes:
-            metodos_gerente = MetodosGerente()
+            metodos_gerente = MetodosAvioes()
             sucesso = metodos_gerente.excluir_aviao(sigla)
 
             if sucesso:
@@ -1983,7 +1950,7 @@ class TelaAvioes_Listar(QMainWindow):
     def carregar_lista_avioes(self):
         """Carrega a lista de aviões cadastrados e exibe na interface."""
         try:
-            metodos_gerente = MetodosGerente()
+            metodos_gerente = MetodosAvioes()
             avioes = metodos_gerente.listar_avioes()
             if avioes:
                 info_text = "ID | Sigla | Modelo | Assentos\n"
@@ -2164,6 +2131,7 @@ class TelaAtendente(QMainWindow):
 
         button_layout.addWidget(self.bt_clientes)
         button_layout.addWidget(self.bt_reservas)
+        button_layout.addWidget(self.bt_chat)
         button_layout.addWidget(self.bt_sair)
 
         # Espaçador abaixo dos botões
@@ -2197,7 +2165,6 @@ class TelaAtendente(QMainWindow):
     def mostrar_tela_chat_atendente(self):
         self.tela_chat_atendente = TelaChat_Atendente()
         self.tela_chat_atendente.show()
-
 
 class TelaChat_Atendente(QMainWindow):
     def __init__(self):
@@ -2248,15 +2215,12 @@ class TelaChat_Atendente(QMainWindow):
         self.messages_layout.setContentsMargins(50, 20, 50, 0)
         self.messages_layout.setSpacing(10)
 
-        # Caixa para as mensagens (usando QLabel dentro de um QScrollArea)
-        self.scroll_area = QScrollArea(self)
-        self.scroll_area.setWidgetResizable(True)
-
-        self.messages_box = QLabel()
+        # Caixa para as mensagens (usando QTextEdit)
+        self.messages_box = QTextEdit()
+        self.messages_box.setReadOnly(True)
         self.messages_box.setStyleSheet("background-color: #f5f5f5; padding: 15px; border-radius: 10px; border: 1px solid #ccc; height: 300px;")
-        self.scroll_area.setWidget(self.messages_box)
-        self.messages_layout.addWidget(self.scroll_area)
-        
+        self.messages_layout.addWidget(self.messages_box)
+
         self.layout.addWidget(self.messages_widget)
 
         # Contêiner 3: Campo de mensagem e botão
@@ -2274,7 +2238,7 @@ class TelaChat_Atendente(QMainWindow):
         # Botão de enviar
         self.bt_enviar = QPushButton("Enviar")
         self.bt_enviar.setFixedSize(100, 40)
-        self.bt_enviar.setStyleSheet("background-color: #4CAF50; color: white;")
+        self.bt_enviar.setStyleSheet(button_style)
         self.bt_enviar.setFont(montserrat_bold)
         self.input_layout.addWidget(self.bt_enviar)
 
@@ -2294,30 +2258,30 @@ class TelaChat_Atendente(QMainWindow):
     def receber_mensagens(self, usuario_socket):
         while True:
             try:
-                messagem = usuario_socket.recv(1024).decode('utf-8')
-                if messagem:
-                    self.exibir_mensagem(messagem)
+                mensagem = usuario_socket.recv(1024).decode("utf-8")
+                if mensagem:
+                    self.exibir_mensagem(mensagem, enviado=False)
             except:
                 print("[ERRO] Conexão com o servidor perdida.")
                 usuario_socket.close()
                 break
 
-    def exibir_mensagem(self, mensagem):
-        """Exibir mensagens recebidas na caixa de mensagens."""
-        current_text = self.messages_box.text()
-        self.messages_box.setText(current_text + "\n" + mensagem)
+    def exibir_mensagem(self, mensagem, enviado):
+        """Exibir mensagens na caixa de mensagens."""
+        cor = "#003d79" if enviado else "black"
+        self.messages_box.append(f'<p style="color: {cor};">{mensagem}</p>')
 
     def enviar_mensagem(self):
         """Enviar mensagem digitada pelo usuário."""
-        messagem = self.message_input.text()
-        if messagem.lower() == 'sair':
+        mensagem = self.message_input.text()
+        if mensagem.lower() == "sair":
             print("[DESCONECTANDO] Encerrando a conexão.")
             self.usuario_socket.close()
             self.close()  # Fecha a janela
-        else:
-            self.usuario_socket.send(messagem.encode('utf-8'))
+        elif mensagem:
+            self.usuario_socket.send(mensagem.encode("utf-8"))
+            self.exibir_mensagem(mensagem, enviado=True)
             self.message_input.clear()  # Limpa o campo de entrada
-
 
 class TelaPassageiros(QMainWindow):
     def __init__(self):
@@ -3345,3 +3309,5 @@ if __name__ == "__main__":
     tela = Tela()
     tela.show()
     sys.exit(app.exec_())
+
+    import psycopg2

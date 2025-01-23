@@ -2,7 +2,7 @@ import socket
 import threading
 
 HOST = '127.0.0.1'
-PORTA = 12345
+PORTA = 5555
 MAXUSUARIOS = 3
 
 usuarios = {}
@@ -57,7 +57,7 @@ def mensagem_privada(transmissor, nome_destino, message):
     nome_transmissor = usuarios[transmissor]
     for usuario_socket, usuario_name in usuarios.items():
         if usuario_name == nome_destino:
-            usuario_socket.send(f"[PRIVADO de {nome_transmissor}]: {message}".encode('utf-8'))
+            usuario_socket.send(f"@{nome_transmissor}: {message}".encode('utf-8'))
             return
     transmissor.send(f"Usuário '{nome_destino}' não encontrado.".encode('utf-8'))
 
@@ -67,7 +67,7 @@ def iniciar_servidor():
     servidor.bind((HOST, PORTA))
     servidor.listen(MAXUSUARIOS)
     rodando = True
-    print(f"[INICIADO] Servidor escutando em {HOST}:{PORTA}")
+    print(f"\n[INICIADO] Servidor escutando em {HOST}:{PORTA}")
 
     while rodando:
         try:
