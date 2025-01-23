@@ -824,6 +824,7 @@ class TelaAvioes(QMainWindow):
         self.tela_listar_aviao = TelaAvioes_Listar()
         self.tela_listar_aviao.show()
     
+
 class TelaVoos_Cadastrar(QMainWindow):
     def __init__(self, cadastro_voos):
         super().__init__()
@@ -859,10 +860,10 @@ class TelaVoos_Cadastrar(QMainWindow):
                 padding: 10px;
             }
             QPushButton:hover {
-                background-color: #ffcccc;  /* Vermelho claro /
+                background-color: #ffcccc;
             }
             QPushButton:pressed {
-                background-color: #cce7ff;  / Azul claro */
+                background-color: #cce7ff;
             }
         """
 
@@ -900,8 +901,24 @@ class TelaVoos_Cadastrar(QMainWindow):
         self.form_layout.setContentsMargins(50, 20, 50, 0)
         self.form_layout.setSpacing(20)
 
+        self.nome_aviao_input = QLineEdit(self)
+        self.nome_aviao_input.setPlaceholderText("Sigla do Avião")
+        self.nome_aviao_input.setStyleSheet(line_edit_style)
+        self.form_layout.addWidget(self.nome_aviao_input)
+
+        self.bt_buscar_aviao = QPushButton("Buscar Avião")
+        self.bt_buscar_aviao.setStyleSheet(button_style)
+        self.bt_buscar_aviao.setFont(montserrat_bold)
+        self.bt_buscar_aviao.clicked.connect(self.buscar_aviao)
+        self.form_layout.addWidget(self.bt_buscar_aviao)
+
+        self.assentos_label = QLabel("Quantidade de Assentos: Não informado")
+        self.assentos_label.setFont(QFont("Arial", 12))
+        self.assentos_label.setStyleSheet("color: #333;")
+        self.form_layout.addWidget(self.assentos_label)
+
         self.sigla_input = QLineEdit(self)
-        self.sigla_input.setPlaceholderText("Sigla")
+        self.sigla_input.setPlaceholderText("Sigla do Voo")
         self.sigla_input.setStyleSheet(line_edit_style)
         self.form_layout.addWidget(self.sigla_input)
 
@@ -920,11 +937,6 @@ class TelaVoos_Cadastrar(QMainWindow):
         self.modelo_input.setStyleSheet(line_edit_style)
         self.form_layout.addWidget(self.modelo_input)
 
-        self.assentos_input = QLineEdit(self)
-        self.assentos_input.setPlaceholderText("Quantidade de Assentos")
-        self.assentos_input.setStyleSheet(line_edit_style)
-        self.form_layout.addWidget(self.assentos_input)
-
         self.layout.addWidget(self.form_widget)
 
         # Contêiner 3: Botões
@@ -940,35 +952,54 @@ class TelaVoos_Cadastrar(QMainWindow):
         self.bt_cadastrar.setFixedSize(button_width, button_height)
         self.bt_cadastrar.setStyleSheet(button_style)
         self.bt_cadastrar.setFont(montserrat_bold)
-        self.bt_cadastrar.clicked.connect(self.cadastrar_voo)  # Conecta ao método de cadastro
+        self.bt_cadastrar.clicked.connect(self.cadastrar_voo)
         self.buttons_layout.addWidget(self.bt_cadastrar, alignment=Qt.AlignCenter)
 
         self.bt_voltar = QPushButton("Voltar")
         self.bt_voltar.setFixedSize(button_width, button_height)
         self.bt_voltar.setStyleSheet(button_style)
         self.bt_voltar.setFont(montserrat_bold)
-        self.bt_voltar.clicked.connect(self.close)  # Fecha a janela
+        self.bt_voltar.clicked.connect(self.close)
         self.buttons_layout.addWidget(self.bt_voltar, alignment=Qt.AlignCenter)
 
         self.layout.addWidget(self.buttons_widget)
 
+    def buscar_aviao(self):
+        nome_aviao = self.nome_aviao_input.text()
+        if not nome_aviao:
+            QMessageBox.warning(self, "Erro", "Informe o nome do avião.")
+            return
+
+        quantidade_assentos = self.cadastro_voos.buscar_assentos_por_aviao(nome_aviao)
+        if quantidade_assentos is None:
+            QMessageBox.warning(self, "Erro", f"Avião com nome '{nome_aviao}' não encontrado.")
+            self.assentos_label.setText("Quantidade de Assentos: Não informado")
+        else:
+            self.assentos_label.setText(f"Quantidade de Assentos: {quantidade_assentos}")
+
     def cadastrar_voo(self):
-        sigla = self.sigla_input.text()
+        sigla_voo = self.sigla_input.text()
         origem = self.origem_input.text()
         destino = self.destino_input.text()
         modelo = self.modelo_input.text()
-        assentos = self.assentos_input.text()  # Novo campo
+        nome_aviao = self.nome_aviao_input.text()
 
-        if not sigla or not origem or not destino or not modelo or not assentos:
+        # Validar se todos os campos estão preenchidos
+        if not sigla_voo or not origem or not destino or not modelo or not nome_aviao:
             QMessageBox.warning(self, "Erro", "Todos os campos devem ser preenchidos.")
             return
 
-        if not assentos.isdigit():
-            QMessageBox.warning(self, "Erro", "Quantidade de assentos deve ser um número.")
+        # Verificar se o avião existe no cadastro
+        quantidade_assentos = self.cadastro_voos.buscar_assentos_por_aviao(nome_aviao)
+        if quantidade_assentos is None:
+            QMessageBox.warning(self, "Erro", f"Avião com sigla '{nome_aviao}' não encontrado.")
             return
 
-        sucesso, mensagem = self.cadastro_voos.cadastrar_voo(sigla, origem, destino, modelo, int(assentos))
+        # Realizar o cadastro do voo
+        sucesso, mensagem = self.cadastro_voos.cadastrar_voo(sigla_voo, origem, destino, modelo, quantidade_assentos)
         QMessageBox.information(self, "Resultado", mensagem)
+
+
 
 class TelaAvioes_Cadastrar(QMainWindow):
     def __init__(self):
@@ -977,8 +1008,8 @@ class TelaAvioes_Cadastrar(QMainWindow):
         self.setFixedSize(1000, 600)
         self.setStyleSheet("background-color: white;")
 
-        # Instância da classe MetodosGerente
-        self.gerente = MetodosGerente()
+        # Instância da classe MetodosAvioes
+        self.gerente = MetodosAvioes()
 
         # Carregar a fonte Montserrat
         if os.path.exists(font_path):
@@ -1074,7 +1105,7 @@ class TelaAvioes_Cadastrar(QMainWindow):
             print("Preencha todos os campos corretamente.")
             return
 
-        # Chamando o método de cadastro da classe MetodosGerente
+        # Chamando o método de cadastro da classe MetodosAvioes
         sucesso = self.gerente.cadastrar_aviao(sigla, modelo, int(assentos))
 
         if sucesso:
@@ -1405,7 +1436,7 @@ class TelaAvioes_Alterar(QMainWindow):
             QMessageBox.warning(self, "Atenção", "Digite a sigla do avião.")
             return
 
-        metodos_gerente = MetodosGerente()
+        metodos_gerente = MetodosAvioes()
         aviao = metodos_gerente.buscar_aviao_por_sigla(sigla)
 
         if aviao:
@@ -1430,7 +1461,7 @@ class TelaAvioes_Alterar(QMainWindow):
             QMessageBox.warning(self, "Erro", "Quantidade de assentos deve ser um número válido.")
             return
 
-        metodos_gerente = MetodosGerente()
+        metodos_gerente = MetodosAvioes()
         sucesso = metodos_gerente.alterar_aviao(sigla, novo_modelo, nova_qtd_assentos)
 
         if sucesso:
@@ -1693,7 +1724,7 @@ class TelaAvioes_Remover(QMainWindow):
             QMessageBox.warning(self, "Atenção", "Digite a sigla do avião.")
             return
 
-        metodos_gerente = MetodosGerente()
+        metodos_gerente = MetodosAvioes()
         aviao = metodos_gerente.buscar_aviao_por_sigla(sigla)
 
         if aviao:
@@ -1718,7 +1749,7 @@ class TelaAvioes_Remover(QMainWindow):
         )
 
         if resposta == QMessageBox.Yes:
-            metodos_gerente = MetodosGerente()
+            metodos_gerente = MetodosAvioes()
             sucesso = metodos_gerente.excluir_aviao(sigla)
 
             if sucesso:
@@ -1919,7 +1950,7 @@ class TelaAvioes_Listar(QMainWindow):
     def carregar_lista_avioes(self):
         """Carrega a lista de aviões cadastrados e exibe na interface."""
         try:
-            metodos_gerente = MetodosGerente()
+            metodos_gerente = MetodosAvioes()
             avioes = metodos_gerente.listar_avioes()
             if avioes:
                 info_text = "ID | Sigla | Modelo | Assentos\n"
