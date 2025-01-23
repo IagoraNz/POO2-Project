@@ -614,16 +614,6 @@ class CadastroClientes:
         except Exception as e:
             return False, f"Erro ao cadastrar cliente: {str(e)}"
 
-    # def listar_clientes(self):
-    #     """Retorna uma lista com todos os clientes cadastrados."""
-    #     try:
-    #         with self.conn.cursor() as cur:
-    #             cur.execute("SELECT id, nome, cpf, telefone FROM clientes;")
-    #             clientes = cur.fetchall()
-    #         return clientes
-    #     except Exception as e:
-    #         return []
-
     def buscar_cliente_por_cpf(self, cpf: str) -> tuple:
         """Busca um cliente pelo CPF."""
         try:
@@ -710,16 +700,18 @@ class CadastroVoos:
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
-                    sql.SQL('''
-                        INSERT INTO voos (sigla, origem, destino, modelo_aviao, quantidade_assentos)
-                        VALUES (%s, %s, %s, %s, %s)
-                    '''), 
+                    '''
+                    INSERT INTO voos (sigla, origem, destino, modelo_aviao, quantidade_assentos)
+                    VALUES (%s, %s, %s, %s, %s)
+                    ''',
                     (sigla, origem, destino, modelo_aviao, quantidade_assentos)
                 )
                 self.conn.commit()
             return True, "Voo cadastrado com sucesso."
         except Exception as e:
             return False, f"Erro ao cadastrar voo: {str(e)}"
+
+
 
     def listar_voos(self) -> list:
         """Retorna uma lista com todos os voos cadastrados."""
@@ -781,6 +773,20 @@ class CadastroVoos:
                     return False, "Voo não encontrado."
         except Exception as e:
             return False, f"Erro ao alterar voo: {str(e)}"
+    
+    def buscar_assentos_por_aviao(self, sigla_aviao: str) -> int:
+        """Busca a quantidade de assentos de um avião pelo campo sigla."""
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    "SELECT assentos FROM avioes WHERE sigla = %s;",
+                    (sigla_aviao,)
+                )
+                result = cur.fetchone()
+            return result[0] if result else None
+        except Exception as e:
+            return None
+
 
 class BackendReservas:
     def __init__(self):
@@ -927,7 +933,8 @@ class BackendRemoverReservas:
         self.cur.close()
         self.conn.close()
 
-class MetodosGerente:
+
+class MetodosAvioes:
     def __init__(self):
         try:
             self.conn = psycopg2.connect(
@@ -983,20 +990,19 @@ class MetodosGerente:
         except Exception as e:
             return []
 
-    def buscar_aviao_por_sigla(self, sigla: str) -> tuple:
-        """Busca um avião pela sigla."""
+    def buscar_aviao_por_nome(self, modelo: str) -> tuple:
+        """Busca um avião pelo modelo."""
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
-                    "SELECT id, sigla, modelo, assentos FROM avioes WHERE sigla = %s;",
-                    (sigla,)
+                    "SELECT id, sigla, modelo, assentos FROM avioes WHERE modelo = %s;",
+                    (modelo,)
                 )
                 aviao = cur.fetchone()
-            if aviao:
-                return aviao
-            return None
+            return aviao
         except Exception as e:
             return None
+
 
     def excluir_aviao(self, sigla: str) -> tuple:
         """Exclui um avião pela sigla."""
