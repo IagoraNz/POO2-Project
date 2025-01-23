@@ -1149,12 +1149,87 @@ class BackendRemoverReservas:
         self.cur.close()
         self.conn.close()
 
+class BackendMarcarVoo:
+    """
+    Classe para marcar um voo e inverter origem e destino no banco de dados.
+    
+    Atributos:
+        conn (psycopg2.connection): Conexão com o banco de dados.
+        cur (psycopg2.cursor): Cursor para executar comandos SQL.
+    """
+    def __init__(self):
+        """ 
+        Inicializa a conexão com o banco de dados.
+
+        Raises:
+            Exception: Erro ao conectar ao banco de dados.
+        """
+        try:
+            self.conn = psycopg2.connect(
+                dbname='credenciais',
+                user='poodois',
+                password='1234',
+                host='localhost',
+                port=5432
+            )
+            self.cur = self.conn.cursor()
+        except Exception as e:
+            print(f"Erro ao conectar ao banco de dados: {e}")
+
+    def marcar_voo(self, sigla: str) -> tuple:
+        """
+        Marca um voo e inverte origem e destino no banco de dados.
+        
+        Args:
+            sigla: (str) Sigla do voo a ser marcado.
+            
+        Returns:
+            tuple: (bool, str) Um par, onde o bool indica sucesso (True) ou falha (False), 
+            e a string contém uma mensagem descritiva.
+        """
+        try:
+            # Verificar se o voo existe
+            self.cur.execute(
+                "SELECT origem, destino FROM voos WHERE sigla = %s;",
+                (sigla,)
+            )
+            result = self.cur.fetchone()
+
+            if result is None:
+                return False, "Voo não encontrado."
+
+            origem, destino = result
+
+            # Inverter origem e destino
+            self.cur.execute(
+                "UPDATE voos SET origem = %s, destino = %s WHERE sigla = %s;",
+                (destino, origem, sigla)
+            )
+
+            # Liberar todos os assentos reservados
+            self.cur.execute(
+                "UPDATE voos SET quantidade_assentos = (SELECT assentos FROM avioes WHERE sigla = (SELECT modelo_aviao FROM voos WHERE sigla = %s)) WHERE sigla = %s;",
+                (sigla, sigla)
+            )
+
+            self.conn.commit()
+            return True, "Voo marcado com sucesso."
+        except Exception as e:
+            return False, f"Erro ao marcar voo: {str(e)}"
+
+    def close_connection(self) -> None:
+        """
+        Fecha a conexão com o banco de dados.
+        """
+        self.cur.close()
+        self.conn.close()
+
 class MetodosGerente:
     """
     Classe responsável por gerenciar aviões em um banco de dados PostgreSQL.
     
     Atributos:
-        conn: Conexão com o banco de dados PostgreSQL.
+        conn (psycopg2.connection): Conexão com o banco de dados PostgreSQL.
     """
     def __init__(self):
         """
