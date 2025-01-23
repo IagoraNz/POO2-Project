@@ -1186,10 +1186,20 @@ class CadastroVoos:
 
 class BackendReservas:
     """
-    Classe responsável por gerenciar reservas de voos em um banco de dados PostgreSQL.
+    Summary:
+        Classe responsável por gerenciar reservas de voos em um banco de dados PostgreSQL.
+        
+    Attributes:
+        conn: object
+            Conexão com o banco de dados.
+            
+    Methods:
+        __init__: Inicializa a classe BackendReservas.
+        criar_tabela: Cria a tabela de reservas no banco de dados.
+        reservar_voo: Realiza
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Inicializa a conexão com o banco de dados e cria a tabela de voos, se não existir.
         """
@@ -1206,9 +1216,19 @@ class BackendReservas:
         except Exception as e:
             print(f"Erro ao conectar ao banco de dados: {e}")
 
-    def create_table(self):
+    def create_table(self) -> None:
         """
-        Cria a tabela de voos no banco de dados, caso ela ainda não exista.
+        Summary:
+            Cria a tabela de voos no banco de dados, caso ela ainda não exista.
+            
+        Args:
+            None
+            
+        Returns:
+            None
+            
+        Raises:
+            Exception: Caso ocorra um erro ao criar a tabela.
         """
         try:
             self.cur.execute('''
@@ -1225,12 +1245,19 @@ class BackendReservas:
         except Exception as e:
             print(f"Erro ao criar tabela: {e}")
 
-    def listar_voos(self) -> list[tuple]:
+    def listar_voos(self) -> list:
         """
-        Lista todos os voos disponíveis no banco de dados.
+        Summary:
+            Lista todos os voos disponíveis no banco de dados.
+            
+        Args:
+
 
         Returns:
-            list: Lista de tuplas contendo os dados dos voos.
+            list (tuple): Lista de tuplas contendo os dados dos voos.
+            
+        Raises:
+            Exception: Caso ocorra um erro ao executar a query.
         """
         try:
             self.cur.execute("SELECT sigla, origem, destino, modelo_aviao, quantidade_assentos FROM voos;")
@@ -1242,7 +1269,8 @@ class BackendReservas:
 
     def reservar_voo(self, sigla: str, assento: int) -> str:
         """
-        Realiza a reserva de um assento para um voo específico.
+        Summary:
+            Realiza a reserva de um assento para um voo específico.
 
         Args:
             sigla: (str) Sigla do voo a ser reservado.
@@ -1250,6 +1278,9 @@ class BackendReservas:
 
         Returns:
             str: Mensagem indicando o status da reserva.
+            
+        Raises:
+            Exception: Caso ocorra um erro ao reservar o voo.
         """
         try:
             # Verificar se o voo existe e há assentos disponíveis
@@ -1278,25 +1309,42 @@ class BackendReservas:
             print(f"Erro ao reservar voo: {e}")
             return "Erro ao realizar a reserva."
 
-    def close_connection(self):
+    def close_connection(self) -> None:
         """
-        Fecha a conexão com o banco de dados.
+        Summary:
+            Fecha a conexão com o banco de dados.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         self.cur.close()
         self.conn.close()
 
-
 class BackendRemoverReservas:
     """
-    Classe para gerenciar remoção de reservas de voos no banco de dados.
+    Summary:
+        Classe para gerenciar remoção de reservas de voos no banco de dados.
     
-    Atributos:
+    Attributes:
         conn (psycopg2.connection): Conexão com o banco de dados.
         cur (psycopg2.cursor): Cursor para executar comandos SQL.
+        
+    Methods:
+        __init__: Inicializa a classe BackendRemoverReservas.
+        create_table: Cria a tabela de voos no banco de dados.
+        listar_voos: Lista todos os voos cadastrados no banco de dados.
+        remover_reserva_voo: Remove
     """
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Inicializa a conexão com o banco de dados e cria a tabela de voos, se não existir.
+        Summary:
+            Inicializa a conexão com o banco de dados e cria a tabela de voos, se não existir.
+
+        Args:
+            None
 
         Raises:
             Exception: Erro ao conectar ao banco de dados.
@@ -1314,9 +1362,19 @@ class BackendRemoverReservas:
         except Exception as e:
             print(f"Erro ao conectar ao banco de dados: {e}")
 
-    def create_table(self):
+    def create_table(self) -> None:
         """
-        Cria a tabela de voos no banco de dados, caso não exista.
+        Summary:
+            Cria a tabela de voos no banco de dados, caso não exista.
+            
+        Args:
+            None
+            
+        Returns:
+            None
+            
+        Raises:
+            Exception: Erro ao criar a tabela.
         """
         try:
             self.cur.execute('''
@@ -1333,12 +1391,19 @@ class BackendRemoverReservas:
         except Exception as e:
             print(f"Erro ao criar tabela: {e}")
 
-    def listar_voos(self):
+    def listar_voos(self) -> list:
         """
-        Lista todos os voos cadastrados no banco de dados.
+        Summary:
+            Lista todos os voos cadastrados no banco de dados.
+        
+        Args:
+            None
         
         Returns:
             list: Lista de tuplas contendo os dados dos voos (sigla, origem, destino, modelo_aviao, quantidade_assentos).
+        
+        Raises:
+            Exception: Erro ao listar voos.
         """
         try:
             self.cur.execute("SELECT sigla, origem, destino, modelo_aviao, quantidade_assentos FROM voos;")
@@ -1386,24 +1451,44 @@ class BackendRemoverReservas:
             print(f"Erro ao reservar voo: {e}")
             return "Erro ao realizar a reserva."
 
-    def close_connection(self):
+    def close_connection(self) -> None:
         """
-        Fecha a conexão com o banco de dados.
+        Summary:
+            Fecha a conexão com o banco de dados.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         self.cur.close()
         self.conn.close()
 
 class BackendMarcarVoo:
     """
-    Classe para marcar um voo e inverter origem e destino no banco de dados.
+    Summary:
+        Classe para marcar um voo e inverter origem e destino no banco de dados.
     
-    Atributos:
+    Attributes:
         conn (psycopg2.connection): Conexão com o banco de dados.
         cur (psycopg2.cursor): Cursor para executar comandos SQL.
+        
+    Methods:
+        __init__: Inicializa a classe BackendMarcarVoo.
+        marcar_voo: Marca um voo e inverte origem e destino no banco de dados.
+        close_connection: Fecha a conexão com o banco de dados.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         """ 
-        Inicializa a conexão com o banco de dados.
+        Summary:
+            Inicializa a conexão com o banco de dados.
+            
+        Args:
+            None
+            
+        Returns:
+            None
 
         Raises:
             Exception: Erro ao conectar ao banco de dados.
@@ -1422,14 +1507,18 @@ class BackendMarcarVoo:
 
     def marcar_voo(self, sigla: str) -> tuple:
         """
-        Marca um voo e inverte origem e destino no banco de dados.
+        Summary:
+            Marca um voo e inverte origem e destino no banco de dados.
         
         Args:
-            sigla: (str) Sigla do voo a ser marcado.
+            sigla (str): Sigla do voo a ser marcado.
             
         Returns:
-            tuple: (bool, str) Um par, onde o bool indica sucesso (True) ou falha (False), 
+            tuple (bool, str): Um par, onde o bool indica sucesso (True) ou falha (False), 
             e a string contém uma mensagem descritiva.
+            
+        Raises:
+            Exception: Erro ao marcar
         """
         try:
             # Verificar se o voo existe
@@ -1463,21 +1552,45 @@ class BackendMarcarVoo:
 
     def close_connection(self) -> None:
         """
-        Fecha a conexão com o banco de dados.
+        Summary:
+            Fecha a conexão com o banco de dados.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         self.cur.close()
         self.conn.close()
 
 class MetodosGerente:
     """
-    Classe responsável por gerenciar aviões em um banco de dados PostgreSQL.
+    Summary:
+        Classe responsável por gerenciar aviões em um banco de dados PostgreSQL.
     
-    Atributos:
-        conn (psycopg2.connection): Conexão com o banco de dados PostgreSQL.
+    Attributes:
+        conn (psycopg2.connection): Conexão com o banco de dados.
+        
+    Methods:
+        __init__: Inicializa a classe MetodosGerente.
+        criar_tabela: Cria a tabela de aviões no banco de dados.
+        cadastrar_aviao: Insere ou atualiza os dados de um avião no banco de dados.
+        listar_avioes: Lista todos os aviões cadastrados no banco de dados.
+        buscar_aviao_por_sigla: Busca um avião no banco de dados pela sigla.
+        excluir_aviao: Exclui um avião do banco de dados pela sigla.
+        alterar_aviao: Altera os dados de um avião existente no banco de dados.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Inicializa a conexão com o banco de dados e cria a tabela de aviões se ela não existir.
+        Summary:
+            Inicializa a conexão com o banco de dados e cria a tabela de aviões se ela não existir.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         
         Raise:
             ConnectionError: Se ocorrer um erro ao conectar ao banco de dados.
@@ -1495,8 +1608,17 @@ class MetodosGerente:
         except psycopg2.OperationalError as e:
             raise ConnectionError(f"Erro ao conectar ao banco de dados: {e}")
 
-    def criar_tabela(self):
-        """Cria a tabela de aviões caso não exista."""
+    def criar_tabela(self) -> None:
+        """
+        Summary:
+            Cria a tabela de aviões caso não exista.
+        
+        Args:
+            None    
+            
+        Returns:
+            None       
+        """
         with self.conn.cursor() as cur:
             cur.execute('''
                 CREATE TABLE IF NOT EXISTS avioes (
@@ -1508,19 +1630,21 @@ class MetodosGerente:
             ''')
             self.conn.commit()
 
-    def cadastrar_aviao(self, sigla: str, modelo: str, assentos: int) -> tuple[bool|str]:
+    def cadastrar_aviao(self, sigla: str, modelo: str, assentos: int) -> tuple:
         """
-        Insere ou atualiza os dados de um avião no banco de dados.
+        Summary:
+            Insere ou atualiza os dados de um avião no banco de dados.
 
-        Parâmetros:
+        Args:
             sigla: (str) Código único do avião.
             modelo: (str) Modelo do avião.
             assentos: (int) Número de assentos do avião.
 
-        Retorno:
-            tuple[bool, str]: 
-                - `True` e mensagem de sucesso se o avião foi cadastrado ou atualizado com sucesso.
-                - `False` e mensagem de erro em caso de falha.
+        Returns:
+            tuple (bool, str): Um par, onde o bool indica sucesso (True) ou falha (False),
+            
+        Raises:
+            Exception: Erro ao cadastrar avião.
         """
         try:
             with self.conn.cursor() as cur:
@@ -1538,14 +1662,19 @@ class MetodosGerente:
         except Exception as e:
             return False, f"Erro ao cadastrar avião: {str(e)}"
 
-    def listar_avioes(self) -> list[tuple]:
+    def listar_avioes(self) -> list:
         """
-        Retorna uma lista com todos os aviões cadastrados.
+        Summary:
+            Retorna uma lista com todos os aviões cadastrados.
+            
+        Args:
+            None
 
-        Retorno:
-            list[tuple]: Lista contendo os aviões no formato 
-                         (id, sigla, modelo, assentos). 
-                         Retorna uma lista vazia em caso de erro.
+        Returns:
+            list (tuple): Lista de tuplas contendo os dados dos aviões (id, sigla, modelo, assentos).
+            
+        Raises:
+            Exception: Erro ao listar aviões.
         """
         try:
             with self.conn.cursor() as cur:
@@ -1555,16 +1684,19 @@ class MetodosGerente:
         except Exception as e:
             return []
 
-    def buscar_aviao_por_sigla(self, sigla: str) -> tuple | None:
-        """Busca um avião pela sigla.
-        
-         Parâmetros:
+    def buscar_aviao_por_sigla(self, sigla: str) -> tuple:
+        """
+        Summary:
+            Busca um avião no banco de dados pela sigla.
+            
+        Args:
             sigla: (str) Código único do avião.
-
-        Retorno:
-            tuple | None:
-                - Um tupla contendo (id, sigla, modelo, assentos) se o avião for encontrado.
-                - `None` se o avião não existir ou em caso de erro.
+            
+        Returns:
+            tuple: Uma tupla contendo os dados do avião
+            
+        Raises:
+            Exception: Erro ao buscar avião.
         """
         try:
             with self.conn.cursor() as cur:
@@ -1579,15 +1711,20 @@ class MetodosGerente:
         except Exception as e:
             return None
 
-    def excluir_aviao(self, sigla: str) -> tuple[bool, str]:
-        """Exclui um avião pela sigla.
-         Parâmetros:
-            sigla: (str) Código único do avião a ser excluído.
-
-        Retorno:
-            tuple[bool, str]: 
-                - `True` e mensagem de sucesso se o avião foi excluído.
-                - `False` e mensagem de erro ou avião não encontrado.
+    def excluir_aviao(self, sigla: str) -> tuple:
+        """
+        Summary:
+            Exclui um avião do banco de dados pela sigla.
+            
+        Args:
+            sigla: (str) Código único do avião.
+            
+        Returns:
+            tuple (bool, str): Um par, onde o bool indica sucesso (True) ou falha (False),
+            e a string contém uma mensagem descritiva.
+            
+        Raises:
+            Exception: Erro ao excluir avião.
         """
         try:
             with self.conn.cursor() as cur:
@@ -1602,17 +1739,22 @@ class MetodosGerente:
         except Exception as e:
             return False, f"Erro ao excluir avião: {str(e)}"
     
-    def alterar_aviao(self, sigla: str, novo_modelo: str, novos_assentos: int) -> tuple[bool|str]:
-        """Altera os dados de um avião existente no banco de dados.
-            Parâmetros:
-                sigla: (str) Código único do avião.
-                novo_modelo: (str) Novo modelo do avião.
-                novos_assentos: (int) Novo número de assentos.
-
-            Retorno:
-                tuple[bool, str]: 
-                    - `True` e mensagem de sucesso se o avião foi atualizado.
-                    - `False` e mensagem de erro ou avião não encontrado.
+    def alterar_aviao(self, sigla: str, novo_modelo: str, novos_assentos: int) -> tuple:
+        """
+        Summary:
+            Altera os dados de um avião existente no banco de dados.
+            
+        Args:
+            sigla: (str) Código único do avião.
+            novo_modelo: (str) Novo modelo do avião.
+            novos_assentos: (int) Novo número de assentos do avião.
+            
+        Returns:
+            tuple (bool, str): Um par, onde o bool indica sucesso (True) ou falha (False),
+            e a string contém uma mensagem descritiva.
+            
+        Raises:
+            Exception: Erro ao alter
         """
         try:
             with self.conn.cursor() as cur:
