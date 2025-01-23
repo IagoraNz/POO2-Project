@@ -990,19 +990,20 @@ class MetodosAvioes:
         except Exception as e:
             return []
 
-    def buscar_aviao_por_nome(self, modelo: str) -> tuple:
-        """Busca um avião pelo modelo."""
+    def buscar_aviao_por_sigla(self, sigla: str) -> tuple:
+        """Busca um avião pela sigla."""
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
-                    "SELECT id, sigla, modelo, assentos FROM avioes WHERE modelo = %s;",
-                    (modelo,)
+                    "SELECT id, sigla, modelo, assentos FROM avioes WHERE sigla = %s;",
+                    (sigla,)
                 )
                 aviao = cur.fetchone()
-            return aviao
+            if aviao:
+                return aviao
+            return None
         except Exception as e:
             return None
-
 
     def excluir_aviao(self, sigla: str) -> tuple:
         """Exclui um avião pela sigla."""
