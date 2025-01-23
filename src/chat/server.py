@@ -12,11 +12,16 @@ usuario_threads = []  # Lista para armazenar threads de usuários
 servidor = None  # Socket do servidor
 rodando = False  # Flag para indicar se o servidor está em execução
 
-
-def atualiza_lista_usuarios():
+def atualiza_lista_usuarios() -> None:
     """
-    Atualiza a lista de usuários conectados e notifica todos os clientes ativos.
-    Remove usuários desconectados da lista.
+    Summary:
+        Atualiza a lista de usuários online para todos os usuários conectados.
+        
+    Args:
+        None
+        
+    Returns:
+        None
     """
     user_list = "Usuários online: " + ", ".join(usuarios.values())
     usuarios_desconectados = []
@@ -30,15 +35,21 @@ def atualiza_lista_usuarios():
     for usuario in usuarios_desconectados:
         del usuarios[usuario]
 
-
-def manter_usuario(usuario_socket, endereco_usuario):
+def manter_usuario(usuario_socket, endereco_usuario) -> None:
     """
-    Gerencia a interação com um usuário conectado.
-    Solicita um nome de usuário, processa mensagens privadas e gerencia desconexões.
+    Summary:
+        Gerencia a interação com um usuário conectado.
+        Solicita um nome de usuário, processa mensagens privadas e gerencia desconexões.
 
     Args:
         usuario_socket (socket.socket): Socket do cliente.
         endereco_usuario (tuple): Endereço IP e porta do cliente.
+        
+    Returns:
+        None
+        
+    Raises:
+        OSError: Erro ao enviar ou receber dados do usuário.
     """
     usuario_socket.send("Escolha um nome de usuário: ".encode('utf-8'))
     usuario_name = usuario_socket.recv(1024).decode('utf-8')
@@ -71,15 +82,18 @@ def manter_usuario(usuario_socket, endereco_usuario):
     usuario_socket.close()
     atualiza_lista_usuarios()
 
-
-def mensagem_privada(transmissor, nome_destino, message):
+def mensagem_privada(transmissor, nome_destino, message) -> None:
     """
-    Envia uma mensagem privada para o destinatário especificado.
+    Summary:
+        Envia uma mensagem privada para o destinatário especificado.
 
     Args:
         transmissor (socket.socket): Socket do cliente que enviou a mensagem.
         nome_destino (str): Nome do usuário destinatário.
         message (str): Conteúdo da mensagem.
+        
+    Returns:
+        None
     """
     nome_transmissor = usuarios[transmissor]
     for usuario_socket, usuario_name in usuarios.items():
@@ -88,10 +102,19 @@ def mensagem_privada(transmissor, nome_destino, message):
             return
     transmissor.send(f"Usuário '{nome_destino}' não encontrado.".encode('utf-8'))
 
-
-def iniciar_servidor():
+def iniciar_servidor() -> None:
     """
-    Inicia o servidor, escutando por novas conexões e gerenciando os usuários conectados.
+    Summary:
+        Inicia o servidor, escutando por novas conexões e gerenciando os usuários conectados.
+        
+    Args:
+        None
+        
+    Returns:
+        None
+        
+    Raises:
+        OSError: Erro ao aceitar novas conexões.
     """
     global servidor, rodando
     servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -115,10 +138,16 @@ def iniciar_servidor():
         except:
             break
 
-
-def stop_servidor():
+def stop_servidor() -> None:
     """
-    Encerra o servidor, desconectando todos os usuários e limpando os recursos.
+    Summary:
+        Encerra o servidor, desconectando todos os usuários e limpando os recursos.
+        
+    Args:
+        None
+        
+    Returns:
+        None
     """
     global rodando
     rodando = False
@@ -132,11 +161,16 @@ def stop_servidor():
         servidor.close()
     print("[ENCERRADO] Servidor foi encerrado.")
 
-
-def main_menu():
+def main_menu() -> None:
     """
-    Exibe o menu principal para controle do servidor.
-    Permite iniciar, encerrar o servidor ou sair do programa.
+    Summary:
+        Exibe o menu principal para controle do servidor. Permite iniciar, encerrar o servidor ou sair do programa.
+        
+    Args:
+        None
+        
+    Returns:
+        None
     """
     while True:
         print("\nMenu:")
@@ -163,6 +197,6 @@ def main_menu():
         else:
             print("Opção inválida. Tente novamente.")
 
-
+# Inicializa o programa
 if __name__ == "__main__":
     main_menu()
