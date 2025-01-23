@@ -1626,7 +1626,7 @@ class TelaVoos_Remover(QMainWindow):
                     cur.execute("SELECT * FROM voos WHERE sigla = %s;", (sigla,))
                     voo = cur.fetchone()
                     if voo:
-                        voo_info = f"Sigla: {voo[0]}\nOrigem: {voo[1]}\nDestino: {voo[2]}\nData: {voo[3]}"
+                        voo_info = f"ID: {voo[0]}\nSigla: {voo[1]}\nOrigem: {voo[2]}\nDestino: {voo[3]}"
                         self.voo_info_label.setText(voo_info)
                     else:
                         self.voo_info_label.setText("Voo não encontrado.")
@@ -1720,6 +1720,7 @@ class TelaAvioes_Remover(QMainWindow):
         self.buscar_button = QPushButton("Buscar Avião")
         self.buscar_button.setFixedSize(200, 50)
         self.buscar_button.setStyleSheet(button_style)
+        self.buscar_button.setFont(montserrat_bold)
         self.buscar_button.clicked.connect(self.buscar_aviao)
         self.sigla_layout.addWidget(self.buscar_button, alignment=Qt.AlignCenter)
 
