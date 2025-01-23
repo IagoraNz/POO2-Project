@@ -779,226 +779,6 @@ class TelaChat_Gerente(QMainWindow):
         """
         Summary:
             Configura o contêiner para exibição das mensagens.
-            
-        Args:
-            None
-            
-        Returns:
-            None
-        """
-        self.messages_widget = QWidget()
-        self.messages_layout = QVBoxLayout(self.messages_widget)
-        self.messages_layout.setContentsMargins(50, 20, 50, 0)
-        self.messages_layout.setSpacing(10)
-
-        self.messages_box = QTextEdit()
-        self.messages_box.setReadOnly(True)
-        self.messages_box.setStyleSheet(
-            "background-color: #f5f5f5; padding: 15px; border-radius: 10px; border: 1px solid #ccc; height: 300px;"
-        )
-        self.messages_layout.addWidget(self.messages_box)
-
-        self.layout.addWidget(self.messages_widget)
-
-    def _configurar_input_e_botao(self, fonte_bold) -> None:
-        """
-        Summary:
-            Configura o campo de entrada e o botão de envio.
-
-        Args:
-            fonte_bold (QFont): Fonte em negrito para o botão de envio.
-            
-        Returns:
-            None
-        """
-        self.input_widget = QWidget()
-        self.input_layout = QHBoxLayout(self.input_widget)
-        self.input_layout.setContentsMargins(50, 20, 50, 0)
-        self.input_layout.setSpacing(10)
-
-        self.message_input = QLineEdit(self)
-        self.message_input.setPlaceholderText("Digite sua mensagem...")
-        self.message_input.setStyleSheet("padding: 10px; border-radius: 10px; border: 1px solid #ccc;")
-        self.input_layout.addWidget(self.message_input)
-
-        self.bt_enviar = QPushButton("Enviar")
-        self.bt_enviar.setFixedSize(100, 40)
-        self.bt_enviar.setStyleSheet(button_style)
-        self.bt_enviar.setFont(fonte_bold)
-        self.input_layout.addWidget(self.bt_enviar)
-
-        self.layout.addWidget(self.input_widget)
-
-    def receber_mensagens(self, usuario_socket) -> None:
-        """
-        Summary:
-            Thread responsável por receber mensagens do servidor.
-
-        Args:
-            usuario_socket (socket): Socket de comunicação com o servidor.
-            
-        Returns:
-            None
-        """
-        while True:
-            try:
-                mensagem = usuario_socket.recv(1024).decode("utf-8")
-                if mensagem:
-                    self.exibir_mensagem(mensagem, enviado=False)
-            except Exception as e:
-                print(f"[ERRO] Conexão com o servidor perdida: {e}")
-                usuario_socket.close()
-                break
-
-    def exibir_mensagem(self, mensagem, enviado) -> None:
-        """
-        Summary:
-            Exibe uma mensagem na caixa de mensagens.
-
-        Args:
-            mensagem (str): Mensagem a ser exibida.
-            enviado (bool): Indica se a mensagem foi enviada pelo usuário.
-            
-        Returns:
-            None
-        """
-        cor = "#003d79" if enviado else "black"
-        self.messages_box.append(f'<p style="color: {cor};">{mensagem}</p>')
-
-    def enviar_mensagem(self) -> None:
-        """
-        Summary:
-            Envia a mensagem digitada pelo usuário ao servidor.
-        
-        Args:
-            None
-            
-        Returns:
-            None    
-        """
-        mensagem = self.message_input.text()
-        if mensagem.lower() == "sair":
-            print("[DESCONECTANDO] Encerrando a conexão.")
-            self.usuario_socket.close()
-            self.close()  # Fecha a janela
-        elif mensagem:
-            self.usuario_socket.send(mensagem.encode("utf-8"))
-            self.exibir_mensagem(mensagem, enviado=True)
-            self.message_input.clear()  # Limpa o campo de entrada
-
-class TelaChat_Gerente(QMainWindow):
-    """
-    Summary:
-        Classe responsável pela tela de chat para o gerente. Esta classe permite ao gerente enviar e receber mensagens em tempo real
-        através de uma conexão socket com o servidor.
-        
-    Attributes:
-        QMainWindow: 
-            Classe base para janelas de aplicativos
-        
-    Methods:
-        _configurar_logo_e_titulo: Configura o contêiner com o logo e o título
-        _configurar_caixa_de_mensagens: Configura o contêiner para exibição das mensagens
-        _configurar_input_e_botao: Configura o campo de entrada e o botão de envio
-        receber_mensagens: Thread responsável por receber mensagens do servidor
-        exibir_mensagem: Exibe uma mensagem na caixa de mensagens
-        enviar_mensagem: Envia a mensagem digitada pelo usuário ao servidor
-    """
-
-    def __init__(self) -> None:
-        """
-        Summary:
-            Inicializa a interface de chat do gerente. Configura o layout principal, componentes visuais (logo, campo de mensagens, botão de envio)
-            e a conexão socket com o servidor.
-            
-        Args:
-            None
-            
-        Returns:
-            None
-        """
-        super().__init__()
-        self.setWindowTitle("Chat - Delta Airlines")
-        self.setFixedSize(1000, 600)
-        self.setStyleSheet("background-color: white;")
-
-        # Carregar a fonte Montserrat ou utilizar Arial como alternativa
-        font_path = "path/to/your/font.ttf"  # Substitua pelo caminho correto da sua fonte
-        if os.path.exists(font_path):
-            QFontDatabase.addApplicationFont(font_path)
-            montserrat_bold = QFont("Montserrat", 14, QFont.Bold)
-        else:
-            montserrat_bold = QFont("Arial", 14, QFont.Bold)
-
-        # Configurar layout principal
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-        self.layout = QVBoxLayout(self.central_widget)
-
-        # Contêiner 1: Logo e título
-        self._configurar_logo_e_titulo(montserrat_bold)
-
-        # Contêiner 2: Caixa de mensagens
-        self._configurar_caixa_de_mensagens()
-
-        # Contêiner 3: Campo de entrada e botão de envio
-        self._configurar_input_e_botao(montserrat_bold)
-
-        # Inicializar conexão socket
-        self.usuario_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            self.usuario_socket.connect((SERVER_HOST, SERVER_PORT))
-        except Exception as e:
-            print(f"[ERRO] Não foi possível conectar ao servidor: {e}")
-            self.close()  # Fecha a janela se não for possível conectar
-
-        # Iniciar thread para receber mensagens
-        self.thread_recebida = threading.Thread(target=self.receber_mensagens, args=(self.usuario_socket,))
-        self.thread_recebida.daemon = True
-        self.thread_recebida.start()
-
-        # Conectar botão de envio
-        self.bt_enviar.clicked.connect(self.enviar_mensagem)
-
-    def _configurar_logo_e_titulo(self, fonte_bold) -> None:
-        """
-        Summary:
-            Configura o contêiner com o logo e o título.
-
-        Args:
-            fonte_bold (QFont): Fonte em negrito para o título.
-            
-        Returns:
-            None
-        """
-        self.logo_widget = QWidget()
-        self.logo_layout = QVBoxLayout(self.logo_widget)
-        self.logo_layout.setContentsMargins(0, 0, 0, 0)
-        self.logo_layout.setSpacing(10)
-
-        # Adiciona o logo
-        self.logo_label = QLabel(self.logo_widget)
-        logo_path = os.path.abspath("./src/images/image.png")
-        if os.path.exists(logo_path):
-            pixmap = QPixmap(logo_path)
-            resized_pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            self.logo_label.setPixmap(resized_pixmap)
-        else:
-            self.logo_label.setText("Imagem não encontrada.")
-        self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)
-
-        # Adiciona o título
-        self.title_label = QLabel("Chat")
-        self.title_label.setFont(fonte_bold)
-        self.title_label.setAlignment(Qt.AlignCenter)
-        self.logo_layout.addWidget(self.title_label)
-
-        self.layout.addWidget(self.logo_widget)
-
-    def _configurar_caixa_de_mensagens(self) -> None:
-        """
-        Summary:
-            Configura o contêiner para exibição das mensagens.
         
         Args:
             None
@@ -1143,6 +923,8 @@ class TelaMarcarVoo_Gerente(QMainWindow):
         else:
             montserrat_bold = QFont("Arial", 14, QFont.Bold)
 
+        # Backend
+        self.backend = BackendMarcarVoo()
 
         # Layout principal
         self.central_widget = QWidget()
@@ -1188,7 +970,7 @@ class TelaMarcarVoo_Gerente(QMainWindow):
         self.bt_marcar.setFixedSize(200, 50)
         self.bt_marcar.setStyleSheet(button_style)
         self.bt_marcar.setFont(montserrat_bold)
-        self.bt_marcar.clicked.connect(self.close)
+        self.bt_marcar.clicked.connect(self.marcar_voo)
         self.buttons_layout.addWidget(self.bt_marcar, alignment=Qt.AlignCenter)
 
         self.bt_voltar = QPushButton("Voltar")
@@ -1199,6 +981,48 @@ class TelaMarcarVoo_Gerente(QMainWindow):
         self.buttons_layout.addWidget(self.bt_voltar, alignment=Qt.AlignCenter)
 
         self.layout.addWidget(self.buttons_widget)
+
+    def marcar_voo(self) -> None:
+        """
+        Summary
+            Lida com o evento de clicar no botão "Marcar Voo".
+            Obtém a sigla do campo de entrada e utiliza o backend para realizar a operação.
+            
+        Args:
+            None
+            
+        Returns:
+            None
+        """
+        sigla = self.sigla_input.text().strip()
+
+        if not sigla:
+            QMessageBox.warning(self, "Erro", "Por favor, insira a sigla do voo.")
+            return
+
+        # Chamar o backend para realizar a operação
+        success, message = self.backend.marcar_voo(sigla)
+
+        if success:
+            QMessageBox.information(self, "Sucesso", message)
+        else:
+            QMessageBox.critical(self, "Erro", message)
+
+        self.sigla_input.clear()
+
+    def closeEvent(self, event) -> None:
+        """
+        Summary:
+            Sobrescreve o evento de fechamento da janela para garantir que a conexão com o banco de dados seja fechada.
+            
+        Args:
+            event (QCloseEvent): Evento de fechamento da janela
+            
+        Returns:
+            None
+        """
+        self.backend.close_connection()
+        super().closeEvent(event)
 
 class TelaVoos(QMainWindow):
     """

@@ -1513,33 +1513,7 @@ class BackendRemoverReservas:
         self.conn.close()
 
 class BackendMarcarVoo:
-    """
-    Summary:
-        Classe para marcar um voo e inverter origem e destino no banco de dados.
-    
-    Attributes:
-        conn (psycopg2.connection): Conexão com o banco de dados.
-        cur (psycopg2.cursor): Cursor para executar comandos SQL.
-        
-    Methods:
-        __init__: Inicializa a classe BackendMarcarVoo.
-        marcar_voo: Marca um voo e inverte origem e destino no banco de dados.
-        close_connection: Fecha a conexão com o banco de dados.
-    """
     def __init__(self) -> None:
-        """ 
-        Summary:
-            Inicializa a conexão com o banco de dados.
-            
-        Args:
-            None
-            
-        Returns:
-            None
-
-        Raises:
-            Exception: Erro ao conectar ao banco de dados.
-        """
         try:
             self.conn = psycopg2.connect(
                 dbname='credenciais',
@@ -1550,27 +1524,22 @@ class BackendMarcarVoo:
             )
             self.cur = self.conn.cursor()
         except Exception as e:
-            print(f"Erro ao conectar ao banco de dados: {e}")
+            raise Exception(f"Erro ao conectar ao banco de dados: {e}")
 
     def marcar_voo(self, sigla: str) -> tuple:
         """
-        Summary:
-            Marca um voo e inverte origem e destino no banco de dados.
-        
+        Marca um voo e inverte origem e destino no banco de dados.
+
         Args:
             sigla (str): Sigla do voo a ser marcado.
-            
+
         Returns:
-            tuple (bool, str): Um par, onde o bool indica sucesso (True) ou falha (False), 
-            e a string contém uma mensagem descritiva.
-            
-        Raises:
-            Exception: Erro ao marcar
+            tuple (bool, str): Indica sucesso (True) ou falha (False) e uma mensagem descritiva.
         """
         try:
             # Verificar se o voo existe
             self.cur.execute(
-                "SELECT origem, destino FROM voos WHERE sigla = %s;",
+                "SELECT origem, destino, modelo_aviao FROM voos WHERE sigla = %s;",
                 (sigla,)
             )
             result = self.cur.fetchone()
@@ -1578,23 +1547,36 @@ class BackendMarcarVoo:
             if result is None:
                 return False, "Voo não encontrado."
 
-            origem, destino = result
+            origem, destino, modelo_aviao = result
+
+            # Obter a quantidade de assentos do avião
+            self.cur.execute(
+                "SELECT assentos FROM avioes WHERE modelo = %s;",
+                (modelo_aviao,)
+            )
+            assentos_result = self.cur.fetchone()
+
+            if assentos_result is None:
+                return False, f"Modelo de avião '{modelo_aviao}' não encontrado."
+
+            quantidade_assentos = assentos_result[0]
 
             # Inverter origem e destino
             self.cur.execute(
-                "UPDATE voos SET origem = %s, destino = %s WHERE sigla = %s;",
-                (destino, origem, sigla)
-            )
-
-            # Liberar todos os assentos reservados
-            self.cur.execute(
-                "UPDATE voos SET quantidade_assentos = (SELECT assentos FROM avioes WHERE sigla = (SELECT modelo_aviao FROM voos WHERE sigla = %s)) WHERE sigla = %s;",
-                (sigla, sigla)
+                """
+                UPDATE voos
+                SET origem = %s,
+                    destino = %s,
+                    quantidade_assentos = %s
+                WHERE sigla = %s;
+                """,
+                (destino, origem, quantidade_assentos, sigla)
             )
 
             self.conn.commit()
             return True, "Voo marcado com sucesso."
         except Exception as e:
+            self.conn.rollback()  # Reverter mudanças em caso de erro
             return False, f"Erro ao marcar voo: {str(e)}"
 
     def close_connection(self) -> None:
