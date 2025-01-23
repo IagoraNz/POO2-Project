@@ -1,5 +1,0 @@
-# Comando para executar o Redis no Windows (precisa ter o Docker Desktop instalado)
-docker run --name redis -p 6379:6379 -d redis
-
-# Inicializar o Redis
-redis-server
