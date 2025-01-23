@@ -58,7 +58,8 @@ class Tela(QWidget):
         Classe principal da interface gráfica da aplicação. Contendo login, cadastro e redirecionamentos
     
     Attributes:
-        QWidget (QWidget): Classe base para todos os widgets
+        QWidget: 
+            Classe base para todos os widgets da interface gráfica
         
     Methods:
         mostrar_formulario_cadastro: Exibe o formulário de cadastro de um novo usuário
@@ -71,9 +72,13 @@ class Tela(QWidget):
         mostrar_tela_home2: Exibe a tela principal do At
     """
 
-    def __init__(self, user=None, senha=None):
+    def __init__(self, user=None, senha=None) -> None:
         """
-        Inicializa a interface gráfica.
+        Summary:
+            Inicializa a interface gráfica.
+            
+        Returns:
+            None
 
         Args:
             user (str, optional): Usuário para autenticação. Default é None.
@@ -487,7 +492,8 @@ class TelaGerente(QMainWindow):
         Classe responsável pela tela de gerenciamento para o gerente
     
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas de aplicativos
+        QMainWindow: 
+            Classe base para janelas de aplicativos
 
     Methods:
         mostrar_tela_voos: Exibe a tela de gerenciamento de voos
@@ -667,7 +673,8 @@ class TelaChat_Gerente(QMainWindow):
         através de uma conexão socket com o servidor.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas de aplicativos
+        QMainWindow: 
+            Classe base para janelas de aplicativos
         
     Methods:
         _configurar_logo_e_titulo: Configura o contêiner com o logo e o título
@@ -678,10 +685,17 @@ class TelaChat_Gerente(QMainWindow):
         enviar_mensagem: Envia a mensagem digitada pelo usuário ao servidor
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Inicializa a interface de chat do gerente. Configura o layout principal, componentes visuais (logo, campo de mensagens, botão de envio)
-        e a conexão socket com o servidor.
+        Summary:
+            Inicializa a interface de chat do gerente. Configura o layout principal, componentes visuais (logo, campo de mensagens, botão de envio)
+            e a conexão socket com o servidor.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         super().__init__()
         self.setWindowTitle("Chat - Delta Airlines")
@@ -879,7 +893,8 @@ class TelaChat_Gerente(QMainWindow):
         através de uma conexão socket com o servidor.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas de aplicativos
+        QMainWindow: 
+            Classe base para janelas de aplicativos
         
     Methods:
         _configurar_logo_e_titulo: Configura o contêiner com o logo e o título
@@ -890,10 +905,17 @@ class TelaChat_Gerente(QMainWindow):
         enviar_mensagem: Envia a mensagem digitada pelo usuário ao servidor
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Inicializa a interface de chat do gerente. Configura o layout principal, componentes visuais (logo, campo de mensagens, botão de envio)
-        e a conexão socket com o servidor.
+        Summary:
+            Inicializa a interface de chat do gerente. Configura o layout principal, componentes visuais (logo, campo de mensagens, botão de envio)
+            e a conexão socket com o servidor.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         super().__init__()
         self.setWindowTitle("Chat - Delta Airlines")
@@ -1090,14 +1112,22 @@ class TelaMarcarVoo_Gerente(QMainWindow):
         Classe responsável pela interface de marcação de voos pelo gerente da companhia aérea Delta Airlines.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas de aplicativos
+        QMainWindow: 
+            Classe base para janelas de aplicativos
         
     Methods:
         __init__: Inicializa a interface de marcação de voos e configura o layout principal, widgets e botões associados.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Inicializa a interface de marcação de voos.
+        Summary:
+            Inicializa a interface de marcação de voos.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         super().__init__()
 
@@ -1186,9 +1216,16 @@ class TelaVoos(QMainWindow):
         mostrar_tela_listar_voo: Exibe a tela de listagem
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Inicializa a interface de gerenciamento de voos. Define o layout principal, os widgets e as ações associadas aos botões.
+        Summary:
+            Inicializa a interface de gerenciamento de voos. Define o layout principal, os widgets e as ações associadas aos botões.
+        
+        Args:
+            None
+            
+        Returns:
+            None
         """
         super().__init__()
         self.setWindowTitle("Gerenciamento de Voos - Delta Airlines")
@@ -1345,7 +1382,8 @@ class TelaAvioes(QMainWindow):
         Classe responsável pela interface gráfica de gerenciamento de aviões. Contém botões para cadastrar, alterar, remover e listar aviões.
     
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas de aplicativos
+        QMainWindow: 
+            Classe base para janelas de aplicativos
         
     Methods:
         __init__: Inicializa a tela de gerenciamento de aviões, configurando o layout e os botões de interação.
@@ -1355,9 +1393,16 @@ class TelaAvioes(QMainWindow):
         mostrar_tela_listar_aviao: Exibe a tela de listagem de aviões
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Inicializa a tela de gerenciamento de aviões, configurando o layout e os botões de interação.
+        Summary:
+            Inicializa a tela de gerenciamento de aviões, configurando o layout e os botões de interação.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         super().__init__()
         self.setWindowTitle("Gerenciamento de Voos - Delta Airlines")
@@ -1517,7 +1562,8 @@ class TelaAvioes(QMainWindow):
     
 class TelaVoos_Cadastrar(QMainWindow):
     """
-    Tela para cadastro de voos na aplicação Delta Airlines.
+    Summary:
+        Tela para cadastro de voos na aplicação Delta Airlines.
 
     Attributes:
         QMainWindow (QMainWindow): Classe base para janelas de aplicativos
@@ -1527,13 +1573,16 @@ class TelaVoos_Cadastrar(QMainWindow):
         cadastrar_voo: Realiza o cadastro de um novo voo, validando todos os campos.
     """
 
-    def __init__(self, cadastro_voos):
+    def __init__(self, cadastro_voos) -> None:
         """
         Summary:
             Inicializa a tela de cadastro de voos.
 
         Args:
             cadastro_voos (CadastroVoos): Instância da classe CadastroVoos
+            
+        Returns:
+            None
         """
         super().__init__()
         self.cadastro_voos = cadastro_voos  # Instância da classe CadastroVoos
@@ -1683,10 +1732,17 @@ class TelaAvioes_Cadastrar(QMainWindow):
         cadastrar_aviao: Método para cadastrar um avião com os dados fornecidos nos campos de entrada.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Inicializa a tela de cadastro de avião. Configura a interface gráfica, incluindo fontes, layout, campos de entrada, 
-        botões de ação, e lógica de exibição da tela.
+        Summary:
+            Inicializa a tela de cadastro de avião. Configura a interface gráfica, incluindo fontes, layout, campos de entrada, 
+            botões de ação, e lógica de exibição da tela.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         super().__init__()
         self.setWindowTitle("Cadastrar Avião - Delta Airlines")
@@ -1819,14 +1875,15 @@ class TelaVoos_Alterar(QMainWindow):
         Classe responsável pela interface gráfica de alteração de voos.
 
     Args:
-        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        QMainWindow:
+            Classe base para janelas da aplicação.
         
     Methods:
         buscar_voo_handler: Busca um voo no banco de dados a partir da sigla inform
         alterar_voo_handler: Altera as informações do voo no banco de dados.
         alterar_voo: Exibe a tela de alteração de voos.
     """
-    def __init__(self, conn=None, parent=None):
+    def __init__(self, conn=None, parent=None) -> None:
         """
         Summary:
             Inicializa a tela de alteração de voos.
@@ -1834,6 +1891,9 @@ class TelaVoos_Alterar(QMainWindow):
         Args:
             conn (psycopg2.connection, optional): Conexão com o banco de dados. Defaults to None.
             parent (QWidget, optional): Widget pai da janela. Defaults to None.
+            
+        Returns:
+            None
         """
         super().__init__(parent)
         self.conn = conn or psycopg2.connect(dbname='credenciais', user='poodois', password='1234', host='localhost', port=5432)
@@ -2073,16 +2133,24 @@ class TelaAvioes_Alterar(QMainWindow):
         Classe responsável pela interface gráfica de alteração de informações de um avião.
     
     Args:
-        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        QMainWindow: 
+            Classe base para janelas da aplicação.
         
     Methods:
         buscar_aviao: Busca um avião no sistema a partir da sigla informada.
         alterar_aviao: Altera as informações do avião no sistema.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Inicializa a tela de alteração de avião, configurando o layout e os campos de entrada para 
-        busca e alteração das informações do avião.
+        Summary:
+            Inicializa a tela de alteração de avião, configurando o layout e os campos de entrada para 
+            busca e alteração das informações do avião.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         super().__init__()
         self.setWindowTitle("Alterar Avião - Delta Airlines")
@@ -2279,14 +2347,15 @@ class TelaVoos_Remover(QMainWindow):
         Classe que representa a tela de remoção de voos na aplicação Delta Airlines.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        QMainWindow: 
+            Classe base para janelas da aplicação.
         
     Methods:
         buscar_voo: Busca informações do voo pela sigla e exibe as informações.
         remover_reserva_voo: Remove um voo do banco de dados.
     """
 
-    def __init__(self, conn = psycopg2.connect(dbname='credenciais', user='poodois', password='1234', host='localhost', port=5432)):
+    def __init__(self, conn = psycopg2.connect(dbname='credenciais', user='poodois', password='1234', host='localhost', port=5432)) -> None:
         """
         Summary:
             Inicializa a tela de remoção de voos, configurando o layout, campos de entrada, botões de ação e lógica de exibição da tela.
@@ -2477,17 +2546,25 @@ class TelaAvioes_Remover(QMainWindow):
         Classe que representa a tela de remoção de aviões na aplicação Delta Airlines.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        QMainWindow: 
+            Classe base para janelas da aplicação.
         
     Methods:
         buscar_aviao: Busca informações do avião pela sigla e exibe as informações.
         remover_aviao: Remove um avião do banco de dados.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Inicializa a tela de remoção de avião, configurando o layout, fontes, campos de entrada
-        e botões necessários para buscar e remover um avião.
+        Summary:
+            Inicializa a tela de remoção de avião, configurando o layout, fontes, campos de entrada
+            e botões necessários para buscar e remover um avião.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         super().__init__()
         self.setWindowTitle("Remover Avião - Delta Airlines")
@@ -2663,13 +2740,23 @@ class TelaVoos_Listar(QMainWindow):
         Classe que representa a tela de listagem de voos na aplicação Delta Airlines.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        QMainWindow: 
+            Classe base para janelas da aplicação.
         
     Methods:
         carregar_lista_voos: Carrega a lista de voos cadastrados e exibe na interface.
     """
-    def __init__(self):
-        """Inicializa a tela para listar os voos cadastrados na Delta Airlines."""
+    def __init__(self) -> None:
+        """
+        Summary:
+            Inicializa a tela para listar os voos cadastrados na Delta Airlines.
+        
+        Args:
+            None
+            
+        Returns:
+            None
+        """
         super().__init__()
 
         # Configurações da janela
@@ -2825,13 +2912,23 @@ class TelaAvioes_Listar(QMainWindow):
         Classe que representa a tela de listagem de aviões na aplicação Delta Airlines.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        QMainWindow: 
+            Classe base para janelas da aplicação.
         
     Methods:
         carregar_lista_avioes: Carrega a lista de aviões cadastrados e exibe na interface.
     """
-    def __init__(self):
-        """Inicializa a tela para listar os aviões cadastrados na Delta Airlines."""
+    def __init__(self) -> None:
+        """
+        Summary:
+            Inicializa a tela para listar os aviões cadastrados na Delta Airlines.
+        
+        Args:
+            None    
+        
+        Returns:
+            None    
+        """
         super().__init__()
 
         # Configurações da janela
@@ -2981,7 +3078,8 @@ class TelaAtendente(QMainWindow):
         Classe que representa a tela principal do atendente na aplicação Delta Airlines.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        QMainWindow: 
+            Classe base para janelas da aplicação.
         
     Methods:
         mostrar_tela_passageiros: Exibe a tela de gerenciamento de passageiros.
@@ -2990,8 +3088,17 @@ class TelaAtendente(QMainWindow):
         mostrar_tela_chat_atendente: Exibe a tela de chat do atendente.
     """
 
-    def __init__(self):
-        """Inicializa a tela principal do atendente e configura o layout e os botões de navegação."""
+    def __init__(self) -> None:
+        """
+        Summary:
+            Inicializa a tela principal do atendente e configura o layout e os botões de navegação.
+        
+        Args:
+            None
+            
+        Returns:
+            None
+        """
         super().__init__()
         self.setWindowTitle("Atendimento - Delta Airlines")
         self.setFixedSize(1000, 600)
@@ -3142,7 +3249,8 @@ class TelaChat_Atendente(QMainWindow):
         Classe que representa a tela de chat do atendente na aplicação Delta Airlines.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        QMainWindow: 
+            Classe base para janelas da aplicação.
         
     Methods:
         receber_mensagens: Recebe e exibe mensagens enviadas ao atendente através do socket.
@@ -3150,8 +3258,17 @@ class TelaChat_Atendente(QMainWindow):
         enviar_mensagem: Envia a mensagem digitada pelo atendente para o servidor.  
     """
 
-    def __init__(self):
-        """Inicializa a tela de chat do atendente, configurando os componentes da interface gráfica."""
+    def __init__(self) -> None:
+        """
+        Summary:
+            Inicializa a tela de chat do atendente, configurando os componentes da interface gráfica.
+        
+        Args:
+            None
+            
+        Returns:
+            None
+        """
         super().__init__()
         self.setWindowTitle("Chat - Delta Airlines")
         self.setFixedSize(1000, 600)
@@ -3302,7 +3419,8 @@ class TelaPassageiros(QMainWindow):
         Classe que representa a tela de gerenciamento de passageiros na aplicação Delta Airlines.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        QMainWindow: 
+            Classe base para janelas da aplicação.
         
     Methods:
         mostrar_tela_cadastrar_passageiro: Exibe a tela de cadastro de passageiros.
@@ -3310,10 +3428,17 @@ class TelaPassageiros(QMainWindow):
         mostrar_tela_remover_passageiro: Exibe a tela de remoção de passageiros.
         mostrar_tela_listar_passageiro: Exibe a tela de listagem de passageiros.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Inicializa a tela de gerenciamento de passageiros, configurando o layout
-        e adicionando os botões de ação.
+        Summary:
+            Inicializa a tela de gerenciamento de passageiros, configurando o layout
+            e adicionando os botões de ação.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         super().__init__()
         self.setWindowTitle("Atendimento de clientes - Delta Airlines")
@@ -3481,16 +3606,24 @@ class TelaReservas(QMainWindow):
         Classe que representa a tela de gerenciamento de reservas na aplicação Delta Airlines.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        QMainWindow: 
+            Classe base para janelas da aplicação.
         
     Methods:
         mostrar_tela_reservas_reservar: Exibe a tela para realizar uma nova reserva.
         mostrar_tela_reservas_remover: Exibe a tela para remover uma reserva existente
     """
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Inicializa a tela de gerenciamento de reservas, configurando o layout
-        e adicionando os botões de ação.
+        Summary:
+            Inicializa a tela de gerenciamento de reservas, configurando o layout
+            e adicionando os botões de ação.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         super().__init__()
         self.setWindowTitle("Gerenciamento de Reservas - Delta Airlines")
@@ -3614,16 +3747,24 @@ class TelaPassageiros_Cadastrar(QMainWindow):
         Classe que representa a tela de cadastro de passageiros na aplicação Delta Airlines.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        QMainWindow: 
+            Classe base para janelas da aplicação.
         
     Methods:
         cadastrar_passageiro: Cadastra um novo passageiro no sistema.
         show_message: Exibe uma mensagem em uma janela modal
     """
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Inicializa a interface da tela de cadastro de cliente.
-        Configura o layout, carrega fontes, logo e campos para o cadastro.
+        Summary:
+            Inicializa a interface da tela de cadastro de cliente.
+            Configura o layout, carrega fontes, logo e campos para o cadastro.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         super().__init__()
         self.setWindowTitle("Cadastrar Cliente - Delta Airlines")
@@ -3773,16 +3914,24 @@ class TelaPassageiros_Alterar(QMainWindow):
         Classe que representa a tela de alteração de dados de um passageiro na aplicação Delta Airlines.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        QMainWindow: 
+            Classe base para janelas da aplicação.
         
     Methods:
         buscar_passageiro: Busca as informações de um passageiro a partir do CPF.
         alterar_passageiro: Altera as informações de um passageiro no banco de dados.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Inicializa a interface de alteração de dados do passageiro.
-        Configura o layout, os campos de entrada e os botões de ação.
+        Summary:
+            Inicializa a interface de alteração de dados do passageiro.
+            Configura o layout, os campos de entrada e os botões de ação.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         super().__init__()
         self.setWindowTitle("Alterar Passageiro - Delta Airlines")
@@ -3910,16 +4059,24 @@ class TelaPassageiros_Remover(QMainWindow):
         Classe que representa a tela de remoção de um passageiro na aplicação Delta Airlines.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        QMainWindow:
+            Classe base para janelas da aplicação.
         
     Methods:
         buscar_passageiro: Busca as informações de um passageiro a partir do CPF.
         remover_passageiro: Remove um passageiro do banco de dados.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Inicializa a interface de remoção de um passageiro.
-        Configura o layout, os campos de entrada e os botões de ação.
+        Summary:
+            Inicializa a interface de remoção de um passageiro.
+            Configura o layout, os campos de entrada e os botões de ação.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         super().__init__()
         self.setWindowTitle("Removendo Passageiros - Delta Airlines")
@@ -4097,18 +4254,22 @@ class TelaPassageiros_Listar(QMainWindow):
         Classe que representa a tela de listagem de passageiros na aplicação Delta Airlines.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        QMainWindow: 
+            Classe base para janelas da aplicação.
         
     Methods:
         atualizar_tabela: Atualiza os dados na tabela de clientes.
     """
-    def __init__(self, db_config=None):
+    def __init__(self, db_config=None) -> None:
         """
         Summary:
             Inicializa a interface da tela de listagem de clientes. Configura o layout, carrega fontes, logo e a tabela de clientes.
         
         Args:
             db_config (dict): Configurações para conexão com o banco de dados.
+            
+        Returns:
+            None
         """
         if db_config is None:
             db_config = {
@@ -4263,15 +4424,23 @@ class TelaReservas_Reservar(QMainWindow):
         Classe responsável pela tela de reserva de voos. Permite que o usuário selecione um voo e faça a reserva.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        QMainWindow: 
+            Classe base para janelas da aplicação.
         
     Methods:
         atualizar_lista_voos: Atualiza a lista de voos disponíveis exibida na tela.
         reservar_voo: Realiza a reserva de um voo com base na sigla fornecida pelo
     """
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Construtor da classe TelaReservas_Reservar. Inicializa a interface e os elementos da tela.
+        Summary:
+            Construtor da classe TelaReservas_Reservar. Inicializa a interface e os elementos da tela.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         super().__init__()
         self.setWindowTitle("Reservar Voo - Delta Airlines")
@@ -4408,17 +4577,25 @@ class TelaReservas_Remover(QMainWindow):
         Classe que representa a tela de remoção de reservas na aplicação Delta Airlines.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        QMainWindow: 
+            Classe base para janelas da aplicação.
         
     Methods:
         atualizar_lista_reservas: Atualiza a lista de reservas disponíveis na tela.
         remover_reserva_voo: Remove a reserva de um voo selecionado
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Inicializa a interface gráfica da tela de remoção de reservas.
-        Estabelece a conexão com o backend e configura o layout da tela.
+        Summary:
+            Inicializa a interface gráfica da tela de remoção de reservas.
+            Estabelece a conexão com o backend e configura o layout da tela.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         super().__init__()
         self.setWindowTitle("Remover Reserva - Delta Airlines")
@@ -4575,7 +4752,8 @@ class GerenciadorDeReservas:
         Classe que gerencia as reservas de voos na aplicação Delta Airlines.
         
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        QMainWindow: 
+            Classe base para janelas da aplicação.
         
     Methods:
         __init__: Inicializa a interface gráfica do gerenciador de reservas.
@@ -4583,7 +4761,7 @@ class GerenciadorDeReservas:
         abrir_tela_remover: Abre a tela de remoção de reservas.
     """
 
-    def __init__(self, dbname, user, password, host='localhost', port=5432):
+    def __init__(self, dbname, user, password, host='localhost', port=5432) -> None:
         """
         Summary:
             Inicializa a conexão com o banco de dados.
@@ -4594,6 +4772,12 @@ class GerenciadorDeReservas:
             password (str): Senha do usuário.
             host (str): Endereço do servidor do banco de dados (padrão 'localhost').
             port (int): Porta de conexão ao banco de dados (padrão 5432).
+            
+        Returns:
+            None
+            
+        Raises:
+            Exception: Se ocorrer um erro ao conectar ao banco de dados.
         """
         try:
             self.conn = psycopg2.connect(
@@ -4700,5 +4884,3 @@ if __name__ == "__main__":
     tela = Tela()
     tela.show()
     sys.exit(app.exec_())
-
-

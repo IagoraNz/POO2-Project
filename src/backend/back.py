@@ -60,7 +60,7 @@ class Aviao:
         return self._sigla_av
 
     @sigla_av.setter
-    def sigla_av(self, sigla_av: str)
+    def sigla_av(self, sigla_av: str):
         """Define a sigla identificadora do avião."""
         self._sigla_av = sigla_av
 
