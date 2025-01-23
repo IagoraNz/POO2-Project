@@ -647,14 +647,6 @@ class TelaVoos(QMainWindow):
         self.button_layout.addWidget(self.bt_listar)
         self.bt_listar.clicked.connect(self.mostrar_tela_listar_voo)
 
-
-        self.bt_marcar_viagem = QPushButton("Marcar Voo")
-        self.bt_marcar_viagem.setFixedSize(button_width, button_height)
-        self.bt_marcar_viagem.setStyleSheet(button_style)
-        self.bt_marcar_viagem.setFont(montserrat_bold)
-        self.button_layout.addWidget(self.bt_marcar_viagem)
-        self.bt_marcar_viagem.clicked.connect(self.mostrar_tela_marcar_voo)
-
         self.bt_voltar = QPushButton("Voltar")
         self.bt_voltar.setFixedSize(button_width, button_height)
         self.bt_voltar.setStyleSheet(button_style)
@@ -701,10 +693,6 @@ class TelaVoos(QMainWindow):
     def mostrar_tela_listar_voo(self):
         self.tela_listar_voo = TelaVoos_Listar()
         self.tela_listar_voo.show()
-    
-    def mostrar_tela_marcar_voo(self):
-        self.tela_marcar_voo = TelaVoos_Marcar()
-        self.tela_marcar_voo.show()
 
 class TelaAvioes(QMainWindow):
     def __init__(self):
@@ -1260,17 +1248,24 @@ class TelaVoos_Alterar(QMainWindow):
         self.layout.addWidget(self.buttons_container)
 
     def buscar_voo_handler(self):
-        # Método para buscar o voo e exibir as informações
+        """Busca informações do voo pela sigla e exibe as informações"""
         sigla = self.sigla_input.text().strip()
-        if not sigla:
-            self.voo_info_label.setText("Por favor, insira uma sigla.")
-            self.voo_info_label.setStyleSheet("color: red;")
-            return
+        if sigla:
+            try:
+                with self.conn.cursor() as cur:
+                    cur.execute("SELECT * FROM voos WHERE sigla = %s;", (sigla,))
+                    voo = cur.fetchone()
+                    if voo:
+                        self.voo_info_label.setText(f"Informações do voo {sigla} encontradas.")
+                        self.voo_info_label.setStyleSheet("color: green;")
+                    else:
+                        self.voo_info_label.setText(f"Informações do voo {sigla} não encontradas.")
+                        self.voo_info_label.setStyleSheet("color: red;")
+            except Exception as e:
+                self.voo_info_label.setText(f"Erro ao buscar voo: {str(e)}")
+        else:
+            self.voo_info_label.setText("Por favor, insira a sigla do voo.")
         
-        # Aqui você pode adicionar a lógica para buscar o voo no banco de dados
-        # Suponha que o voo seja encontrado, atualize o info_label com informações do voo.
-        self.voo_info_label.setText(f"Informações do voo {sigla} encontradas.")
-        self.voo_info_label.setStyleSheet("color: green;")
 
     def alterar_voo_handler(self):
         sigla = self.sigla_input.text().strip()
@@ -1961,104 +1956,6 @@ class TelaAvioes_Listar(QMainWindow):
             self.aviao_info_label.setText(info_text)
         except Exception as e:
             self.aviao_info_label.setText(f"Erro ao carregar aviões: {str(e)}")
-
-class TelaVoos_Marcar(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Marcar Voo - Delta Airlines")
-        self.setFixedSize(1000, 600)
-        self.setStyleSheet("background-color: white;")
-
-        # Carregar a fonte Montserrat
-        font_path = "./src/fonts/Montserrat-Bold.ttf"  # Atualize o caminho da fonte
-        if os.path.exists(font_path):
-            QFontDatabase.addApplicationFont(font_path)
-            montserrat_bold = QFont("Montserrat", 14, QFont.Bold)
-        else:
-            montserrat_bold = QFont("Arial", 14, QFont.Bold)
-
-        # Layout principal
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-        self.layout = QVBoxLayout(self.central_widget)
-
-        # 1. Contêiner com o logo (centralizado)
-        self.logo_container = QWidget()
-        self.logo_layout = QVBoxLayout(self.logo_container)
-        self.logo_layout.setAlignment(Qt.AlignCenter)
-
-        self.logo_label = QLabel(self.logo_container)
-        logo_path = os.path.abspath("./src/images/image.png")
-        if os.path.exists(logo_path):
-            pixmap = QPixmap(logo_path)
-            resized_pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            self.logo_label.setPixmap(resized_pixmap)
-        else:
-            self.logo_label.setText("Imagem não encontrada.")
-
-        self.logo_layout.addWidget(self.logo_label)
-        self.layout.addWidget(self.logo_container)
-
-        # 2. Contêiner "Marcar Voo"
-        self.label_container = QLabel("Marcar Voo")
-        self.label_container.setFont(montserrat_bold)
-        self.label_container.setAlignment(Qt.AlignCenter)
-        self.label_container.setStyleSheet("color: #333333;")
-        self.layout.addWidget(self.label_container, alignment=Qt.AlignCenter)
-
-        # 3. Contêiner de entrada para sigla
-        self.sigla_container = QWidget()
-        self.sigla_layout = QVBoxLayout(self.sigla_container)
-        self.sigla_container.setContentsMargins(100, 10, 100, 10)
-        self.sigla_layout.setSpacing(10)
-
-        self.sigla_input = QLineEdit()
-        self.sigla_input.setPlaceholderText("Sigla")
-        self.sigla_input.setStyleSheet("border: 1px solid #cccccc; padding: 5px; border-radius: 3px;")
-        self.sigla_layout.addWidget(self.sigla_input)
-
-        self.buscar_button = QPushButton("Buscar Voo")
-        self.buscar_button.setFixedSize(200, 50)
-        self.buscar_button.setStyleSheet(button_style)
-        self.sigla_layout.addWidget(self.buscar_button, alignment=Qt.AlignCenter)
-
-        self.layout.addWidget(self.sigla_container)
-
-        # 4. Contêiner 3: Informações do voo
-        self.info_container = QWidget()
-        self.info_layout = QVBoxLayout(self.info_container)
-        self.info_container.setContentsMargins(100, 10, 100, 10)
-        self.info_layout.setSpacing(10)
-
-        self.voo_info_label = QLabel("Informações do voo a serem exibidas aqui")
-        self.voo_info_label.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
-        self.voo_info_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-        self.info_layout.addWidget(self.voo_info_label)
-
-        self.layout.addWidget(self.info_container)
-
-        # 5. Contêiner com os botões "Marcar Voo" e "Voltar"
-        self.button_container = QWidget()
-        self.button_layout = QVBoxLayout(self.button_container)
-        self.button_layout.setAlignment(Qt.AlignCenter)
-
-        # Botão "Marcar Voo"
-        self.confirmar_voo_button = QPushButton("Marcar Voo")
-        self.confirmar_voo_button.setFixedSize(200, 50)
-        self.confirmar_voo_button.setStyleSheet(button_style)
-        self.confirmar_voo_button.setFont(montserrat_bold)
-        self.confirmar_voo_button.clicked.connect(self.close)  # Implementar funcionalidade de marcação
-        self.button_layout.addWidget(self.confirmar_voo_button)
-
-        # Botão "Voltar"
-        self.voltar_button = QPushButton("Voltar")
-        self.voltar_button.setFixedSize(200, 50)
-        self.voltar_button.setStyleSheet(button_style)
-        self.voltar_button.setFont(montserrat_bold)
-        self.voltar_button.clicked.connect(self.close)  # Substituir por lógica de voltar
-        self.button_layout.addWidget(self.voltar_button)
-
-        self.layout.addWidget(self.button_container)
 
 class TelaAtendente(QMainWindow):
     def __init__(self):
