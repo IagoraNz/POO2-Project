@@ -196,6 +196,7 @@ class Tela(QWidget):
             bt_efetuar_cadastro.setStyleSheet(button_style)
             bt_efetuar_cadastro.setFont(QFont("Montserrat", 10, QFont.Bold))
             bt_efetuar_cadastro.clicked.connect(self.efetuar_cadastro)
+            bt_efetuar_cadastro.clicked.connect(self.voltar_inicial_pelo_cadastro)
             self.layout.addWidget(bt_efetuar_cadastro, alignment=Qt.AlignHCenter)
 
         # Tornar os campos de cadastro visíveis
@@ -204,7 +205,34 @@ class Tela(QWidget):
         self.layout.itemAt(7).widget().setVisible(True)
         self.layout.itemAt(8).widget().setVisible(True)
         self.layout.itemAt(9).widget().setVisible(True)
+        
+    def voltar_inicial_pelo_cadastro(self):
+        # Limpar os campos de cadastro
+        if hasattr(self, 'usuario_input') and self.usuario_input.isVisible():
+            if self.usuario_input.text():
+                self.usuario_input.setText("")
+            if hasattr(self, 'senha_input') and self.senha_input.text():
+                self.senha_input.setText("")
+            if hasattr(self, 'tipo_input') and self.tipo_input.isVisible() and self.tipo_input.text():
+                self.tipo_input.setText("")
 
+        # Remover os campos de login
+        self.layout.itemAt(5).widget().setVisible(False)
+        self.layout.itemAt(6).widget().setVisible(False)
+        self.layout.itemAt(7).widget().setVisible(False)
+        self.layout.itemAt(8).widget().setVisible(False)
+        self.layout.itemAt(9).widget().setVisible(False)
+
+        # Limpar a tela de boas-vindas e botões
+        self.welcome_label.setText("<b>Bem-vindo ao sistema gerenciador da Delta Airlines</b>")
+        self.layout.itemAt(3).widget().setVisible(True)
+        self.layout.itemAt(4).widget().setVisible(True)
+        
+        # Fechar a tela atual e abrir a tela inicial
+        self.close()
+        self.tela_inicial = Tela()  # Crie uma nova instância da tela inicial
+        self.tela_inicial.show()
+        
     def efetuar_cadastro(self):
         """
         Realiza o cadastro de um novo usuário no sistema.
@@ -447,7 +475,7 @@ class TelaGerente(QMainWindow):
         # Widget centralizador para botões
         button_widget = QWidget()
         button_layout = QVBoxLayout(button_widget)
-        button_layout.setContentsMargins(0, 0, 0, 0)
+        button_layout.setContentsMargins(400, 80, 0, 0)
         button_layout.setSpacing(15)
         button_layout.setAlignment(Qt.AlignCenter)
 
@@ -470,6 +498,12 @@ class TelaGerente(QMainWindow):
         self.bt_chat.setFont(montserrat_bold)
         self.bt_chat.clicked.connect(self.mostrar_tela_chat_gerente)
 
+        self.bt_marcar_voo = QPushButton("Marcar Voo")
+        self.bt_marcar_voo.setFixedSize(200, 50)
+        self.bt_marcar_voo.setStyleSheet(button_style)
+        self.bt_marcar_voo.setFont(montserrat_bold)
+        self.bt_marcar_voo.clicked.connect(self.mostrar_tela_marcar_voo)
+
         self.bt_sair = QPushButton("Sair")
         self.bt_sair.setFixedSize(200, 50)
         self.bt_sair.setStyleSheet(button_style)
@@ -480,6 +514,7 @@ class TelaGerente(QMainWindow):
         button_layout.addWidget(self.bt_voos)
         button_layout.addWidget(self.bt_avioes)
         button_layout.addWidget(self.bt_chat)
+        button_layout.addWidget(self.bt_marcar_voo)
         button_layout.addWidget(self.bt_sair)
 
         # Adiciona um espaçador abaixo dos botões
@@ -526,9 +561,12 @@ class TelaGerente(QMainWindow):
         self.tela_chat_gerente = TelaChat_Gerente()
         self.tela_chat_gerente.show()
 
+    def mostrar_tela_marcar_voo(self):
+        self.tela_marcar_voo = TelaMarcarVoo_Gerente()
+        self.tela_marcar_voo.show()
 
-SERVER_HOST = '26.7.161.228'  # Endereço IP do servidor
-SERVER_PORT = 5555            # Porta do servidor
+SERVER_HOST = '26.7.161.228'
+SERVER_PORT = 5555
 
 class TelaChat_Gerente(QMainWindow):
     """
@@ -866,6 +904,79 @@ class TelaChat_Gerente(QMainWindow):
             self.exibir_mensagem(mensagem, enviado=True)
             self.message_input.clear()  # Limpa o campo de entrada
 
+class TelaMarcarVoo_Gerente(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Marcar Voo - Delta Airlines")
+        self.setFixedSize(1000, 600)
+        self.setStyleSheet("background-color: white;")
+
+        # Carregar a fonte Montserrat
+        font_path = os.path.abspath("./src/fonts/Montserrat-Bold.ttf")
+        if os.path.exists(font_path):
+            QFontDatabase.addApplicationFont(font_path)
+            montserrat_bold = QFont("Montserrat", 14, QFont.Bold)
+        else:
+            montserrat_bold = QFont("Arial", 14, QFont.Bold)
+
+
+        # Layout principal
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+        self.layout = QVBoxLayout(self.central_widget)
+
+        # Contêiner: Logo e título
+        self.logo_widget = QWidget()
+        self.logo_layout = QVBoxLayout(self.logo_widget)
+        self.logo_layout.setContentsMargins(0, 0, 0, 0)
+        self.logo_layout.setSpacing(10)
+
+        self.logo_label = QLabel(self.logo_widget)
+        logo_path = os.path.abspath("./src/images/image.png")
+        if os.path.exists(logo_path):
+            pixmap = QPixmap(logo_path)
+            resized_pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.logo_label.setPixmap(resized_pixmap)
+        else:
+            self.logo_label.setText("Imagem não encontrada.")
+        self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)
+
+        self.title_label = QLabel("Marcar Voo")
+        self.title_label.setFont(montserrat_bold)
+        self.title_label.setAlignment(Qt.AlignCenter)
+        self.logo_layout.addWidget(self.title_label)
+
+        self.layout.addWidget(self.logo_widget)
+
+        # Contêiner: Campo de entrada
+        self.sigla_input = QLineEdit(self)
+        self.sigla_input.setPlaceholderText("Digite a sigla do voo")
+        self.sigla_input.setStyleSheet(line_edit_style)
+        self.layout.addWidget(self.sigla_input, alignment=Qt.AlignCenter)
+
+        # Contêiner: Botões
+        self.buttons_widget = QWidget()
+        self.buttons_layout = QVBoxLayout(self.buttons_widget)
+        self.buttons_layout.setContentsMargins(0, 0, 0, 0)
+        self.buttons_layout.setSpacing(10)  # Ajuste para aproximar os botões
+
+        self.bt_marcar = QPushButton("Marcar Voo")
+        self.bt_marcar.setFixedSize(200, 50)
+        self.bt_marcar.setStyleSheet(button_style)
+        self.bt_marcar.setFont(montserrat_bold)
+        self.bt_marcar.clicked.connect(self.close)
+        self.buttons_layout.addWidget(self.bt_marcar, alignment=Qt.AlignCenter)
+
+        self.bt_voltar = QPushButton("Voltar")
+        self.bt_voltar.setFixedSize(200, 50)
+        self.bt_voltar.setStyleSheet(button_style)
+        self.bt_voltar.setFont(montserrat_bold)
+        self.bt_voltar.clicked.connect(self.close)
+        self.buttons_layout.addWidget(self.bt_voltar, alignment=Qt.AlignCenter)
+
+        self.layout.addWidget(self.buttons_widget)
+
 class TelaVoos(QMainWindow):
     """
     Classe responsável pela interface de gerenciamento de voos da companhia aérea Delta Airlines.
@@ -936,7 +1047,7 @@ class TelaVoos(QMainWindow):
         # Botões do lado esquerdo
         self.button_widget = QWidget()
         self.button_layout = QVBoxLayout(self.button_widget)
-        self.button_layout.setContentsMargins(0, 0, 0, 0)
+        self.button_layout.setContentsMargins(400, 55, 0, 0)
         self.button_layout.setSpacing(15)
         self.button_layout.setAlignment(Qt.AlignTop)
 
@@ -983,19 +1094,6 @@ class TelaVoos(QMainWindow):
 
         self.left_layout.addWidget(self.button_widget)
         self.layout.addLayout(self.left_layout)
-
-        # Layout da direita com contêiner
-        self.right_layout = QVBoxLayout()
-        self.right_layout.setContentsMargins(20, 35, 20, 0)
-        self.right_layout.setSpacing(20)
-
-        self.label_container = QLabel("O que faremos com os voos?")
-        self.label_container.setFont(montserrat_bold)
-        self.label_container.setAlignment(Qt.AlignCenter)
-        self.label_container.setStyleSheet("color: #333333;")
-        self.right_layout.addWidget(self.label_container, alignment=Qt.AlignCenter)
-
-        self.layout.addLayout(self.right_layout)
     
     def mostrar_tela_cadastrar_voo(self):
         """
@@ -1083,7 +1181,7 @@ class TelaAvioes(QMainWindow):
         # Widget dos botões
         self.button_widget = QWidget()
         self.button_layout = QVBoxLayout(self.button_widget)
-        self.button_layout.setContentsMargins(0, 0, 0, 0)
+        self.button_layout.setContentsMargins(400, 60, 0, 0)
         self.button_layout.setSpacing(15)
         self.button_layout.setAlignment(Qt.AlignTop)
 
@@ -1167,8 +1265,7 @@ class TelaAvioes(QMainWindow):
         """
         self.tela_listar_aviao = TelaAvioes_Listar()
         self.tela_listar_aviao.show()
-
-
+    
 class TelaVoos_Cadastrar(QMainWindow):
     """
     Tela para cadastro de voos na aplicação Delta Airlines.
@@ -1200,29 +1297,91 @@ class TelaVoos_Cadastrar(QMainWindow):
         else:
             montserrat_bold = QFont("Arial", 14, QFont.Bold)
 
-        # Estilos e layout da tela
-        # ...
+        # Layout principal
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+        self.layout = QVBoxLayout(self.central_widget)
 
-    def buscar_aviao(self):
-        """
-        Busca a quantidade de assentos disponíveis para o avião com base na sigla fornecida.
+        # Contêiner 1: Logo e título
+        self.logo_widget = QWidget()
+        self.logo_layout = QVBoxLayout(self.logo_widget)
+        self.logo_layout.setContentsMargins(0, 0, 0, 0)
+        self.logo_layout.setSpacing(10)
 
-        Se o nome do avião não for informado ou não for encontrado, exibe uma mensagem de erro.
-        Atualiza o rótulo de quantidade de assentos com a informação obtida.
-
-        :raises: Exibe uma mensagem de aviso se o avião não for encontrado.
-        """
-        nome_aviao = self.nome_aviao_input.text()
-        if not nome_aviao:
-            QMessageBox.warning(self, "Erro", "Informe o nome do avião.")
-            return
-
-        quantidade_assentos = self.cadastro_voos.buscar_assentos_por_aviao(nome_aviao)
-        if quantidade_assentos is None:
-            QMessageBox.warning(self, "Erro", f"Avião com nome '{nome_aviao}' não encontrado.")
-            self.assentos_label.setText("Quantidade de Assentos: Não informado")
+        self.logo_label = QLabel(self.logo_widget)
+        logo_path = os.path.abspath("./src/images/image.png")
+        if os.path.exists(logo_path):
+            pixmap = QPixmap(logo_path)
+            resized_pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.logo_label.setPixmap(resized_pixmap)
         else:
-            self.assentos_label.setText(f"Quantidade de Assentos: {quantidade_assentos}")
+            self.logo_label.setText("Imagem não encontrada.")
+        self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)
+
+        self.title_label = QLabel("Cadastrar Voo")
+        self.title_label.setFont(montserrat_bold)
+        self.title_label.setAlignment(Qt.AlignCenter)
+        self.logo_layout.addWidget(self.title_label)
+
+        self.layout.addWidget(self.logo_widget)
+
+        # Contêiner 2: Campos de entrada
+        self.form_widget = QWidget()
+        self.form_layout = QVBoxLayout(self.form_widget)
+        self.form_layout.setContentsMargins(50, 20, 50, 0)
+        self.form_layout.setSpacing(20)
+
+        self.nome_aviao_input = QLineEdit(self)
+        self.nome_aviao_input.setPlaceholderText("Sigla do Avião")
+        self.nome_aviao_input.setStyleSheet(line_edit_style)
+        self.form_layout.addWidget(self.nome_aviao_input)
+
+        self.sigla_input = QLineEdit(self)
+        self.sigla_input.setPlaceholderText("Sigla do Voo")
+        self.sigla_input.setStyleSheet(line_edit_style)
+        self.form_layout.addWidget(self.sigla_input)
+
+        self.origem_input = QLineEdit(self)
+        self.origem_input.setPlaceholderText("Origem")
+        self.origem_input.setStyleSheet(line_edit_style)
+        self.form_layout.addWidget(self.origem_input)
+
+        self.destino_input = QLineEdit(self)
+        self.destino_input.setPlaceholderText("Destino")
+        self.destino_input.setStyleSheet(line_edit_style)
+        self.form_layout.addWidget(self.destino_input)
+
+        self.modelo_input = QLineEdit(self)
+        self.modelo_input.setPlaceholderText("Modelo do Avião")
+        self.modelo_input.setStyleSheet(line_edit_style)
+        self.form_layout.addWidget(self.modelo_input)
+
+        self.layout.addWidget(self.form_widget)
+
+        # Contêiner 3: Botões
+        self.buttons_widget = QWidget()
+        self.buttons_layout = QVBoxLayout(self.buttons_widget)
+        self.buttons_layout.setContentsMargins(0, 30, 0, 0)
+        self.buttons_layout.setSpacing(20)
+
+        button_width = 200
+        button_height = 50
+
+        self.bt_cadastrar = QPushButton("Cadastrar")
+        self.bt_cadastrar.setFixedSize(button_width, button_height)
+        self.bt_cadastrar.setStyleSheet(button_style)
+        self.bt_cadastrar.setFont(montserrat_bold)
+        self.bt_cadastrar.clicked.connect(self.cadastrar_voo)
+        self.buttons_layout.addWidget(self.bt_cadastrar, alignment=Qt.AlignCenter)
+
+        self.bt_voltar = QPushButton("Voltar")
+        self.bt_voltar.setFixedSize(button_width, button_height)
+        self.bt_voltar.setStyleSheet(button_style)
+        self.bt_voltar.setFont(montserrat_bold)
+        self.bt_voltar.clicked.connect(self.close)
+        self.buttons_layout.addWidget(self.bt_voltar, alignment=Qt.AlignCenter)
+
+        self.layout.addWidget(self.buttons_widget)
 
     def cadastrar_voo(self):
         """
@@ -1274,8 +1433,8 @@ class TelaAvioes_Cadastrar(QMainWindow):
         self.setFixedSize(1000, 600)
         self.setStyleSheet("background-color: white;")
 
-        # Instância da classe MetodosAvioes
-        self.gerente = MetodosAvioes()
+        # Instância da classe MetodosGerente
+        self.gerente = MetodosGerente()
 
         # Carregar a fonte Montserrat
         if os.path.exists(font_path):
@@ -1379,7 +1538,7 @@ class TelaAvioes_Cadastrar(QMainWindow):
             print("Preencha todos os campos corretamente.")
             return
 
-        # Chamando o método de cadastro da classe MetodosAvioes
+        # Chamando o método de cadastro da classe MetodosGerente
         sucesso = self.gerente.cadastrar_aviao(sigla, modelo, int(assentos))
 
         # Exibindo mensagem de sucesso ou erro
@@ -1753,7 +1912,7 @@ class TelaAvioes_Alterar(QMainWindow):
             QMessageBox.warning(self, "Atenção", "Digite a sigla do avião.")
             return
 
-        metodos_gerente = MetodosAvioes()
+        metodos_gerente = MetodosGerente()
         aviao = metodos_gerente.buscar_aviao_por_sigla(sigla)
 
         if aviao:
@@ -1783,7 +1942,7 @@ class TelaAvioes_Alterar(QMainWindow):
             QMessageBox.warning(self, "Erro", "Quantidade de assentos deve ser um número válido.")
             return
 
-        metodos_gerente = MetodosAvioes()
+        metodos_gerente = MetodosGerente()
         sucesso = metodos_gerente.alterar_aviao(sigla, novo_modelo, nova_qtd_assentos)
 
         if sucesso:
@@ -1922,7 +2081,7 @@ class TelaVoos_Remover(QMainWindow):
                     cur.execute("SELECT * FROM voos WHERE sigla = %s;", (sigla,))
                     voo = cur.fetchone()
                     if voo:
-                        voo_info = f"Sigla: {voo[0]}\nOrigem: {voo[1]}\nDestino: {voo[2]}\nData: {voo[3]}"
+                        voo_info = f"ID: {voo[0]}\nSigla: {voo[1]}\nOrigem: {voo[2]}\nDestino: {voo[3]}"
                         self.voo_info_label.setText(voo_info)
                     else:
                         self.voo_info_label.setText("Voo não encontrado.")
@@ -2032,6 +2191,7 @@ class TelaAvioes_Remover(QMainWindow):
         self.buscar_button = QPushButton("Buscar Avião")
         self.buscar_button.setFixedSize(200, 50)
         self.buscar_button.setStyleSheet(button_style)
+        self.buscar_button.setFont(montserrat_bold)
         self.buscar_button.clicked.connect(self.buscar_aviao)
         self.sigla_layout.addWidget(self.buscar_button, alignment=Qt.AlignCenter)
 
@@ -2082,7 +2242,7 @@ class TelaAvioes_Remover(QMainWindow):
             QMessageBox.warning(self, "Atenção", "Digite a sigla do avião.")
             return
 
-        metodos_gerente = MetodosAvioes()
+        metodos_gerente = MetodosGerente()
         aviao = metodos_gerente.buscar_aviao_por_sigla(sigla)
 
         if aviao:
@@ -2111,7 +2271,7 @@ class TelaAvioes_Remover(QMainWindow):
         )
 
         if resposta == QMessageBox.Yes:
-            metodos_gerente = MetodosAvioes()
+            metodos_gerente = MetodosGerente()
             sucesso = metodos_gerente.excluir_aviao(sigla)
 
             if sucesso:
@@ -2173,37 +2333,53 @@ class TelaVoos_Listar(QMainWindow):
         self.label_container.setStyleSheet("color: #333333;")
         self.layout.addWidget(self.label_container, alignment=Qt.AlignCenter)
 
-        # Contêiner para informações dos voos
-        self.info_container = QWidget()
-        self.info_layout = QVBoxLayout(self.info_container)
-        self.info_container.setContentsMargins(100, 10, 100, 10)
-        self.info_layout.setSpacing(10)
-
-        button_style = """
-            QPushButton {
+        # Tabela de voos
+        self.tabela_voos = QTableWidget()
+        self.tabela_voos.setColumnCount(5)  # Cinco colunas: ID, Sigla, Origem, Destino, Modelo
+        self.tabela_voos.setHorizontalHeaderLabels(["ID", "Sigla", "Origem", "Destino", "Modelo"])
+        self.tabela_voos.setSelectionMode(QAbstractItemView.NoSelection)  # Desativa seleção de células
+        self.tabela_voos.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Impede edição das células
+        self.tabela_voos.setStyleSheet("""
+            QTableWidget {
+                background-color: #f9f9f9;
+                font-size: 12px;
+                color: #333333;
+                border: 1px solid #dddddd;
+                border-radius: 5px;
+            }
+            QTableWidget::item {
+                padding: 8px;
+            }
+            QTableWidget::horizontalHeader {
+                background-color: #4CAF50;
+                color: white;
+                font-weight: bold;
+                font-size: 14px;
+                border: none;
+            }
+            QTableWidget::verticalHeader {
                 background-color: #f1f1f1;
                 border: none;
-                border-radius: 10px;
-                font-size: 14px;
-                padding: 10px;
             }
-            QPushButton:hover {
-                background-color: #ffcccc;
+            QScrollBar:vertical {
+                border: none;
+                background: #f1f1f1;
+                width: 10px;
+                margin: 0px 0px 0px 0px;
             }
-            QPushButton:pressed {
-                background-color: #cce7ff;
+            QScrollBar::handle:vertical {
+                background: #4CAF50;
+                border-radius: 5px;
             }
-        """
-        
-        # Criação de uma label para mostrar as informações dos voos
-        self.voo_info_label = QLabel("Informações do voo a serem exibidas aqui")
-        self.voo_info_label.setStyleSheet(button_style)
-        self.voo_info_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-        self.info_layout.addWidget(self.voo_info_label)
+        """)
 
-        self.layout.addWidget(self.info_container)
+        # Scroll para a tabela
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidget(self.tabela_voos)
+        self.scroll_area.setWidgetResizable(True)
+        self.layout.addWidget(self.scroll_area)
 
-        # Contêiner com o botão "Voltar"
+        # Botão "Voltar"
         self.button_container = QWidget()
         self.button_layout = QVBoxLayout(self.button_container)
         self.button_layout.setAlignment(Qt.AlignCenter)
@@ -2217,27 +2393,34 @@ class TelaVoos_Listar(QMainWindow):
 
         self.layout.addWidget(self.button_container)
 
-        # Chamar o método para listar os voos ao inicializar
-        self.listar_voos()
+        # Carregar dados dos voos
+        self.carregar_lista_voos()
 
-    def listar_voos(self) -> None:
-        """Atualiza a label com a lista de voos cadastrados no banco de dados."""
+    def carregar_lista_voos(self):
+        """Carrega a lista de voos cadastrados e exibe na interface."""
         try:
-            # Consultar os voos no banco de dados
             with self.conn.cursor() as cur:
                 cur.execute("SELECT id, sigla, origem, destino, modelo_aviao FROM voos;")
                 voos = cur.fetchall()
-            
-            # Formatar os dados dos voos para exibição
-            voo_info = ""
-            for voo in voos:
-                voo_info += f"ID: {voo[0]} | Sigla: {voo[1]} | Origem: {voo[2]} | Destino: {voo[3]} | Modelo: {voo[4]}\n"
 
-            # Atualizar a label com as informações dos voos
-            self.voo_info_label.setText(voo_info if voo_info else "Nenhum voo cadastrado.")
+            if voos:
+                self.tabela_voos.setRowCount(len(voos))
+                for i, voo in enumerate(voos):
+                    self.tabela_voos.setItem(i, 0, QTableWidgetItem(str(voo[0])))  # ID
+                    self.tabela_voos.setItem(i, 1, QTableWidgetItem(voo[1]))  # Sigla
+                    self.tabela_voos.setItem(i, 2, QTableWidgetItem(voo[2]))  # Origem
+                    self.tabela_voos.setItem(i, 3, QTableWidgetItem(voo[3]))  # Destino
+                    self.tabela_voos.setItem(i, 4, QTableWidgetItem(voo[4]))  # Modelo
+            else:
+                self.tabela_voos.setRowCount(1)
+                self.tabela_voos.setItem(0, 0, QTableWidgetItem("Nenhum voo cadastrado"))
+                for col in range(1, 5):
+                    self.tabela_voos.setItem(0, col, QTableWidgetItem(""))
         except Exception as e:
-            self.voo_info_label.setText(f"Erro ao carregar os voos: {str(e)}")
-
+            self.tabela_voos.setRowCount(1)
+            self.tabela_voos.setItem(0, 0, QTableWidgetItem(f"Erro ao carregar voos: {str(e)}"))
+            for col in range(1, 5):
+                self.tabela_voos.setItem(0, col, QTableWidgetItem(""))
 
 class TelaAvioes_Listar(QMainWindow):
     def __init__(self):
@@ -2287,18 +2470,51 @@ class TelaAvioes_Listar(QMainWindow):
         self.label_container.setStyleSheet("color: #333333;")
         self.layout.addWidget(self.label_container, alignment=Qt.AlignCenter)
 
-        # Contêiner de informações dos aviões
-        self.info_container = QWidget()
-        self.info_layout = QVBoxLayout(self.info_container)
-        self.info_container.setContentsMargins(100, 10, 100, 10)
-        self.info_layout.setSpacing(10)
+        # Tabela de aviões
+        self.tabela_avioes = QTableWidget()
+        self.tabela_avioes.setColumnCount(4)  # Quatro colunas: ID, Sigla, Modelo, Assentos
+        self.tabela_avioes.setHorizontalHeaderLabels(["ID", "Sigla", "Modelo", "Assentos"])
+        self.tabela_avioes.setSelectionMode(QAbstractItemView.NoSelection)  # Desativa seleção de células
+        self.tabela_avioes.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Impede edição das células
+        self.tabela_avioes.setStyleSheet("""
+            QTableWidget {
+                background-color: #f9f9f9;
+                font-size: 12px;
+                color: #333333;
+                border: 1px solid #dddddd;
+                border-radius: 5px;
+            }
+            QTableWidget::item {
+                padding: 8px;
+            }
+            QTableWidget::horizontalHeader {
+                background-color: #4CAF50;
+                color: white;
+                font-weight: bold;
+                font-size: 14px;
+                border: none;
+            }
+            QTableWidget::verticalHeader {
+                background-color: #f1f1f1;
+                border: none;
+            }
+            QScrollBar:vertical {
+                border: none;
+                background: #f1f1f1;
+                width: 10px;
+                margin: 0px 0px 0px 0px;
+            }
+            QScrollBar::handle:vertical {
+                background: #4CAF50;
+                border-radius: 5px;
+            }
+        """)
 
-        self.aviao_info_label = QLabel()
-        self.aviao_info_label.setStyleSheet("border: 1px solid #cccccc; padding: 8px; border-radius: 5px;")
-        self.aviao_info_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-        self.info_layout.addWidget(self.aviao_info_label)
-
-        self.layout.addWidget(self.info_container)
+        # Scroll para a tabela
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidget(self.tabela_avioes)
+        self.scroll_area.setWidgetResizable(True)
+        self.layout.addWidget(self.scroll_area)
 
         # Botão "Voltar"
         self.button_container = QWidget()
@@ -2320,18 +2536,25 @@ class TelaAvioes_Listar(QMainWindow):
     def carregar_lista_avioes(self):
         """Carrega a lista de aviões cadastrados e exibe na interface."""
         try:
-            metodos_gerente = MetodosAvioes()
+            metodos_gerente = MetodosGerente()
             avioes = metodos_gerente.listar_avioes()
             if avioes:
-                info_text = "ID | Sigla | Modelo | Assentos\n"
-                info_text += "\n".join([f"{aviao[0]} | {aviao[1]} | {aviao[2]} | {aviao[3]}" for aviao in avioes])
+                self.tabela_avioes.setRowCount(len(avioes))
+                for i, aviao in enumerate(avioes):
+                    self.tabela_avioes.setItem(i, 0, QTableWidgetItem(str(aviao[0])))  # ID
+                    self.tabela_avioes.setItem(i, 1, QTableWidgetItem(aviao[1]))  # Sigla
+                    self.tabela_avioes.setItem(i, 2, QTableWidgetItem(aviao[2]))  # Modelo
+                    self.tabela_avioes.setItem(i, 3, QTableWidgetItem(str(aviao[3])))  # Assentos
             else:
-                info_text = "Nenhum avião cadastrado."
-
-            self.aviao_info_label.setText(info_text)
+                self.tabela_avioes.setRowCount(1)
+                self.tabela_avioes.setItem(0, 0, QTableWidgetItem("Nenhum avião cadastrado"))
+                for col in range(1, 4):
+                    self.tabela_avioes.setItem(0, col, QTableWidgetItem(""))
         except Exception as e:
-            self.aviao_info_label.setText(f"Erro ao carregar aviões: {str(e)}")
-
+            self.tabela_avioes.setRowCount(1)
+            self.tabela_avioes.setItem(0, 0, QTableWidgetItem(f"Erro ao carregar aviões: {str(e)}"))
+            for col in range(1, 4):
+                self.tabela_avioes.setItem(0, col, QTableWidgetItem(""))
 
 class TelaAtendente(QMainWindow):
     """Tela principal do atendente, com botões para navegação entre diferentes telas de gerenciamento na Delta Airlines."""
@@ -2339,7 +2562,7 @@ class TelaAtendente(QMainWindow):
     def __init__(self):
         """Inicializa a tela principal do atendente e configura o layout e os botões de navegação."""
         super().__init__()
-        self.setWindowTitle("Gerenciamento - Delta Airlines")
+        self.setWindowTitle("Atendimento - Delta Airlines")
         self.setFixedSize(1000, 600)
         self.setStyleSheet("background-color: white;")
 
@@ -2376,7 +2599,7 @@ class TelaAtendente(QMainWindow):
         # Widget para centralizar botões
         button_widget = QWidget()
         button_layout = QVBoxLayout(button_widget)
-        button_layout.setContentsMargins(0, 0, 0, 0)
+        button_layout.setContentsMargins(400, 90, 0, 0)
         button_layout.setSpacing(15)
         button_layout.setAlignment(Qt.AlignCenter)
         
@@ -2580,7 +2803,7 @@ class TelaPassageiros(QMainWindow):
         e adicionando os botões de ação.
         """
         super().__init__()
-        self.setWindowTitle("Gerenciamento de Clientes - Delta Airlines")
+        self.setWindowTitle("Atendimento de clientes - Delta Airlines")
         self.setFixedSize(1000, 600)
         self.setStyleSheet("background-color: white;")
 
@@ -2622,7 +2845,7 @@ class TelaPassageiros(QMainWindow):
         # Widget dos botões
         self.button_widget = QWidget()
         self.button_layout = QVBoxLayout(self.button_widget)
-        self.button_layout.setContentsMargins(0, 0, 0, 0)
+        self.button_layout.setContentsMargins(400, 70, 0, 0)
         self.button_layout.setSpacing(15)
         self.button_layout.setAlignment(Qt.AlignTop)
 
@@ -2765,7 +2988,7 @@ class TelaReservas(QMainWindow):
         # Widget dos botões
         self.button_widget = QWidget()
         self.button_layout = QVBoxLayout(self.button_widget)
-        self.button_layout.setContentsMargins(0, 0, 0, 0)
+        self.button_layout.setContentsMargins(400, 120, 0, 0)
         self.button_layout.setSpacing(15)
         self.button_layout.setAlignment(Qt.AlignTop)
 
