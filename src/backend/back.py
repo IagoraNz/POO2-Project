@@ -4,20 +4,15 @@ import psycopg2
 class Aviao():
     """
     Classe que representa um avião.
-
-    Atributos:
-        modelo (str): Modelo do avião.
-        quantidade_assentos (int): Quantidade de assentos disponíveis no avião.
-        sigla_av (str): Sigla identificadora do avião.
     """
-    def __init__(self, modelo: str, quantidade_assentos: int, sigla_av: str):
+    def __init__(self, modelo: str, quantidade_assentos: int, sigla_av: str) -> None: 
         """
         Inicializa a classe Aviao.
 
         Args:
-            modelo (str): Modelo do avião.
-            quantidade_assentos (int): Quantidade de assentos disponíveis.
-            sigla_av (str): Sigla identificadora do avião.
+            modelo: (str) Modelo do avião.
+            quantidade_assentos: (int) Quantidade de assentos disponíveis.
+            sigla_av: (str) Sigla identificadora do avião.
         """
         self._modelo = modelo
         self._quantidade_assentos = quantidade_assentos
@@ -56,22 +51,16 @@ class Aviao():
 class Voo():
     """
     Classe que representa um voo.
-
-    Atributos:
-        sigla (str): Identificador único do voo.
-        origem (str): Cidade de origem do voo.
-        destino (str): Cidade de destino do voo.
-        aviao (Aviao): Avião associado ao voo.
     """
     def __init__(self, sigla: str, origem: str, destino: str, aviao: object) -> None:
         """
         Inicializa a classe Voo.
 
         Args:
-            sigla (str): Identificador do voo.
-            origem (str): Cidade de origem.
-            destino (str): Cidade de destino.
-            aviao (Aviao): Avião utilizado no voo.
+            sigla: (str) Identificador do voo.
+            origem: (str) Cidade de origem.
+            destino: (str) Cidade de destino.
+            aviao: (Aviao) Avião utilizado no voo.
         """
         self._sigla = sigla
         self._origem = origem
@@ -120,12 +109,12 @@ class Voo():
         """Define o avião associado ao voo."""
         self._aviao = aviao
         
-    def preenche_assentos(self, quantidade: int) -> tuple:
+    def preenche_assentos(self, quantidade: int) -> tuple [bool|str]:
         """
         Preenche a lista de assentos disponíveis no voo.
 
         Args:
-            quantidade (int): Quantidade de assentos a preencher.
+            quantidade: (int) Quantidade de assentos a preencher.
 
         Returns:
             tuple: (bool, str) indicando o sucesso e uma mensagem.
@@ -134,12 +123,12 @@ class Voo():
             self._assentos.append(i)
         return True, 'Assentos preenchidos com sucesso'
     
-    def reservar_assento(self, numero: int) -> tuple:
+    def reservar_assento(self, numero: int) -> tuple [bool|str]:
         """
         Reserva um assento no voo.
 
         Args:
-            numero (int): Número do assento a ser reservado.
+            numero: (int) Número do assento a ser reservado.
 
         Returns:
             tuple: (bool, str) indicando o sucesso e uma mensagem.
@@ -155,20 +144,16 @@ class Voo():
 class Passageiro:
     """
     Classe que representa um passageiro.
-
-    Atributos:
-        nome (str): Nome do passageiro.
-        cpf (int): CPF do passageiro.
-        telefone (int): Número de telefone do passageiro.
+    
     """
     def __init__(self, nome: str, cpf: int, telefone: int) -> None:
         """
         Inicializa a classe Passageiro.
 
         Args:
-            nome (str): Nome do passageiro.
-            cpf (int): CPF do passageiro.
-            telefone (int): Número de telefone do passageiro.
+            nome: (str) Nome do passageiro.
+            cpf: (int) CPF do passageiro.
+            telefone: (int) Número de telefone do passageiro.
         """
         self._nome = nome
         self._cpf = cpf
@@ -213,10 +198,10 @@ class Funcionario():
         Inicializa um objeto Funcionario.
 
         Args:
-            nome (str): Nome do funcionário.
-            cpf (int): CPF do funcionário.
-            salario (float): Salário do funcionário.
-            senha (str): Senha do funcionário.
+            nome: (str) Nome do funcionário.
+            cpf: (int) CPF do funcionário.
+            salario: (float) Salário do funcionário.
+            senha: (str) Senha do funcionário.
         """
         self._nome = nome
         self._cpf = cpf
@@ -267,16 +252,16 @@ class Gerente(Funcionario):
     """
     Representa um gerente que herda de Funcionario, com atributo adicional expediente.
     """
-    def __init__(self, nome: str, cpf: int, salario: float, senha: str, expediente: str):
+    def __init__(self, nome: str, cpf: int, salario: float, senha: str, expediente: str) -> None:
         """
         Inicializa um objeto Gerente.
 
         Args:
-            nome (str): Nome do gerente.
-            cpf (int): CPF do gerente.
-            salario (float): Salário do gerente.
-            senha (str): Senha do gerente.
-            expediente (str): Horário de expediente do gerente.
+            nome: (str) Nome do gerente.
+            cpf: (int) CPF do gerente.
+            salario: (float) Salário do gerente.
+            senha: (str) Senha do gerente.
+            expediente: (str) Horário de expediente do gerente.
         """
         super().__init__(nome, cpf, salario, senha)
         self._expediente = expediente
@@ -295,16 +280,16 @@ class Atendente(Funcionario):
     """
     Representa um atendente que herda de Funcionario, com atributo adicional terminal.
     """
-    def __init__(self, nome: str, cpf: int, salario: float, senha: str, terminal: int):
+    def __init__(self, nome: str, cpf: int, salario: float, senha: str, terminal: int) -> None:
         """
         Inicializa um objeto Atendente.
 
         Args:
-            nome (str): Nome do atendente.
-            cpf (int): CPF do atendente.
-            salario (float): Salário do atendente.
-            senha (str): Senha do atendente.
-            terminal (int): Terminal atribuído ao atendente.
+            nome: (str) Nome do atendente.
+            cpf: (int) CPF do atendente.
+            salario: (float) Salário do atendente.
+            senha: (str) Senha do atendente.
+            terminal: (int) Terminal atribuído ao atendente.
         """
         super().__init__(nome, cpf, salario, senha)
         self._terminal = terminal
@@ -323,13 +308,13 @@ class Autenticacao:
     """
     Responsável pela autenticação de usuários e gerenciamento de credenciais no banco de dados.
     """
-    def __init__(self, user: str, senha: str):
+    def __init__(self, user: str, senha: str) -> None:
         """
         Inicializa um objeto Autenticacao.
 
         Args:
-            user (str): Nome de usuário.
-            senha (str): Senha do usuário.
+            user: (str) Nome de usuário.
+            senha: (str) Senha do usuário.
         """
         self._user = user
         self._senha = senha
@@ -379,17 +364,17 @@ class Autenticacao:
         """Define a senha do usuário."""
         self._senha = senha
 
-    def cadastro(self, user: str, senha: str, tipo: int) -> tuple:
+    def cadastro(self, user: str, senha: str, tipo: int) -> tuple[bool|str]:
         """
         Cadastra ou atualiza um usuário no banco de dados.
 
         Args:
-            user (str): Nome de usuário.
-            senha (str): Senha do usuário.
-            tipo (int): Tipo de usuário (1 para gerente, 2 para atendente).
+            user: (str) Nome de usuário.
+            senha: (str) Senha do usuário.
+            tipo: (int) Tipo de usuário (1 para gerente, 2 para atendente).
 
         Returns:
-            tuple: Status e mensagem de sucesso ou erro.
+            tuple: (bool|str) Status e mensagem de sucesso ou erro.
         """
         try:
             with self.conn.cursor() as cur:
@@ -407,16 +392,16 @@ class Autenticacao:
         except Exception as e:
             return False, f"Erro no cadastro: {str(e)}"
 
-    def login(self, user: str, senha: str) -> tuple:
+    def login(self, user: str, senha: str) -> tuple[bool|str]:
         """
         Realiza o login de um usuário.
 
         Args:
-            user (str): Nome de usuário.
-            senha (str): Senha do usuário.
+            user: (str) Nome de usuário.
+            senha: (str) Senha do usuário.
 
         Returns:
-            tuple: Status e mensagem indicando o tipo de usuário ou erro.
+            tuple: (bool|str) Status e mensagem indicando o tipo de usuário ou erro.
         """
         try:
             with self.conn.cursor() as cur:
@@ -443,15 +428,15 @@ class CiaAerea():
     """
     Representa uma companhia aérea, com atributos para gerenciar aviões, voos, passageiros e funcionários.
     """
-    def __init__(self, nome: str, cnpj: int, telefone: int, endereco: str):
+    def __init__(self, nome: str, cnpj: int, telefone: int, endereco: str) -> None:
         """
         Inicializa um objeto CiaAerea.
 
         Args:
-            nome (str): Nome da companhia aérea.
-            cnpj (int): CNPJ da companhia aérea.
-            telefone (int): Telefone da companhia aérea.
-            endereco (str): Endereço da companhia aérea.
+            nome: (str) Nome da companhia aérea.
+            cnpj: (int) CNPJ da companhia aérea.
+            telefone: (int) Telefone da companhia aérea.
+            endereco: (str) Endereço da companhia aérea.
         """
         self._nome = nome
         self._cnpj = cnpj
@@ -502,15 +487,15 @@ class CiaAerea():
         """Define o endereço da companhia aérea."""
         self._endereco = endereco
         
-    def add_aviao(self, aviao: object) -> tuple:
+    def add_aviao(self, aviao: object) -> tuple[bool|str]:
         """
         Adiciona um avião à companhia aérea.
 
         Args:
-            aviao (object): Objeto da classe Aviao.
+            aviao: (object) Objeto da classe Aviao.
 
         Returns:
-            tuple: Status e mensagem indicando sucesso ou erro.
+            tuple:(bool|str) Status e mensagem indicando sucesso ou erro.
         """
         if isinstance(aviao, Aviao):
             if aviao._sigla_av not in self._avioes.keys():
@@ -519,12 +504,12 @@ class CiaAerea():
             return False, 'Avião já cadastrado!'
         return False, 'Avião inválido!'
     
-    def excluir_aviao(self, sigla: str) -> tuple:
+    def excluir_aviao(self, sigla: str) -> tuple[bool|str]:
         """
         Exclui um avião do sistema.
 
         Args:
-            sigla (str): A sigla identificadora do avião.
+            sigla: (str) A sigla identificadora do avião.
 
         Returns:
             tuple: (bool, str) indicando o sucesso da operação e uma mensagem.
@@ -534,12 +519,12 @@ class CiaAerea():
             return True, 'Avião excluído com sucesso!'
         return False, 'Avião não encontrado!'
 
-    def add_voo(self, voo: object) -> tuple:
+    def add_voo(self, voo: object) -> tuple [bool|str]:
         """
         Adiciona um voo ao sistema.
 
         Args:
-            voo (object): Objeto do tipo `Voo` representando o voo a ser adicionado.
+            voo: (object) Objeto do tipo `Voo` representando o voo a ser adicionado.
 
         Returns:
             tuple: (bool, str) indicando o sucesso da operação e uma mensagem.
@@ -551,12 +536,12 @@ class CiaAerea():
             return False, 'Voo já cadastrado!'
         return False, 'Voo inválido!'
     
-    def excluir_voo(self, sigla: str) -> tuple:
+    def excluir_voo(self, sigla: str) -> tuple[bool|str]:
         """
         Exclui um voo do sistema.
 
         Args:
-            sigla (str): A sigla identificadora do voo.
+            sigla: (str) A sigla identificadora do voo.
 
         Returns:
             tuple: (bool, str) indicando o sucesso da operação e uma mensagem.
@@ -566,12 +551,12 @@ class CiaAerea():
             return True, 'Voo excluído com sucesso!'
         return False, 'Voo não encontrado!'
     
-    def add_passageiro(self, passageiro: object) -> tuple:
+    def add_passageiro(self, passageiro: object) -> tuple[bool|str]:
         """
         Adiciona um passageiro ao sistema.
 
         Args:
-            passageiro (object): Objeto do tipo `Passageiro` representando o passageiro.
+            passageiro: (object) Objeto do tipo `Passageiro` representando o passageiro.
 
         Returns:
             tuple: (bool, str) indicando o sucesso da operação e uma mensagem.
@@ -583,12 +568,12 @@ class CiaAerea():
             return False, 'Passageiro já cadastrado!'
         return False, 'Passageiro inválido!'
     
-    def excluir_passageiro(self, cpf: int) -> tuple:
+    def excluir_passageiro(self, cpf: int) -> tuple[bool|str]:
         """
         Exclui um passageiro do sistema.
 
         Args:
-            cpf (int): O CPF do passageiro.
+            cpf: (int) O CPF do passageiro.
 
         Returns:
             tuple: (bool, str) indicando o sucesso da operação e uma mensagem.
@@ -598,12 +583,12 @@ class CiaAerea():
             return True, 'Passageiro excluído com sucesso!'
         return False, 'Passageiro não encontrado!'
     
-    def add_funcionario(self, funcionario: object) -> tuple:
+    def add_funcionario(self, funcionario: object) -> tuple[bool|str]:
         """
         Adiciona um funcionário ao sistema.
 
         Args:
-            funcionario (object): Objeto do tipo `Funcionario` representando o funcionário.
+            funcionario: (object) Objeto do tipo `Funcionario` representando o funcionário.
 
         Returns:
             tuple: (bool, str) indicando o sucesso da operação e uma mensagem.
@@ -615,12 +600,12 @@ class CiaAerea():
             return False, "Funcionário já cadastrado!"
         return False, "Funcionário inválido!"
     
-    def excluir_funcionario(self, cpf: object) -> tuple:
+    def excluir_funcionario(self, cpf: object) -> tuple[bool|str]:
         """
         Exclui um funcionário do sistema.
 
         Args:
-            cpf (int): O CPF do funcionário.
+            cpf: (int) O CPF do funcionário.
 
         Returns:
             tuple: (bool, str) indicando o sucesso da operação e uma mensagem.
@@ -668,14 +653,14 @@ class CadastroClientes:
             ''')
             self.conn.commit()
 
-    def cadastrar_cliente(self, nome: str, cpf: str, telefone: str) -> tuple:
+    def cadastrar_cliente(self, nome: str, cpf: str, telefone: str) -> tuple[bool|str]:
         """
         Insere ou atualiza os dados de um cliente no banco de dados.
 
         Args:
-            nome (str): Nome do cliente.
-            cpf (str): CPF do cliente.
-            telefone (str): Telefone do cliente.
+            nome: (str) Nome do cliente.
+            cpf: (str) CPF do cliente.
+            telefone: (str) Telefone do cliente.
 
         Returns:
             tuple: Um par (bool, str), onde o bool indica sucesso (True) ou falha (False),
@@ -697,17 +682,8 @@ class CadastroClientes:
         except Exception as e:
             return False, f"Erro ao cadastrar cliente: {str(e)}"
 
-    # def listar_clientes(self):
-    #     """Retorna uma lista com todos os clientes cadastrados."""
-    #     try:
-    #         with self.conn.cursor() as cur:
-    #             cur.execute("SELECT id, nome, cpf, telefone FROM clientes;")
-    #             clientes = cur.fetchall()
-    #         return clientes
-    #     except Exception as e:
-    #         return []
 
-    def buscar_cliente_por_cpf(self, cpf: str) -> tuple:
+    def buscar_cliente_por_cpf(self, cpf: str) -> tuple[bool|str]:
         """
         Busca um cliente no banco de dados pelo CPF.
 
@@ -715,7 +691,7 @@ class CadastroClientes:
             cpf (str): CPF do cliente.
 
         Returns:
-            tuple: Uma tupla contendo os dados do cliente (id, nome, cpf, telefone), 
+            tuple: (bool|str) Uma tupla contendo os dados do cliente (id, nome, cpf, telefone), 
                    ou None caso o cliente não seja encontrado.
         """
         try:
@@ -731,12 +707,12 @@ class CadastroClientes:
         except Exception as e:
             return None
 
-    def excluir_cliente(self, cpf: str) -> tuple:
+    def excluir_cliente(self, cpf: str) -> tuple[bool|str]:
         """
         Exclui um cliente do banco de dados pelo CPF.
 
         Args:
-            cpf (str): CPF do cliente a ser excluído.
+            cpf: (str) CPF do cliente a ser excluído.
 
         Returns:
             tuple: Um par (bool, str), onde o bool indica sucesso (True) ou falha (False),
@@ -755,14 +731,14 @@ class CadastroClientes:
         except Exception as e:
             return False, f"Erro ao excluir cliente: {str(e)}"
     
-    def alterar_cliente(self, cpf: str, novo_nome: str, novo_telefone: str) -> tuple:
+    def alterar_cliente(self, cpf: str, novo_nome: str, novo_telefone: str) -> tuple[bool|str]:
         """
         Altera os dados de um cliente existente no banco de dados pelo CPF.
 
         Args:
-            cpf (str): CPF do cliente a ser alterado.
-            novo_nome (str): Novo nome do cliente.
-            novo_telefone (str): Novo telefone do cliente.
+            cpf: (str) CPF do cliente a ser alterado.
+            novo_nome: (str) Novo nome do cliente.
+            novo_telefone: (str) Novo telefone do cliente.
 
         Returns:
             tuple: Um par (bool, str), onde o bool indica sucesso (True) ou falha (False),
@@ -826,17 +802,16 @@ class CadastroVoos:
             ''')
             self.conn.commit()
 
-    def cadastrar_voo(self, sigla: str, origem: str, destino: str, modelo_aviao: str, quantidade_assentos: int) -> tuple:
-        """Insere os dados de um voo no banco de dados."""
+    def cadastrar_voo(self, sigla: str, origem: str, destino: str, modelo_aviao: str, quantidade_assentos: int) -> tuple[bool|str]:
         """
         Insere os dados de um voo no banco de dados.
 
         Args:
-            sigla (str): Identificação única do voo (exemplo: código do voo).
-            origem (str): Local de origem do voo.
-            destino (str): Local de destino do voo.
-            modelo_aviao (str): Modelo do avião.
-            quantidade_assentos (int): Quantidade total de assentos disponíveis no avião.
+            sigla: (str) Identificação única do voo (exemplo: código do voo).
+            origem: (str) Local de origem do voo.
+            destino: (str) Local de destino do voo.
+            modelo_aviao: (str) Modelo do avião.
+            quantidade_assentos: (int) Quantidade total de assentos disponíveis no avião.
 
         Returns:
             tuple: Um par (bool, str), onde o bool indica sucesso (True) ou falha (False),
@@ -856,10 +831,8 @@ class CadastroVoos:
         except Exception as e:
             return False, f"Erro ao cadastrar voo: {str(e)}"
 
-    def listar_voos(self) -> list:
-        """
-        Retorna uma lista com todos os voos cadastrados.
-
+    def listar_voos(self) -> list[tuple]:
+        """"
         Returns:
             list: Uma lista contendo tuplas com os dados de cada voo.
         """
@@ -871,12 +844,12 @@ class CadastroVoos:
         except Exception as e:
             return []
 
-    def buscar_voo_por_sigla(self, sigla: str) -> tuple:
+    def buscar_voo_por_sigla(self, sigla: str) -> tuple[int, str, str, str, str]:
         """
         Busca os dados de um voo no banco de dados pela sigla.
 
         Args:
-            sigla (str): Identificação única do voo.
+            sigla: (str) Identificação única do voo.
 
         Returns:
             tuple: Uma tupla contendo os dados do voo (id, sigla, origem, destino, modelo_aviao),
@@ -895,12 +868,12 @@ class CadastroVoos:
         except Exception as e:
             return None
 
-    def excluir_voo(self, sigla: str) -> tuple:
+    def excluir_voo(self, sigla: str) -> tuple[bool|str]:
         """
         Exclui um voo do banco de dados pela sigla.
 
         Args:
-            sigla (str): Identificação única do voo a ser excluído.
+            sigla: (str) Identificação única do voo a ser excluído.
 
         Returns:
             tuple: Um par (bool, str), onde o bool indica sucesso (True) ou falha (False),
@@ -919,16 +892,16 @@ class CadastroVoos:
         except Exception as e:
             return False, f"Erro ao excluir voo: {str(e)}"
 
-    def alterar_voo(self, sigla: str, origem: str, destino: str, modelo_aviao: str, quantidade_assentos: int) -> tuple:
+    def alterar_voo(self, sigla: str, origem: str, destino: str, modelo_aviao: str, quantidade_assentos: int) -> tuple[bool|str]:
         """
         Altera os dados de um voo existente no banco de dados pela sigla.
 
         Args:
-            sigla (str): Identificação única do voo a ser alterado.
-            origem (str): Novo local de origem do voo.
-            destino (str): Novo local de destino do voo.
-            modelo_aviao (str): Novo modelo do avião.
-            quantidade_assentos (int): Nova quantidade total de assentos disponíveis.
+            sigla: (str) Identificação única do voo a ser alterado.
+            origem: (str) Novo local de origem do voo.
+            destino: (str) Novo local de destino do voo.
+            modelo_aviao: (str) Novo modelo do avião.
+            quantidade_assentos: (int) Nova quantidade total de assentos disponíveis.
 
         Returns:
             tuple: Um par (bool, str), onde o bool indica sucesso (True) ou falha (False),
@@ -994,7 +967,7 @@ class BackendReservas:
         except Exception as e:
             print(f"Erro ao criar tabela: {e}")
 
-    def listar_voos(self) -> list:
+    def listar_voos(self) -> list[tuple]:
         """
         Lista todos os voos disponíveis no banco de dados.
 
@@ -1014,8 +987,8 @@ class BackendReservas:
         Realiza a reserva de um assento para um voo específico.
 
         Args:
-            sigla (str): Sigla do voo a ser reservado.
-            assento (int): Número do assento a ser reservado.
+            sigla: (str) Sigla do voo a ser reservado.
+            assento: (int) Número do assento a ser reservado.
 
         Returns:
             str: Mensagem indicando o status da reserva.
@@ -1122,8 +1095,8 @@ class BackendRemoverReservas:
         Remove a reserva de um assento para um voo específico.
 
         Args:
-            sigla (str): Sigla do voo cuja reserva será removida.
-            assento (int): Número do assento a ser removido.
+            sigla: (str) Sigla do voo cuja reserva será removida.
+            assento: (int) Número do assento a ser removido.
 
         Returns:
             str: Mensagem indicando o status da remoção.
@@ -1159,7 +1132,6 @@ class BackendRemoverReservas:
         """
         Fecha a conexão com o banco de dados.
         """
-
         self.cur.close()
         self.conn.close()
 
@@ -1203,14 +1175,14 @@ class MetodosGerente:
             ''')
             self.conn.commit()
 
-    def cadastrar_aviao(self, sigla: str, modelo: str, assentos: int) -> tuple:
+    def cadastrar_aviao(self, sigla: str, modelo: str, assentos: int) -> tuple[bool|str]:
         """
         Insere ou atualiza os dados de um avião no banco de dados.
 
         Parâmetros:
-            sigla (str): Código único do avião.
-            modelo (str): Modelo do avião.
-            assentos (int): Número de assentos do avião.
+            sigla: (str) Código único do avião.
+            modelo: (str) Modelo do avião.
+            assentos: (int) Número de assentos do avião.
 
         Retorno:
             tuple[bool, str]: 
@@ -1254,7 +1226,7 @@ class MetodosGerente:
         """Busca um avião pela sigla.
         
          Parâmetros:
-            sigla (str): Código único do avião.
+            sigla: (str) Código único do avião.
 
         Retorno:
             tuple | None:
@@ -1277,7 +1249,7 @@ class MetodosGerente:
     def excluir_aviao(self, sigla: str) -> tuple[bool, str]:
         """Exclui um avião pela sigla.
          Parâmetros:
-            sigla (str): Código único do avião a ser excluído.
+            sigla: (str) Código único do avião a ser excluído.
 
         Retorno:
             tuple[bool, str]: 
@@ -1300,9 +1272,9 @@ class MetodosGerente:
     def alterar_aviao(self, sigla: str, novo_modelo: str, novos_assentos: int) -> tuple[bool|str]:
         """Altera os dados de um avião existente no banco de dados.
             Parâmetros:
-                sigla (str): Código único do avião.
-                novo_modelo (str): Novo modelo do avião.
-                novos_assentos (int): Novo número de assentos.
+                sigla: (str) Código único do avião.
+                novo_modelo: (str) Novo modelo do avião.
+                novos_assentos: (int) Novo número de assentos.
 
             Retorno:
                 tuple[bool, str]: 
