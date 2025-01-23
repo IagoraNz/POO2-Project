@@ -1,16 +1,20 @@
 import pytest
 import redis
 
-def test_login_gerente(server):
+def test_login_gerente(server) -> None:
     """
-    Testa o login de um gerente.
-    
-    Neste teste, a função verifica se o login do usuário 'gerente' é realizado corretamente com a senha
-    'senha123'. A função valida se o status retornado é 1 e se a mensagem retornada é "Login efetuado com 
-    sucesso, Gerente".
+    Summary:
+        Testa o login de um gerente.
+        
+        Neste teste, a função verifica se o login do usuário 'gerente' é realizado corretamente com a senha
+        'senha123'. A função valida se o status retornado é 1 e se a mensagem retornada é "Login efetuado com 
+        sucesso, Gerente".
 
     Args:
         server: Instância do servidor onde o login será testado.
+        
+    Returns:
+        None
 
     Assert:
         status: (int) 1, indicando sucesso no login do gerente.
@@ -24,13 +28,14 @@ def test_login_gerente(server):
     assert status == 1
     assert mensagem == "Login efetuado com sucesso, Gerente"
 
-def test_login_atendente(server):
+def test_login_atendente(server) -> None:
     """
-    Testa o login de um atendente.
-    
-    Neste teste, a função verifica se o login do usuário 'atendente' é realizado corretamente com a senha
-    'senha456'. A função valida se o status retornado é 2 e se a mensagem retornada é "Login efetuado com 
-    sucesso, Atendente".
+    Summary:
+        Testa o login de um atendente.
+        
+        Neste teste, a função verifica se o login do usuário 'atendente' é realizado corretamente com a senha
+        'senha456'. A função valida se o status retornado é 2 e se a mensagem retornada é "Login efetuado com 
+        sucesso, Atendente".
 
     Args:
         server: Instância do servidor onde o login será testado.
@@ -47,15 +52,19 @@ def test_login_atendente(server):
     assert status == 2
     assert mensagem == "Login efetuado com sucesso, Atendente"
 
-def test_login_falha(server):
+def test_login_falha(server) -> None:
     """
-    Testa o login com falha (usuário inexistente ou senha incorreta).
-    
-    Este teste verifica se o login falha quando um usuário não existente ou senha incorreta é fornecido.
-    A função valida se o status retornado é False e se a mensagem é "Login não foi efetuado com sucesso".
+    Summary:
+        Testa o login com falha (usuário inexistente ou senha incorreta).
+        
+        Este teste verifica se o login falha quando um usuário não existente ou senha incorreta é fornecido.
+        A função valida se o status retornado é False e se a mensagem é "Login não foi efetuado com sucesso".
 
     Args:
         server: Instância do servidor onde o login será testado.
+        
+    Returns:
+        None
 
     Assert:
         status: (bool) False, indicando falha no login.

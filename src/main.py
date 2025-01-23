@@ -1206,7 +1206,8 @@ class TelaVoos(QMainWindow):
         Classe responsável pela interface de gerenciamento de voos da companhia aérea Delta Airlines.
 
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas de aplicativos
+        QMainWindow: 
+            Classe base para janelas de aplicativos
         
     Methods:
         __init__: Inicializa a interface de gerenciamento de voos e configura o layout principal, widgets e botões associados.
@@ -1566,7 +1567,8 @@ class TelaVoos_Cadastrar(QMainWindow):
         Tela para cadastro de voos na aplicação Delta Airlines.
 
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas de aplicativos
+        QMainWindow: 
+            Classe base para janelas de aplicativos
         
     Methods:
         __init__: Inicializa a tela de cadastro de voos, configurando o layout e os botões de interação.
@@ -1725,7 +1727,8 @@ class TelaAvioes_Cadastrar(QMainWindow):
         Classe responsável pela tela de cadastro de avião.
 
     Attributes:
-        QMainWindow (QMainWindow): Classe base para janelas de aplicativos
+        QMainWindow: 
+            Classe base para janelas de aplicativos
         
     Methods:
         __init__: Inicializa a tela de cadastro de avião, configurando o layout, campos de entrada, botões de ação e lógica de exibição da tela.
