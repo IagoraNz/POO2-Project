@@ -1,17 +1,21 @@
-# 📄 Implementação do Trabalho Final da disciplina de Programação Orientada á Objetos 2.
+# 📄 Implementação do trabalho final da disciplina de Programação Orientada a Objetos II.
 
-## 🔗 **Objetivo**
+## 🔗 Objetivo
 O objetivo deste projeto é implementar as operações de um sistema de aeroporto, onde gerenciamos as interações envolvendo gerentes e atendentes. O sistema oferece funcionalidades para o manuseio eficiente e seguro das tarefas relacionadas ao aeroporto.
 
-## 🔗 **Funcionalidades**
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/994d3b10-2937-4942-ba8e-3b1a428ecd71" alt="Descrição da imagem" width="500px">
+</div>
 
-1. Cadastro
+## 🔗 Funcionalidades
+
+### ⚙️ Cadastro
 Ao acessar a tela de Cadastro, o usuário deverá preencher os campos com seu usuário, senha e função (gerente ou atendente). Após inserir um usuário, senha válidos e uma função válida, e clicar em Efetuar Cadastro, o sistema criará o cadastro do usuário, permitindo que ele realize o login posteriormente.
 
-2. Login
+### ⚙️ Login
 Na tela de Login, o usuário preencherá os campos de usuário e senha. Após clicar em Entrar, o sistema verificará as credenciais fornecidas. Com base no número de cadastro realizado, o usuário será direcionado para as funcionalidades específicas de gerente ou atendente, conforme sua função.
 
-3. Tela de Gerente
+### ⚙️ Tela de Gerente
 Se, após o login, o usuário for identificado como gerente, ele terá acesso às seguintes funcionalidades através dos botões na tela principal de gerente:
 
 - Voo
@@ -19,20 +23,19 @@ Se, após o login, o usuário for identificado como gerente, ele terá acesso à
 - Chat
 - Sair (para retornar ao menu principal)
 
-3.1 Tela de Voo
+#### 🔧 Tela de Voo
 
-Na tela de Voos, o gerente poderá cadastrar novos voos, alterar voos, remover voos, listar voos e marcar voos.
+Na tela de Voos, o gerente terá diversas funcionalidades disponíveis para gerenciar o fluxo de operações aéreas. Ele poderá cadastrar novos voos, atualizar informações de voos existentes, remover voos quando necessário, listar todos os voos cadastrados para consulta e organização, além de marcar voos. Essas ações permitirão ao gerente manter um controle eficiente e organizado dos voos registrados no sistema.
 
-3.2 Tela de Aviões
+#### 🔧 Tela de Aviões
 
-Na tela de Aviões, o gerente poderá cadastrar aviões, alterar aviões, remover aviões e listar os aviões.
+Na tela de Aviões, o gerente terá à sua disposição diversas funcionalidades para gerenciar as informações relacionadas à frota de aviões. Ele poderá cadastrar novos aviões, atualizar dados de aviões já existentes, remover registros de aviões que não são mais necessários e listar todos os aviões cadastrados para facilitar a consulta e a organização. Essas funcionalidades garantirão um controle eficaz e atualizado da frota no sistema.
 
+#### 🔧 Tela de Chat
 
-3.3 Tela de Chat
+Na tela de Chat, o gerente terá a possibilidade de se comunicar diretamente com os atendentes de maneira prática e em tempo real. Essa funcionalidade permitirá trocar informações, fornecer orientações, esclarecer dúvidas e acompanhar a execução das atividades, promovendo uma comunicação eficiente e colaborativa entre o gerente e a equipe de atendimento.
 
-Na tela de Chat, o gerente poderá se comunicar diretamente com os atendentes em tempo real.
-
-4. Tela de Atendente
+### ⚙️ Tela de Atendente
 
 Se, após o login, o usuário for identificado como atendente, ele terá acesso às seguintes funcionalidades através dos botões na tela principal de atendente:
 
@@ -41,42 +44,46 @@ Se, após o login, o usuário for identificado como atendente, ele terá acesso 
 - Chat
 - Sair (para retornar ao menu principal)
   
-4.1 Tela de Passageiros
+#### 🔧 Tela de Passageiros
 
-Na tela de passageiros, o atendente poderá cadastrar passageiros, alterar passageiros, remover passageiros e listar passageiros.
+Na tela de Passageiros, o atendente terá acesso a funcionalidades essenciais para o gerenciamento de informações dos clientes. Ele poderá cadastrar novos passageiros no sistema, atualizar os dados de passageiros já existentes, remover registros de passageiros quando necessário e listar todos os passageiros cadastrados para facilitar a consulta e a organização. Essas ferramentas asseguram uma gestão eficiente e precisa das informações dos passageiros.
 
-4.2 Tela de Reservas
+#### 🔧 Tela de Reservas
 
-Na tela de reserva, o atendente poderá reservar um voo ou remover a reserva de um voo.
+Na tela de Reservas, o atendente terá à disposição funcionalidades para gerenciar as reservas de voos de forma prática e eficiente. Ele poderá realizar a reserva de um voo para um cliente, garantindo o registro da viagem no sistema, ou remover reservas já existentes, caso haja cancelamentos ou alterações. Essas opções permitem um gerenciamento organizado e atualizado das reservas, atendendo às necessidades dos clientes de maneira ágil.
 
-4.3 Tela de Chat
+#### 🔧 Tela de Chat
 
-Na tela de Chat, o atendente poderá se comunicar diretamente com os gerentes em tempo real.
+Na tela de Chat, o atendente terá a possibilidade de se comunicar diretamente com os gerentes de maneira prática e em tempo real. Essa funcionalidade permitirá trocar informações, fornecer orientações, esclarecer dúvidas e acompanhar a execução das atividades, promovendo uma comunicação eficiente e colaborativa entre o gerente e a equipe de atendimento.
   
-## 🔗 Requisitos da Aplicação
+## 🔗 Aproveite a aplicação
 Para que a aplicação funcione corretamente é necessário o Docker Desktop instalado, além da criação do conteiner Postgress(banco de dados utilizado). 
 
-1. Criação do Conteiner.
+1. Clone o repositório
+```
+git clone https://github.com/IagoraNz/POO2-Project
+```
+
+2. Criação do container
 
 Para criar o conteiner utilize o código abaixo no terminal do seu compilador com o Docker Desktop em execução.
 ``` 
 docker run --name postgres -e POSTGRES_USER=poodois -e POSTGRES_PASSWORD=1234 -e POSTGRES_DB=credenciais -p 5432:5432 -d postgres
 ``` 
 
-2. Iniciar o conteiner do Docker Desktop
+3. Iniciar o conteiner do Docker
 
 Com o Docker Desktop em execução e após o contêiner ter sido criado, utilize o comando abaixo para iniciar o contêiner pelo terminal ou, se preferir, inicie-o manualmente pelo Docker Desktop.
-
-
 ``` 
 docker start postgres
 ```
 
-3. Inicializar os Pré-Requisitos.
-   
-Uma vez que o contêiner esteja em execução, você pode prosseguir para usar o aplicativo conectando-se ao banco de dados PostgreSQL através das credenciais e da porta especificadas acima. Certifique-se de que todas as dependências ou configurações necessárias para o sistema de gerenciamento do aeroporto estejam devidamente configuradas.
+4. Rode o arquivo principal da aplicação
+```
+./main.py
+``` 
 
-Notas
-Certifique-se de que você criou o contêiner.
-Certifique-se de que o Docker e o contêiner Docker estão em execução.
-Certifique-se de que seu sistema tenha recursos suficientes alocados para o Docker Desktop a fim de evitar problemas de desempenho.
+## ⚠️ Notas
+- Certifique-se de que você criou o contêiner.
+- Certifique-se de que o Docker e o contêiner Docker estão em execução.
+- Certifique-se de que seu sistema tenha recursos suficientes alocados para o Docker Desktop a fim de evitar problemas de desempenho.
