@@ -1188,9 +1188,7 @@ class TelaVoos(QMainWindow):
 
     def __init__(self):
         """
-        Inicializa a interface de gerenciamento de voos.
-
-        Define o layout principal, os widgets e as ações associadas aos botões.
+        Inicializa a interface de gerenciamento de voos. Define o layout principal, os widgets e as ações associadas aos botões.
         """
         super().__init__()
         self.setWindowTitle("Gerenciamento de Voos - Delta Airlines")
@@ -1283,43 +1281,78 @@ class TelaVoos(QMainWindow):
         self.left_layout.addWidget(self.button_widget)
         self.layout.addLayout(self.left_layout)
     
-    def mostrar_tela_cadastrar_voo(self):
+    def mostrar_tela_cadastrar_voo(self) -> None:
         """
-        Exibe a tela de cadastro de voos.
+        Summary:
+            Exibe a tela de cadastro de voos.
 
-        Cria uma instância da tela de cadastro, caso ainda não exista,
-        e a exibe ao usuário.
+        Args:
+            None
+            
+        Returns:
+            None
         """
         if not hasattr(self, 'cadastro_voos'):
             self.cadastro_voos = CadastroVoos()
         self.tela_cadastrar_voo = TelaVoos_Cadastrar(self.cadastro_voos)
         self.tela_cadastrar_voo.show()
 
-    def mostrar_tela_alterar_voo(self):
+    def mostrar_tela_alterar_voo(self) -> None:
         """
-        Exibe a tela de alteração de voos.
+        Summary:
+            Exibe a tela de alteração de voos.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         self.tela_alterar_voo = TelaVoos_Alterar()
         self.tela_alterar_voo.show()
     
-    def mostrar_tela_remover_reserva_voo(self):
+    def mostrar_tela_remover_reserva_voo(self) -> None:
         """
-        Exibe a tela de remoção de reservas de voos.
+        Summary:
+            Exibe a tela de remoção de reservas de voos.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         self.tela_remover_reserva_voo = TelaVoos_Remover()
         self.tela_remover_reserva_voo.show()
     
-    def mostrar_tela_listar_voo(self):
+    def mostrar_tela_listar_voo(self) -> None:
         """
-        Exibe a tela de listagem de voos.
+        Summary:
+            Exibe a tela de listagem de voos.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         self.tela_listar_voo = TelaVoos_Listar()
         self.tela_listar_voo.show()
 
 class TelaAvioes(QMainWindow):
     """
-    Classe responsável pela interface gráfica de gerenciamento de aviões.
-    Contém botões para cadastrar, alterar, remover e listar aviões.
+    Summary:
+        Classe responsável pela interface gráfica de gerenciamento de aviões. Contém botões para cadastrar, alterar, remover e listar aviões.
+    
+    Attributes:
+        QMainWindow (QMainWindow): Classe base para janelas de aplicativos
+        
+    Methods:
+        __init__: Inicializa a tela de gerenciamento de aviões, configurando o layout e os botões de interação.
+        mostrar_tela_cadastar_aviao: Exibe a tela de cadastro de avião
+        mostrar_tela_alterar_aviao: Exibe a tela de alteração de avião
+        mostrar_tela_remover_aviao: Exibe a tela de remoção de avião
+        mostrar_tela_listar_aviao: Exibe a tela de listagem de aviões
     """
 
     def __init__(self):
@@ -1426,30 +1459,58 @@ class TelaAvioes(QMainWindow):
         self.placeholder_widget = QWidget()
         self.layout.addWidget(self.placeholder_widget)
 
-    def mostrar_tela_cadastar_aviao(self):
+    def mostrar_tela_cadastar_aviao(self) -> None:
         """
-        Exibe a tela de cadastro de avião.
+        Summary:
+            Exibe a tela de cadastro de avião.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         self.tela_cadastrar_aviao = TelaAvioes_Cadastrar()
         self.tela_cadastrar_aviao.show()
 
-    def mostrar_tela_alterar_aviao(self):
+    def mostrar_tela_alterar_aviao(self) -> None:
         """
-        Exibe a tela de alteração de avião.
+        Summary:
+            Exibe a tela de alteração de avião.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         self.tela_alterar_aviao = TelaAvioes_Alterar()
         self.tela_alterar_aviao.show()
 
-    def mostrar_tela_remover_aviao(self):
+    def mostrar_tela_remover_aviao(self) -> None:
         """
-        Exibe a tela de remoção de avião.
+        Summary:
+            Exibe a tela de remoção de avião.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         self.tela_remover_aviao = TelaAvioes_Remover()
         self.tela_remover_aviao.show()
 
-    def mostrar_tela_listar_aviao(self):
+    def mostrar_tela_listar_aviao(self) -> None:
         """
-        Exibe a tela de listagem de aviões.
+        Summary:
+            Exibe a tela de listagem de aviões.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         self.tela_listar_aviao = TelaAvioes_Listar()
         self.tela_listar_aviao.show()
@@ -1458,18 +1519,21 @@ class TelaVoos_Cadastrar(QMainWindow):
     """
     Tela para cadastro de voos na aplicação Delta Airlines.
 
-    Esta classe gerencia a interface gráfica que permite ao usuário cadastrar voos, fornecendo informações sobre 
-    sigla do voo, origem, destino, modelo de avião e a quantidade de assentos disponível.
-
-    A interação com a classe de backend é feita por meio da instância 'cadastro_voos', que lida com os métodos de 
-    cadastro de voo e consulta de aviões.
+    Attributes:
+        QMainWindow (QMainWindow): Classe base para janelas de aplicativos
+        
+    Methods:
+        __init__: Inicializa a tela de cadastro de voos, configurando o layout e os botões de interação.
+        cadastrar_voo: Realiza o cadastro de um novo voo, validando todos os campos.
     """
 
     def __init__(self, cadastro_voos):
         """
-        Inicializa a tela de cadastro de voos.
+        Summary:
+            Inicializa a tela de cadastro de voos.
 
-        :param cadastro_voos: Instância da classe de backend para cadastro de voos (CadastroVoos).
+        Args:
+            cadastro_voos (CadastroVoos): Instância da classe CadastroVoos
         """
         super().__init__()
         self.cadastro_voos = cadastro_voos  # Instância da classe CadastroVoos
@@ -1571,15 +1635,19 @@ class TelaVoos_Cadastrar(QMainWindow):
 
         self.layout.addWidget(self.buttons_widget)
 
-    def cadastrar_voo(self):
+    def cadastrar_voo(self) -> None:
         """
         Realiza o cadastro de um novo voo, validando todos os campos.
 
-        O método verifica se todos os campos estão preenchidos e se o avião existe no cadastro.
-        Caso contrário, exibe uma mensagem de erro. Em caso de sucesso, registra o voo e exibe uma 
-        mensagem informando o resultado.
-
-        :raises: Exibe uma mensagem de aviso se algum campo não estiver preenchido corretamente ou se o avião não for encontrado.
+        Args:
+            None
+            
+        Returns:
+            None
+            
+        Raises:
+            QMessageBox.warning: Exibe uma mensagem de erro caso algum campo não seja preenchido.
+            QMessageBox.information: Exibe uma mensagem de sucesso após o cadastro do voo.
         """
         sigla_voo = self.sigla_input.text()
         origem = self.origem_input.text()
@@ -1604,16 +1672,20 @@ class TelaVoos_Cadastrar(QMainWindow):
 
 class TelaAvioes_Cadastrar(QMainWindow):
     """
-    Classe responsável pela tela de cadastro de avião.
-    Permite que o usuário insira os dados de um novo avião, como a sigla, modelo e quantidade de assentos, 
-    e realize o cadastro no sistema.
+    Summary:
+        Classe responsável pela tela de cadastro de avião.
+
+    Attributes:
+        QMainWindow (QMainWindow): Classe base para janelas de aplicativos
+        
+    Methods:
+        __init__: Inicializa a tela de cadastro de avião, configurando o layout, campos de entrada, botões de ação e lógica de exibição da tela.
+        cadastrar_aviao: Método para cadastrar um avião com os dados fornecidos nos campos de entrada.
     """
 
     def __init__(self):
         """
-        Inicializa a tela de cadastro de avião.
-
-        Configura a interface gráfica, incluindo fontes, layout, campos de entrada, 
+        Inicializa a tela de cadastro de avião. Configura a interface gráfica, incluindo fontes, layout, campos de entrada, 
         botões de ação, e lógica de exibição da tela.
         """
         super().__init__()
@@ -1708,14 +1780,16 @@ class TelaAvioes_Cadastrar(QMainWindow):
 
         self.layout.addWidget(self.buttons_widget)
 
-    def cadastrar_aviao(self):
+    def cadastrar_aviao(self) -> None:
         """
-        Método para cadastrar um avião com os dados fornecidos nos campos de entrada.
-        Valida se os campos estão corretamente preenchidos e realiza o cadastro do avião.
-        
-        - Verifica se todos os campos foram preenchidos corretamente.
-        - Chama o método `cadastrar_aviao` da classe `MetodosAvioes` para realizar o cadastro no sistema.
-        - Exibe mensagens de sucesso ou erro, conforme o resultado do cadastro.
+        Summary:
+            Método para cadastrar um avião com os dados fornecidos nos campos de entrada.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         sigla = self.sigla_input.text().strip()
         modelo = self.modelo_input.text().strip()
@@ -1741,7 +1815,8 @@ class TelaAvioes_Cadastrar(QMainWindow):
 
 class TelaVoos_Alterar(QMainWindow):
     """
-    Classe responsável pela interface gráfica de alteração de voos.
+    Summary:
+        Classe responsável pela interface gráfica de alteração de voos.
 
     Args:
         QMainWindow (QMainWindow): Classe base para janelas da aplicação.
@@ -1753,7 +1828,8 @@ class TelaVoos_Alterar(QMainWindow):
     """
     def __init__(self, conn=None, parent=None):
         """
-        Inicializa a tela de alteração de voos.
+        Summary:
+            Inicializa a tela de alteração de voos.
         
         Args:
             conn (psycopg2.connection, optional): Conexão com o banco de dados. Defaults to None.
@@ -1900,8 +1976,9 @@ class TelaVoos_Alterar(QMainWindow):
         self.layout.addWidget(self.buttons_container)
 
     def buscar_voo_handler(self) -> None:
-        """ 
-        Busca um voo no banco de dados a partir da sigla informada no campo de entrada.
+        """
+        Summary: 
+            Busca um voo no banco de dados a partir da sigla informada no campo de entrada.
         
         Args:
             None
@@ -1928,7 +2005,8 @@ class TelaVoos_Alterar(QMainWindow):
         
     def alterar_voo_handler(self) -> None:
         """
-        Altera as informações do voo no banco de dados.
+        Summary:
+            Altera as informações do voo no banco de dados.
         
         Args:
             None
@@ -1955,7 +2033,7 @@ class TelaVoos_Alterar(QMainWindow):
 
     def alterar_voo(self, sigla: str, origem: str, destino: str, modelo_aviao: str) -> tuple:
         """ 
-        Summary
+        Summary:
             Este método altera as informações de um voo no banco de dados.
             
         Args:
@@ -1965,7 +2043,10 @@ class TelaVoos_Alterar(QMainWindow):
             modelo_aviao (str): Modelo do avião do voo.
             
         Returns:
-            tuple: Retorna uma tupla com um booleano indicando se a alteração foi bem sucedida e uma mensagem.
+            tuple (bool, str): Retorna uma tupla com um booleano indicando se a alteração foi bem sucedida e uma mensagem.
+        
+        Raises:
+            Exception: Se ocorrer um erro ao alterar os dados do voo.
         """
         try:
             with self.conn.cursor() as cur:
@@ -1988,8 +2069,8 @@ class TelaVoos_Alterar(QMainWindow):
 
 class TelaAvioes_Alterar(QMainWindow):
     """
-    Classe responsável pela interface gráfica de alteração de informações de um avião.
-    Permite buscar um avião por sigla e alterar seu modelo e a quantidade de assentos.
+    Summary:
+        Classe responsável pela interface gráfica de alteração de informações de um avião.
     
     Args:
         QMainWindow (QMainWindow): Classe base para janelas da aplicação.
@@ -2122,15 +2203,18 @@ class TelaAvioes_Alterar(QMainWindow):
 
     def buscar_aviao(self) -> None:
         """
-        Método que busca o avião com base na sigla fornecida pelo usuário.
-        Se o avião for encontrado, exibe as informações dele nos campos de edição.
-        Caso contrário, exibe uma mensagem de erro.
+        Summary:
+            Método que busca o avião com base na sigla fornecida pelo usuário.
         
         Args:
             None
             
         Returns:
             None
+            
+        Raises:
+            QMessageBox.warning: Exibe uma mensagem de erro caso a sigla não seja fornecida.
+            QMessageBox.warning: Exibe uma mensagem de erro caso o avião não seja encontrado.
         """
         sigla = self.sigla_input.text().strip()
         if not sigla:
@@ -2149,13 +2233,19 @@ class TelaAvioes_Alterar(QMainWindow):
 
     def alterar_aviao(self) -> None:
         """
-        Método que altera as informações do avião (modelo e quantidade de assentos) com base nos dados fornecidos.
+        Summary:
+            Método que altera as informações do avião (modelo e quantidade de assentos) com base nos dados fornecidos.
         
         Args:
             None
             
         Returns:
             None
+            
+        Raises:
+            QMessageBox.warning: Exibe uma mensagem de erro caso algum campo não seja preenchido.
+            QMessageBox.information: Exibe uma mensagem de sucesso após a alteração do avião.
+            QMessageBox.critical: Exibe uma mensagem de erro caso a alteração do avião falhe.
         """
         sigla = self.sigla_input.text().strip()
         novo_modelo = self.modelo_input.text().strip()
@@ -2185,15 +2275,27 @@ class TelaAvioes_Alterar(QMainWindow):
 
 class TelaVoos_Remover(QMainWindow):
     """
-    Classe que representa a tela de remoção de voos na aplicação Delta Airlines.
-    Permite a busca e remoção de voos cadastrados.
+    Summary:
+        Classe que representa a tela de remoção de voos na aplicação Delta Airlines.
+        
+    Attributes:
+        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        
+    Methods:
+        buscar_voo: Busca informações do voo pela sigla e exibe as informações.
+        remover_reserva_voo: Remove um voo do banco de dados.
     """
 
     def __init__(self, conn = psycopg2.connect(dbname='credenciais', user='poodois', password='1234', host='localhost', port=5432)):
         """
-        Inicializa a tela de remoção de voos, configura a interface e a conexão com o banco de dados.
-
-        :param conn: Conexão com o banco de dados (opcional, padrão é a conexão com o PostgreSQL local).
+        Summary:
+            Inicializa a tela de remoção de voos, configurando o layout, campos de entrada, botões de ação e lógica de exibição da tela.
+            
+        Args:
+            conn (psycopg2.connection, optional): Conexão com o banco de dados. Defaults to psycopg2.connect(dbname='credenciais', user='pood
+            
+        Returns:
+            None
         """
         super().__init__()
         self.setWindowTitle("Removendo Voos - Delta Airlines")
@@ -2295,12 +2397,19 @@ class TelaVoos_Remover(QMainWindow):
 
         self.layout.addWidget(self.button_container)
 
-    def buscar_voo(self):
+    def buscar_voo(self) -> None:
         """
-        Busca informações do voo pela sigla e exibe as informações.
+        Summary:
+            Busca informações do voo pela sigla e exibe as informações.
 
-        Caso o voo seja encontrado no banco de dados, exibe as informações 
-        no campo de exibição. Caso contrário, exibe uma mensagem de erro.
+        Args:
+            None
+            
+        Returns:
+            None
+            
+        Raises:
+            Exception: Se ocorrer um erro ao buscar o voo.
         """
         sigla = self.sigla_input.text().strip()
         if sigla:
@@ -2318,12 +2427,16 @@ class TelaVoos_Remover(QMainWindow):
         else:
             self.voo_info_label.setText("Por favor, insira a sigla do voo.")
 
-    def remover_reserva_voo(self):
+    def remover_reserva_voo(self) -> None:
         """
-        Remove o voo utilizando a sigla fornecida.
+        Summary:
+            Remove o voo utilizando a sigla fornecida.
 
-        Verifica se a sigla está preenchida e executa a exclusão do voo no banco 
-        de dados. Exibe mensagens de sucesso ou erro conforme o caso.
+        Args:
+            None
+            
+        Returns:
+            None
         """
         sigla = self.sigla_input.text().strip()
         if sigla:
@@ -2336,11 +2449,17 @@ class TelaVoos_Remover(QMainWindow):
 
     def excluir_voo(self, sigla: str) -> tuple:
         """
-        Exclui um voo pela sigla no banco de dados.
+        Summary:
+            Exclui um voo pela sigla no banco de dados.
 
-        :param sigla: A sigla do voo a ser excluído.
-        :return: Uma tupla (sucesso: bool, mensagem: str) indicando se a exclusão foi 
-                 bem-sucedida ou se ocorreu um erro.
+        Args:
+            sigla (str): Sigla do voo a ser excluído.
+            
+        Returns:
+            tuple (bool, str): Retorna uma tupla com um booleano indicando se a exclusão foi bem sucedida e uma mensagem.
+            
+        Raises:
+            Exception: Se ocorrer um erro ao excluir o voo.
         """
         try:
             with self.conn.cursor() as cur:
@@ -2354,8 +2473,15 @@ class TelaVoos_Remover(QMainWindow):
 
 class TelaAvioes_Remover(QMainWindow):
     """
-    Classe responsável pela interface gráfica para remoção de aviões.
-    Permite buscar um avião pela sigla e, caso encontrado, remover o avião do sistema.
+    Summary:
+        Classe que representa a tela de remoção de aviões na aplicação Delta Airlines.
+        
+    Attributes:
+        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        
+    Methods:
+        buscar_aviao: Busca informações do avião pela sigla e exibe as informações.
+        remover_aviao: Remove um avião do banco de dados.
     """
 
     def __init__(self):
@@ -2460,11 +2586,20 @@ class TelaAvioes_Remover(QMainWindow):
 
         self.layout.addWidget(self.button_container)
 
-    def buscar_aviao(self):
+    def buscar_aviao(self) -> None:
         """
-        Método que busca informações do avião com base na sigla fornecida pelo usuário.
-        Se o avião for encontrado, exibe suas informações. Caso contrário, exibe uma mensagem de erro.
-        Após a busca bem-sucedida, a sigla fica como somente leitura.
+        Summary:
+            Busca informações do avião pela sigla e exibe as informações.
+            
+        Args:
+            None
+            
+        Returns:
+            None
+            
+        Raises:
+            QMessageBox.warning: Exibe uma mensagem de erro caso a sigla não seja fornecida.
+            QMessageBox.warning: Exibe uma mensagem de erro caso o avião não seja encontrado.
         """
         sigla = self.sigla_input.text().strip()
         if not sigla:
@@ -2483,11 +2618,22 @@ class TelaAvioes_Remover(QMainWindow):
             self.aviao_info_label.setText("Avião não encontrado.")
             self.sigla_input.setReadOnly(False)
 
-    def remover_aviao(self):
+    def remover_aviao(self) -> None:
         """
-        Método que remove o avião baseado na sigla fornecida pelo usuário.
-        Exibe uma caixa de confirmação antes de proceder com a remoção. Se a remoção for bem-sucedida,
-        exibe uma mensagem de sucesso. Caso contrário, exibe uma mensagem de erro.
+        Summary:
+            Remove um avião do banco de dados.
+            
+        Args:
+            None
+            
+        Returns:
+            None
+            
+        Raises:
+            QMessageBox.warning: Exibe uma mensagem de erro caso a sigla não seja fornecida.
+            QMessageBox.question: Exibe uma mensagem de confirmação para a remoção do avião.
+            QMessageBox.information: Exibe uma mensagem de sucesso após a remoção do avião.
+            QMessageBox.critical: Exibe uma mensagem de erro caso a remoção do avião falhe.
         """
         sigla = self.sigla_input.text().strip()
         if not sigla:
@@ -2512,6 +2658,16 @@ class TelaAvioes_Remover(QMainWindow):
                 QMessageBox.critical(self, "Erro", "Erro ao remover o avião.")
 
 class TelaVoos_Listar(QMainWindow):
+    """
+    Summary:
+        Classe que representa a tela de listagem de voos na aplicação Delta Airlines.
+        
+    Attributes:
+        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        
+    Methods:
+        carregar_lista_voos: Carrega a lista de voos cadastrados e exibe na interface.
+    """
     def __init__(self):
         """Inicializa a tela para listar os voos cadastrados na Delta Airlines."""
         super().__init__()
@@ -2625,8 +2781,20 @@ class TelaVoos_Listar(QMainWindow):
         # Carregar dados dos voos
         self.carregar_lista_voos()
 
-    def carregar_lista_voos(self):
-        """Carrega a lista de voos cadastrados e exibe na interface."""
+    def carregar_lista_voos(self) -> None:
+        """
+        Summary:
+            Carrega a lista de voos cadastrados e exibe na interface.
+            
+        Args:
+            None
+            
+        Returns:
+            None
+            
+        Raises:
+            Exception: Se ocorrer um erro ao carregar os voos.
+        """
         try:
             with self.conn.cursor() as cur:
                 cur.execute("SELECT id, sigla, origem, destino, modelo_aviao FROM voos;")
@@ -2652,6 +2820,16 @@ class TelaVoos_Listar(QMainWindow):
                 self.tabela_voos.setItem(0, col, QTableWidgetItem(""))
 
 class TelaAvioes_Listar(QMainWindow):
+    """
+    Summary:
+        Classe que representa a tela de listagem de aviões na aplicação Delta Airlines.
+        
+    Attributes:
+        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        
+    Methods:
+        carregar_lista_avioes: Carrega a lista de aviões cadastrados e exibe na interface.
+    """
     def __init__(self):
         """Inicializa a tela para listar os aviões cadastrados na Delta Airlines."""
         super().__init__()
@@ -2762,8 +2940,20 @@ class TelaAvioes_Listar(QMainWindow):
         # Carregar dados dos aviões
         self.carregar_lista_avioes()
 
-    def carregar_lista_avioes(self):
-        """Carrega a lista de aviões cadastrados e exibe na interface."""
+    def carregar_lista_avioes(self) -> None:
+        """
+        Summary:
+            Carrega a lista de aviões cadastrados e exibe na interface.
+            
+        Args:
+            None
+            
+        Returns:
+            None
+            
+        Raises:
+            Exception: Se ocorrer um erro ao carregar os aviões.
+        """
         try:
             metodos_gerente = MetodosGerente()
             avioes = metodos_gerente.listar_avioes()
@@ -2786,7 +2976,19 @@ class TelaAvioes_Listar(QMainWindow):
                 self.tabela_avioes.setItem(0, col, QTableWidgetItem(""))
 
 class TelaAtendente(QMainWindow):
-    """Tela principal do atendente, com botões para navegação entre diferentes telas de gerenciamento na Delta Airlines."""
+    """ 
+    Summary:
+        Classe que representa a tela principal do atendente na aplicação Delta Airlines.
+        
+    Attributes:
+        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        
+    Methods:
+        mostrar_tela_passageiros: Exibe a tela de gerenciamento de passageiros.
+        mostrar_tela_reservas: Exibe a tela de gerenciamento de reservas.
+        mostrar_tela_inicial: Exibe a tela inicial do sistema.
+        mostrar_tela_chat_atendente: Exibe a tela de chat do atendente.
+    """
 
     def __init__(self):
         """Inicializa a tela principal do atendente e configura o layout e os botões de navegação."""
@@ -2878,28 +3080,75 @@ class TelaAtendente(QMainWindow):
         self.placeholder_widget = QWidget()
         self.stacked_widget.addWidget(self.placeholder_widget)
 
-    def mostrar_tela_passageiros(self):
-        """Exibe a tela de gerenciamento de passageiros."""
+    def mostrar_tela_passageiros(self) -> None:
+        """ 
+        Summary:
+            Exibe a tela de gerenciamento de passageiros.
+        
+        Args:
+            None
+            
+        Returns:
+            None    
+        """
         self.tela_passageiros = TelaPassageiros()
         self.tela_passageiros.show()
     
-    def mostrar_tela_reservas(self):
-        """Exibe a tela de gerenciamento de reservas."""
+    def mostrar_tela_reservas(self) -> None:
+        """
+        Summary:
+            Exibe a tela de gerenciamento de reservas.
+            
+        Args:
+            None
+            
+        Returns:
+            None  
+        """
         self.tela_reservas = TelaReservas()
         self.tela_reservas.show()
     
-    def mostrar_tela_inicial(self):
-        """Exibe a tela inicial do sistema."""
+    def mostrar_tela_inicial(self) -> None:
+        """
+        Summary:
+            Exibe a tela inicial do sistema.
+            
+        Args:
+            None
+            
+        Returns:
+            None  
+        """
         self.tela_inicial = Tela()
         self.tela_inicial.show()
     
-    def mostrar_tela_chat_atendente(self):
-        """Exibe a tela de chat do atendente."""
+    def mostrar_tela_chat_atendente(self) -> None:
+        """
+        Summary:
+            Exibe a tela de chat do atendente.
+        
+        Args:
+            None
+            
+        Returns:
+            None  
+        """
         self.tela_chat_atendente = TelaChat_Atendente()
         self.tela_chat_atendente.show()
 
 class TelaChat_Atendente(QMainWindow):
-    """Tela de chat para comunicação entre atendente e cliente na Delta Airlines."""
+    """ 
+    Summary:
+        Classe que representa a tela de chat do atendente na aplicação Delta Airlines.
+        
+    Attributes:
+        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        
+    Methods:
+        receber_mensagens: Recebe e exibe mensagens enviadas ao atendente através do socket.
+        exibir_mensagem: Exibe uma mensagem na caixa de mensagens com a cor apropriada.
+        enviar_mensagem: Envia a mensagem digitada pelo atendente para o servidor.  
+    """
 
     def __init__(self):
         """Inicializa a tela de chat do atendente, configurando os componentes da interface gráfica."""
@@ -2990,8 +3239,17 @@ class TelaChat_Atendente(QMainWindow):
         # Conectar o botão de enviar
         self.bt_enviar.clicked.connect(self.enviar_mensagem)
 
-    def receber_mensagens(self, usuario_socket):
-        """Recebe e exibe mensagens enviadas ao atendente através do socket."""
+    def receber_mensagens(self, usuario_socket) -> None:
+        """ 
+        Summary:
+            Recebe e exibe mensagens enviadas ao atendente através do socket.
+            
+        Args:
+            usuario_socket (socket): Socket do usuário para receber mensagens.
+            
+        Returns:
+            None
+        """
         while True:
             try:
                 mensagem = usuario_socket.recv(1024).decode("utf-8")
@@ -3002,13 +3260,32 @@ class TelaChat_Atendente(QMainWindow):
                 usuario_socket.close()
                 break
 
-    def exibir_mensagem(self, mensagem, enviado):
-        """Exibe uma mensagem na caixa de mensagens com a cor apropriada."""
+    def exibir_mensagem(self, mensagem, enviado) -> None:
+        """ 
+        Summary:
+            Exibe uma mensagem na caixa de mensagens com a cor apropriada.
+            
+        Args:
+            mensagem (str): Mensagem a ser exibida.
+            enviado (bool): Indica se a mensagem foi enviada pelo atendente.
+            
+        Returns:
+            None
+        """
         cor = "#003d79" if enviado else "black"
         self.messages_box.append(f'<p style="color: {cor};">{mensagem}</p>')
 
-    def enviar_mensagem(self):
-        """Envia a mensagem digitada pelo atendente para o servidor."""
+    def enviar_mensagem(self) -> None:
+        """ 
+        Summary:
+            Envia a mensagem digitada pelo atendente para o servidor.
+            
+        Args:
+            None
+            
+        Returns:
+            None
+        """
         mensagem = self.message_input.text()
         if mensagem.lower() == "sair":
             print("[DESCONECTANDO] Encerrando a conexão.")
@@ -3021,8 +3298,17 @@ class TelaChat_Atendente(QMainWindow):
 
 class TelaPassageiros(QMainWindow):
     """
-    Classe responsável pela interface de gerenciamento de passageiros.
-    Permite a visualização, cadastro, alteração, remoção e listagem de passageiros.
+    Summary:
+        Classe que representa a tela de gerenciamento de passageiros na aplicação Delta Airlines.
+        
+    Attributes:
+        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        
+    Methods:
+        mostrar_tela_cadastrar_passageiro: Exibe a tela de cadastro de passageiros.
+        mostrar_tela_alterar_passageiro: Exibe a tela de alteração de dados de passageiros.
+        mostrar_tela_remover_passageiro: Exibe a tela de remoção de passageiros.
+        mostrar_tela_listar_passageiro: Exibe a tela de listagem de passageiros.
     """
     def __init__(self):
         """
@@ -3129,33 +3415,61 @@ class TelaPassageiros(QMainWindow):
         self.placeholder_widget = QWidget()
         self.layout.addWidget(self.placeholder_widget)
 
-    def mostrar_tela_cadastrar_passageiro(self):
+    def mostrar_tela_cadastrar_passageiro(self) -> None:
         """
-        Exibe a tela de cadastro de passageiros.
+        Summary:
+            Exibe a tela de cadastro de passageiros.
+            
+        Args:
+            None
+            
+        Returns:
+            None  
         """
         self.tela_cadastrar_passageiro = TelaPassageiros_Cadastrar()
         self.tela_cadastrar_passageiro.show()
         self.close()
 
-    def mostrar_tela_alterar_passageiro(self):
+    def mostrar_tela_alterar_passageiro(self) -> None:
         """
-        Exibe a tela de alteração de dados de passageiros.
+        Summary:
+            Exibe a tela de alteração de dados de passageiros.
+            
+        Args:
+            None
+            
+        Returns:
+            None  
         """
         self.tela_alterar_passageiro = TelaPassageiros_Alterar()
         self.tela_alterar_passageiro.show()
         self.close()
 
-    def mostrar_tela_remover_passageiro(self):
+    def mostrar_tela_remover_passageiro(self) -> None:
         """
-        Exibe a tela de remoção de passageiros.
+        Summary:
+            Exibe a tela de remoção de passageiros.
+            
+        Args:
+            None
+            
+        Returns:
+            None  
         """
         self.tela_remover_passageiro = TelaPassageiros_Remover()
         self.tela_remover_passageiro.show()
         self.close()
 
-    def mostrar_tela_listar_passageiro(self):
+    def mostrar_tela_listar_passageiro(self) -> None:
         """
-        Exibe a tela de listagem de passageiros.
+        Summary:
+            Exibe a tela de listagem de passageiros.
+            
+        Args:
+            None
+            
+        Returns:
+            None  
         """
         self.tela_listar_passageiro = TelaPassageiros_Listar()
         self.tela_listar_passageiro.show()
@@ -3163,8 +3477,15 @@ class TelaPassageiros(QMainWindow):
 
 class TelaReservas(QMainWindow):
     """
-    Classe responsável pela interface de gerenciamento de reservas.
-    Permite a criação, remoção e visualização de reservas.
+    Summary:
+        Classe que representa a tela de gerenciamento de reservas na aplicação Delta Airlines.
+        
+    Attributes:
+        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        
+    Methods:
+        mostrar_tela_reservas_reservar: Exibe a tela para realizar uma nova reserva.
+        mostrar_tela_reservas_remover: Exibe a tela para remover uma reserva existente
     """
     def __init__(self):
         """
@@ -3257,17 +3578,31 @@ class TelaReservas(QMainWindow):
         self.placeholder_widget = QWidget()
         self.layout.addWidget(self.placeholder_widget)
 
-    def mostrar_tela_reservas_reservar(self):
+    def mostrar_tela_reservas_reservar(self) -> None:
         """
-        Exibe a tela para realizar uma nova reserva.
+        Summary:
+            Exibe a tela para realizar uma nova reserva.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         self.tela_reservas_reservar = TelaReservas_Reservar()
         self.tela_reservas_reservar.show()
         self.close()
 
-    def mostrar_tela_reservas_remover(self):
+    def mostrar_tela_reservas_remover(self) -> None:
         """
-        Exibe a tela para remover uma reserva existente.
+        Summary:
+            Exibe a tela para remover uma reserva existente.
+            
+        Args:
+            None
+            
+        Returns:
+            None  
         """
         self.tela_reservas_remover = TelaReservas_Remover()
         self.tela_reservas_remover.show()
@@ -3275,7 +3610,15 @@ class TelaReservas(QMainWindow):
 
 class TelaPassageiros_Cadastrar(QMainWindow):
     """
-    Classe que representa a tela de cadastro de clientes.
+    Summary:
+        Classe que representa a tela de cadastro de passageiros na aplicação Delta Airlines.
+        
+    Attributes:
+        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        
+    Methods:
+        cadastrar_passageiro: Cadastra um novo passageiro no sistema.
+        show_message: Exibe uma mensagem em uma janela modal
     """
     def __init__(self):
         """
@@ -3374,13 +3717,19 @@ class TelaPassageiros_Cadastrar(QMainWindow):
 
         self.layout.addWidget(self.buttons_widget)
 
-    def cadastrar_cliente(self):
+    def cadastrar_cliente(self) -> None:
         """
-        Método chamado ao clicar no botão "Cadastrar".
-        Faz o cadastro do cliente no banco de dados.
-        Exibe uma mensagem de sucesso ou erro após o cadastro.
-
-        Valida se todos os campos estão preenchidos antes de tentar o cadastro.
+        Summary:
+            Cadastra um novo passageiro no sistema. Coleta os dados dos campos de entrada
+            
+        Args:
+            None
+            
+        Returns:
+            None  
+            
+        Raises:
+            Exception: Se ocorrer um erro ao cadastrar o passageiro.
         """
         nome = self.nome_input.text().strip()
         cpf = self.cpf_input.text().strip()
@@ -3399,12 +3748,17 @@ class TelaPassageiros_Cadastrar(QMainWindow):
             self.cpf_input.clear()
             self.telefone_input.clear()
 
-    def show_message(self, titulo, mensagem):
+    def show_message(self, titulo, mensagem) -> None:
         """
-        Exibe uma mensagem em uma janela modal.
-
-        :param titulo: O título da mensagem.
-        :param mensagem: O texto a ser exibido na mensagem.
+        Summary:
+            Exibe uma mensagem em uma janela modal.
+            
+        Args:
+            titulo (str): Título da mensagem.
+            mensagem (str): Conteúdo da mensagem.
+            
+        Returns:
+            None
         """
         from PyQt5.QtWidgets import QMessageBox
         msg = QMessageBox(self)
@@ -3415,8 +3769,15 @@ class TelaPassageiros_Cadastrar(QMainWindow):
 
 class TelaPassageiros_Alterar(QMainWindow):
     """
-    Classe que representa a tela de alteração de dados de um passageiro.
-    Permite buscar, alterar e exibir informações de um passageiro.
+    Summary:
+        Classe que representa a tela de alteração de dados de um passageiro na aplicação Delta Airlines.
+        
+    Attributes:
+        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        
+    Methods:
+        buscar_passageiro: Busca as informações de um passageiro a partir do CPF.
+        alterar_passageiro: Altera as informações de um passageiro no banco de dados.
     """
     def __init__(self):
         """
@@ -3485,10 +3846,16 @@ class TelaPassageiros_Alterar(QMainWindow):
         self.layout.addWidget(self.voltar_button, alignment=Qt.AlignCenter)
         self.voltar_button.clicked.connect(self.close)
 
-    def buscar_passageiro(self):
+    def buscar_passageiro(self) -> None:
         """
-        Método para buscar as informações de um passageiro a partir do CPF.
-        Exibe as informações encontradas ou um erro caso o passageiro não seja encontrado.
+        Summary:
+            Busca as informações de um passageiro a partir do CPF.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         cpf = self.cpf_input.text().strip()
         if not cpf:
@@ -3507,11 +3874,19 @@ class TelaPassageiros_Alterar(QMainWindow):
             QMessageBox.warning(self, "Erro", "Passageiro não encontrado.")
             self.passageiro_info_label.setText("")
 
-    def alterar_passageiro(self):
+    def alterar_passageiro(self) -> None:
         """
-        Método para alterar as informações de um passageiro.
-        Valida os campos e realiza a alteração no banco de dados.
-        Exibe uma mensagem de sucesso ou erro.
+        Summary:
+            Altera as informações de um passageiro no banco de dados.
+            
+        Args:
+            None
+            
+        Returns:
+            None  
+            
+        Raises:
+            Exception: Se ocorrer um erro ao alterar os dados do passageiro.
         """
         nome = self.nome_input.text().strip()
         telefone = self.telefone_input.text().strip()
@@ -3531,8 +3906,15 @@ class TelaPassageiros_Alterar(QMainWindow):
 
 class TelaPassageiros_Remover(QMainWindow):
     """
-    Classe que representa a tela de remoção de um passageiro.
-    Permite buscar e remover um passageiro pelo CPF.
+    Summary:
+        Classe que representa a tela de remoção de um passageiro na aplicação Delta Airlines.
+        
+    Attributes:
+        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        
+    Methods:
+        buscar_passageiro: Busca as informações de um passageiro a partir do CPF.
+        remover_passageiro: Remove um passageiro do banco de dados.
     """
     def __init__(self):
         """
@@ -3637,10 +4019,19 @@ class TelaPassageiros_Remover(QMainWindow):
 
         self.layout.addWidget(self.button_container)
     
-    def buscar_passageiro(self):
+    def buscar_passageiro(self) -> None:
         """
-        Método para buscar as informações de um passageiro a partir do CPF.
-        Exibe as informações encontradas ou um erro caso o passageiro não seja encontrado.
+        Summary:
+            Busca as informações de um passageiro a partir do CPF.
+            
+        Args:
+            None
+            
+        Returns:
+            None
+            
+        Raises:
+            Exception: Se ocorrer um erro ao buscar o passageiro.
         """
         cpf = self.cpf_input.text().strip()
         
@@ -3662,10 +4053,19 @@ class TelaPassageiros_Remover(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao buscar passageiro: {str(e)}")
 
-    def remover_passageiro(self):
+    def remover_passageiro(self) -> None:
         """
-        Método para remover um passageiro a partir do CPF.
-        Exibe uma caixa de confirmação antes de realizar a remoção.
+        Summary:
+            Remove um passageiro do banco de dados.
+            
+        Args:
+            None
+            
+        Returns:
+            None
+            
+        Raises:
+            Exception: Se ocorrer um erro ao remover o passageiro.
         """
         cpf = self.cpf_input.text().strip()
 
@@ -3693,16 +4093,22 @@ class TelaPassageiros_Remover(QMainWindow):
 
 class TelaPassageiros_Listar(QMainWindow):
     """
-    Classe responsável pela tela de listagem de passageiros. Exibe a lista de passageiros cadastrados,
-    incluindo informações como ID, nome, CPF e telefone.
+    Summary:
+        Classe que representa a tela de listagem de passageiros na aplicação Delta Airlines.
+        
+    Attributes:
+        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        
+    Methods:
+        atualizar_tabela: Atualiza os dados na tabela de clientes.
     """
     def __init__(self, db_config=None):
         """
-        Construtor da classe TelaPassageiros_Listar.
-
+        Summary:
+            Inicializa a interface da tela de listagem de clientes. Configura o layout, carrega fontes, logo e a tabela de clientes.
+        
         Args:
-            db_config (dict, optional): Dicionário de configuração do banco de dados. Caso não seja fornecido, 
-                                         usa-se o valor padrão.
+            db_config (dict): Configurações para conexão com o banco de dados.
         """
         if db_config is None:
             db_config = {
@@ -3823,10 +4229,19 @@ class TelaPassageiros_Listar(QMainWindow):
 
         self.layout.addWidget(self.button_container)
 
-    def atualizar_tabela(self):
+    def atualizar_tabela(self) -> None:
         """
-        Atualiza os dados na tabela de clientes.
-        Caso não haja clientes cadastrados, exibe uma mensagem na tabela.
+        Summary:
+            Atualiza os dados na tabela de clientes.
+            
+        Args:
+            None
+            
+        Returns:
+            None
+            
+        Raises:
+            Exception: Se ocorrer um erro ao atualizar a tabela.
         """
         if self.clientes:
             self.tabela_clientes.setRowCount(len(self.clientes))
@@ -3844,7 +4259,15 @@ class TelaPassageiros_Listar(QMainWindow):
 
 class TelaReservas_Reservar(QMainWindow):
     """
-    Classe responsável pela tela de reserva de voos. Permite que o usuário selecione um voo e faça a reserva.
+    Summary:
+        Classe responsável pela tela de reserva de voos. Permite que o usuário selecione um voo e faça a reserva.
+        
+    Attributes:
+        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        
+    Methods:
+        atualizar_lista_voos: Atualiza a lista de voos disponíveis exibida na tela.
+        reservar_voo: Realiza a reserva de um voo com base na sigla fornecida pelo
     """
     def __init__(self):
         """
@@ -3981,14 +4404,15 @@ class TelaReservas_Reservar(QMainWindow):
 
 class TelaReservas_Remover(QMainWindow):
     """
-    Tela de interface gráfica para remoção de reservas de voo.
-    Esta classe herda de QMainWindow e permite ao usuário visualizar a lista de voos disponíveis
-    e remover uma reserva de voo ao fornecer a sigla do voo.
-
+    Summary:
+        Classe que representa a tela de remoção de reservas na aplicação Delta Airlines.
+        
     Attributes:
-        backend (BackendRemoverReservas): Instância do backend para manipulação de reservas.
-        central_widget (QWidget): Widget principal da interface.
-        layout (QVBoxLayout): Layout para organizar os widgets na interface.
+        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        
+    Methods:
+        atualizar_lista_reservas: Atualiza a lista de reservas disponíveis na tela.
+        remover_reserva_voo: Remove a reserva de um voo selecionado
     """
 
     def __init__(self):
@@ -4090,12 +4514,16 @@ class TelaReservas_Remover(QMainWindow):
 
         self.layout.addWidget(self.buttons_container)
 
-    def atualizar_lista_voos(self):
+    def atualizar_lista_voos(self) -> None:
         """
-        Atualiza a lista de voos disponíveis na interface gráfica.
-
-        Obtém os voos disponíveis do backend e os exibe na tela. Caso não haja voos,
-        uma mensagem informando a ausência de voos será exibida.
+        Summary:
+            Atualiza a lista de voos disponíveis exibida na tela. Consulta o backend para obter a lista de voos.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         voos = self.backend.listar_voos()
         if voos:
@@ -4106,12 +4534,16 @@ class TelaReservas_Remover(QMainWindow):
             texto_voos = "Nenhum voo disponível."
         self.voos_lista_label.setText(texto_voos)
 
-    def remover_reserva_voo(self):
+    def remover_reserva_voo(self) -> None:
         """
-        Remove a reserva de um voo selecionado pelo usuário.
-
-        Obtém a sigla do voo inserida pelo usuário e solicita ao backend a remoção da reserva.
-        Caso a sigla não seja válida, exibe uma mensagem de erro.
+        Summary:
+            Remove a reserva de um voo selecionado. Consulta o backend para realizar a remoção da reserva.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         sigla = self.sigla_input.text().strip()
 
@@ -4123,30 +4555,40 @@ class TelaReservas_Remover(QMainWindow):
         self.voos_lista_label.setText(mensagem)
         self.atualizar_lista_voos()
 
-    def closeEvent(self, event):
+    def closeEvent(self, event) -> None:
         """
-        Fecha a conexão com o backend quando a janela é fechada.
-
-        Este método é chamado automaticamente quando a janela é fechada.
+        Summary:
+            Fecha a conexão com o backend quando a janela é fechada.
+            
+        Args:
+            event (QCloseEvent): Evento de fechamento da janela.
+            
+        Returns:
+            None
         """
         self.backend.close_connection()
         super().closeEvent(event)
 
 class GerenciadorDeReservas:
     """
-    Classe responsável pela interação com o banco de dados para gerenciamento de voos e reservas.
-    Permite listar voos, adicionar voos e remover reservas.
-
+    Summary:
+        Classe que gerencia as reservas de voos na aplicação Delta Airlines.
+        
     Attributes:
-        conn (psycopg2.connection): Conexão com o banco de dados.
-        cursor (psycopg2.cursor): Cursor para execução de comandos SQL.
+        QMainWindow (QMainWindow): Classe base para janelas da aplicação.
+        
+    Methods:
+        __init__: Inicializa a interface gráfica do gerenciador de reservas.
+        abrir_tela_reservar: Abre a tela de reserva de voos.
+        abrir_tela_remover: Abre a tela de remoção de reservas.
     """
 
     def __init__(self, dbname, user, password, host='localhost', port=5432):
         """
-        Inicializa a conexão com o banco de dados.
+        Summary:
+            Inicializa a conexão com o banco de dados.
 
-        Parâmetros:
+        Args:
             dbname (str): Nome do banco de dados.
             user (str): Nome de usuário para autenticação.
             password (str): Senha do usuário.
@@ -4165,12 +4607,19 @@ class GerenciadorDeReservas:
         except Exception as e:
             print("Erro ao conectar ao banco de dados:", e)
 
-    def listar_voos(self):
+    def listar_voos(self) -> list:
         """
-        Retorna todos os voos disponíveis no banco de dados.
-
-        Retorna:
-            list: Lista de tuplas representando os voos disponíveis.
+        Summary:
+            Lista os voos disponíveis no banco de dados.
+            
+        Args:
+            None
+            
+        Returns:
+            list: Lista de voos disponíveis.
+            
+        Raises:
+            Exception: Se ocorrer um erro ao listar os voos.
         """
         try:
             self.cursor.execute("SELECT * FROM voos;")
@@ -4180,15 +4629,22 @@ class GerenciadorDeReservas:
             print("Erro ao listar voos:", e)
             return []
 
-    def adicionar_voo(self, sigla, origem, destino, modelo_aviao):
+    def adicionar_voo(self, sigla, origem, destino, modelo_aviao) -> None:
         """
-        Adiciona um novo voo ao banco de dados.
-
-        Parâmetros:
+        Summary:
+            Adiciona um novo voo ao banco de dados.
+            
+        Args:
             sigla (str): Sigla do voo.
-            origem (str): Origem do voo.
-            destino (str): Destino do voo.
-            modelo_aviao (str): Modelo do avião utilizado.
+            origem (str): Aeroporto de origem.
+            destino (str): Aeroporto de destino.
+            modelo_aviao (str): Modelo do avião.
+            
+        Returns:
+            None
+            
+        Raises:
+            Exception: Se ocorrer um erro ao adicionar o voo.
         """
         try:
             self.cursor.execute(
@@ -4200,12 +4656,19 @@ class GerenciadorDeReservas:
         except Exception as e:
             print("Erro ao adicionar voo:", e)
 
-    def remover_reserva_voo(self, id_voo):
+    def remover_reserva_voo(self, id_voo) -> None:
         """
-        Remove uma reserva de voo no banco de dados com base no ID do voo.
-
-        Parâmetros:
+        Summary:
+            Remove a reserva de um voo no banco de dados.
+            
+        Args:
             id_voo (int): ID do voo a ser removido.
+            
+        Returns:
+            None
+            
+        Raises:
+            Exception: Se ocorrer um erro ao remover a reserva do voo.
         """
         try:
             self.cursor.execute("DELETE FROM voos WHERE id = %s;", (id_voo,))
@@ -4214,9 +4677,16 @@ class GerenciadorDeReservas:
         except Exception as e:
             print("Erro ao remover voo:", e)
 
-    def fechar_conexao(self):
+    def fechar_conexao(self) -> None:
         """
-        Fecha a conexão com o banco de dados.
+        Summary:
+            Fecha a conexão com o banco de dados.
+            
+        Args:
+            None
+            
+        Returns:
+            None
         """
         try:
             self.cursor.close()
