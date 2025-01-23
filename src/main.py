@@ -404,6 +404,12 @@ class TelaGerente(QMainWindow):
         self.bt_chat.setFont(montserrat_bold)
         self.bt_chat.clicked.connect(self.mostrar_tela_chat_gerente)
 
+        self.bt_marcar_voo = QPushButton("Marcar Voo")
+        self.bt_marcar_voo.setFixedSize(200, 50)
+        self.bt_marcar_voo.setStyleSheet(button_style)
+        self.bt_marcar_voo.setFont(montserrat_bold)
+        self.bt_marcar_voo.clicked.connect(self.mostrar_tela_marcar_voo)
+
         self.bt_sair = QPushButton("Sair")
         self.bt_sair.setFixedSize(200, 50)
         self.bt_sair.setStyleSheet(button_style)
@@ -413,6 +419,7 @@ class TelaGerente(QMainWindow):
         button_layout.addWidget(self.bt_voos)
         button_layout.addWidget(self.bt_avioes)
         button_layout.addWidget(self.bt_chat)
+        button_layout.addWidget(self.bt_marcar_voo)
         button_layout.addWidget(self.bt_sair)
 
         # Espaçador abaixo dos botões
@@ -446,6 +453,10 @@ class TelaGerente(QMainWindow):
     def mostrar_tela_chat_gerente(self):
         self.tela_chat_gerente = TelaChat_Gerente()
         self.tela_chat_gerente.show()
+
+    def mostrar_tela_marcar_voo(self):
+        self.tela_marcar_voo = TelaMarcarVoo_Gerente()
+        self.tela_marcar_voo.show()
 
 SERVER_HOST = '26.7.161.228'
 SERVER_PORT = 5555
@@ -566,6 +577,79 @@ class TelaChat_Gerente(QMainWindow):
             self.usuario_socket.send(mensagem.encode("utf-8"))
             self.exibir_mensagem(mensagem, enviado=True)
             self.message_input.clear()  # Limpa o campo de entrada
+
+class TelaMarcarVoo_Gerente(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Marcar Voo - Delta Airlines")
+        self.setFixedSize(1000, 600)
+        self.setStyleSheet("background-color: white;")
+
+        # Carregar a fonte Montserrat
+        font_path = os.path.abspath("./src/fonts/Montserrat-Bold.ttf")
+        if os.path.exists(font_path):
+            QFontDatabase.addApplicationFont(font_path)
+            montserrat_bold = QFont("Montserrat", 14, QFont.Bold)
+        else:
+            montserrat_bold = QFont("Arial", 14, QFont.Bold)
+
+
+        # Layout principal
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+        self.layout = QVBoxLayout(self.central_widget)
+
+        # Contêiner: Logo e título
+        self.logo_widget = QWidget()
+        self.logo_layout = QVBoxLayout(self.logo_widget)
+        self.logo_layout.setContentsMargins(0, 0, 0, 0)
+        self.logo_layout.setSpacing(10)
+
+        self.logo_label = QLabel(self.logo_widget)
+        logo_path = os.path.abspath("./src/images/image.png")
+        if os.path.exists(logo_path):
+            pixmap = QPixmap(logo_path)
+            resized_pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.logo_label.setPixmap(resized_pixmap)
+        else:
+            self.logo_label.setText("Imagem não encontrada.")
+        self.logo_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)
+
+        self.title_label = QLabel("Marcar Voo")
+        self.title_label.setFont(montserrat_bold)
+        self.title_label.setAlignment(Qt.AlignCenter)
+        self.logo_layout.addWidget(self.title_label)
+
+        self.layout.addWidget(self.logo_widget)
+
+        # Contêiner: Campo de entrada
+        self.sigla_input = QLineEdit(self)
+        self.sigla_input.setPlaceholderText("Digite a sigla do voo")
+        self.sigla_input.setStyleSheet(line_edit_style)
+        self.layout.addWidget(self.sigla_input, alignment=Qt.AlignCenter)
+
+        # Contêiner: Botões
+        self.buttons_widget = QWidget()
+        self.buttons_layout = QVBoxLayout(self.buttons_widget)
+        self.buttons_layout.setContentsMargins(0, 0, 0, 0)
+        self.buttons_layout.setSpacing(10)  # Ajuste para aproximar os botões
+
+        self.bt_marcar = QPushButton("Marcar Voo")
+        self.bt_marcar.setFixedSize(200, 50)
+        self.bt_marcar.setStyleSheet(button_style)
+        self.bt_marcar.setFont(montserrat_bold)
+        self.bt_marcar.clicked.connect(self.close)
+        self.buttons_layout.addWidget(self.bt_marcar, alignment=Qt.AlignCenter)
+
+        self.bt_voltar = QPushButton("Voltar")
+        self.bt_voltar.setFixedSize(200, 50)
+        self.bt_voltar.setStyleSheet(button_style)
+        self.bt_voltar.setFont(montserrat_bold)
+        self.bt_voltar.clicked.connect(self.close)
+        self.buttons_layout.addWidget(self.bt_voltar, alignment=Qt.AlignCenter)
+
+        self.layout.addWidget(self.buttons_widget)
 
 class TelaVoos(QMainWindow):
     def __init__(self):
@@ -901,7 +985,7 @@ class TelaVoos_Cadastrar(QMainWindow):
         self.form_layout.addWidget(self.bt_buscar_aviao)
 
         self.assentos_label = QLabel("Quantidade de Assentos: Não informado")
-        self.assentos_label.setFont(QFont("Arial", 12))
+        self.assentos_label.setFont(montserrat_bold)
         self.assentos_label.setStyleSheet("color: #333;")
         self.form_layout.addWidget(self.assentos_label)
 
