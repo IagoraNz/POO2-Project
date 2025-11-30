@@ -1,89 +1,145 @@
-# 📄 Implementação do trabalho final da disciplina de Programação Orientada a Objetos II.
+# ✈️ POO2-Airport: Sistema de Gerenciamento de Aeroporto
 
-## 🔗 Objetivo
-O objetivo deste projeto é implementar as operações de um sistema de aeroporto, onde gerenciamos as interações envolvendo gerentes e atendentes. O sistema oferece funcionalidades para o manuseio eficiente e seguro das tarefas relacionadas ao aeroporto.
+![Status do Projeto](https://img.shields.io/badge/Status-Concluído-green)
+![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
+![Docker](https://img.shields.io/badge/Docker-Required-2496ED)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-336791)
+
+Este repositório contém o trabalho final da disciplina de **Programação Orientada a Objetos II**, focado no desenvolvimento de um sistema completo de gerenciamento de operações aeroportuárias.
+
+## 📄 Sobre o projeto
+
+O objetivo deste projeto é implementar as operações de um sistema de aeroporto, onde gerenciamos as interações envolvendo gerentes e atendentes. O sistema oferece funcionalidades para o manuseio eficiente e seguro das tarefas relacionadas ao aeroporto, incluindo gestão de voos, aviões, passageiros, reservas e comunicação em tempo real.
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/994d3b10-2937-4942-ba8e-3b1a428ecd71" alt="Descrição da imagem" width="500px">
+  <img src="https://github.com/user-attachments/assets/994d3b10-2937-4942-ba8e-3b1a428ecd71" alt="Sistema de Aeroporto" width="500px">
 </div>
 
-## 🔗 Funcionalidades
+### 🎯 Objetivos específicos
+- Implementar sistema de autenticação com diferentes níveis de acesso (Gerente e Atendente).
+- Gerenciar operações de voos e frota de aviões.
+- Controlar cadastro de passageiros e reservas.
+- Facilitar comunicação em tempo real entre gerentes e atendentes via chat.
+- Aplicar conceitos de Programação Orientada a Objetos (POO).
 
-### ⚙️ Cadastro
-Ao acessar a tela de Cadastro, o usuário deverá preencher os campos com seu usuário, senha e função (gerente ou atendente). Após inserir um usuário, senha válidos e uma função válida, e clicar em Efetuar Cadastro, o sistema criará o cadastro do usuário, permitindo que ele realize o login posteriormente.
+## 🛠️ Tecnologias utilizadas
 
-### ⚙️ Login
-Na tela de Login, o usuário preencherá os campos de usuário e senha. Após clicar em Entrar, o sistema verificará as credenciais fornecidas. Com base no número de cadastro realizado, o usuário será direcionado para as funcionalidades específicas de gerente ou atendente, conforme sua função.
+O projeto foi desenvolvido em **Python** utilizando as seguintes tecnologias:
 
-### ⚙️ Tela de Gerente
-Se, após o login, o usuário for identificado como gerente, ele terá acesso às seguintes funcionalidades através dos botões na tela principal de gerente:
+- **Python 3.9+**: Linguagem principal do projeto.
+- **PostgreSQL**: Banco de dados relacional para armazenamento de dados.
+- **Docker**: Containerização do banco de dados.
+- **Tkinter/CustomTkinter**: Interface gráfica do usuário.
+- **Poetry**: Gerenciamento de dependências.
 
-- Voo
-- Aviões
-- Chat
-- Sair (para retornar ao menu principal)
+## ⚙️ Funcionalidades
 
-#### 🔧 Tela de Voo
+### 🔐 Sistema de autenticação
 
-Na tela de Voos, o gerente terá diversas funcionalidades disponíveis para gerenciar o fluxo de operações aéreas. Ele poderá cadastrar novos voos, atualizar informações de voos existentes, remover voos quando necessário, listar todos os voos cadastrados para consulta e organização, além de marcar voos. Essas ações permitirão ao gerente manter um controle eficiente e organizado dos voos registrados no sistema.
+#### Cadastro
+Ao acessar a tela de Cadastro, o usuário deverá preencher os campos com seu usuário, senha e função (gerente ou atendente). Após inserir credenciais válidas e clicar em Efetuar Cadastro, o sistema criará o cadastro do usuário.
 
-#### 🔧 Tela de Aviões
+#### Login
+Na tela de Login, o usuário preencherá os campos de usuário e senha. O sistema verificará as credenciais e direcionará o usuário para as funcionalidades específicas de sua função.
 
-Na tela de Aviões, o gerente terá à sua disposição diversas funcionalidades para gerenciar as informações relacionadas à frota de aviões. Ele poderá cadastrar novos aviões, atualizar dados de aviões já existentes, remover registros de aviões que não são mais necessários e listar todos os aviões cadastrados para facilitar a consulta e a organização. Essas funcionalidades garantirão um controle eficaz e atualizado da frota no sistema.
+---
 
-#### 🔧 Tela de Chat
+### 👔 Funcionalidades do gerente
 
-Na tela de Chat, o gerente terá a possibilidade de se comunicar diretamente com os atendentes de maneira prática e em tempo real. Essa funcionalidade permitirá trocar informações, fornecer orientações, esclarecer dúvidas e acompanhar a execução das atividades, promovendo uma comunicação eficiente e colaborativa entre o gerente e a equipe de atendimento.
+#### ✈️ Gestão de voos
+- Cadastrar novos voos
+- Atualizar informações de voos existentes
+- Remover voos
+- Listar todos os voos cadastrados
+- Marcar status de voos
 
-### ⚙️ Tela de Atendente
+#### 🛩️ Gestão de aviões
+- Cadastrar novos aviões na frota
+- Atualizar dados de aviões existentes
+- Remover aviões da frota
+- Listar todos os aviões cadastrados
 
-Se, após o login, o usuário for identificado como atendente, ele terá acesso às seguintes funcionalidades através dos botões na tela principal de atendente:
+#### 💬 Chat com atendentes
+Comunicação em tempo real com a equipe de atendimento para coordenação de atividades e esclarecimento de dúvidas.
 
-- Passageiros
-- Reservas
-- Chat
-- Sair (para retornar ao menu principal)
-  
-#### 🔧 Tela de Passageiros
+---
 
-Na tela de Passageiros, o atendente terá acesso a funcionalidades essenciais para o gerenciamento de informações dos clientes. Ele poderá cadastrar novos passageiros no sistema, atualizar os dados de passageiros já existentes, remover registros de passageiros quando necessário e listar todos os passageiros cadastrados para facilitar a consulta e a organização. Essas ferramentas asseguram uma gestão eficiente e precisa das informações dos passageiros.
+### 👨‍💼 Funcionalidades do atendente
 
-#### 🔧 Tela de Reservas
+#### 👥 Gestão de passageiros
+- Cadastrar novos passageiros
+- Atualizar dados de passageiros
+- Remover registros de passageiros
+- Listar todos os passageiros cadastrados
 
-Na tela de Reservas, o atendente terá à disposição funcionalidades para gerenciar as reservas de voos de forma prática e eficiente. Ele poderá realizar a reserva de um voo para um cliente, garantindo o registro da viagem no sistema, ou remover reservas já existentes, caso haja cancelamentos ou alterações. Essas opções permitem um gerenciamento organizado e atualizado das reservas, atendendo às necessidades dos clientes de maneira ágil.
+#### 🎫 Gestão de reservas
+- Realizar reservas de voos para clientes
+- Remover reservas existentes
+- Consultar reservas ativas
 
-#### 🔧 Tela de Chat
+#### 💬 Chat com gerentes
+Comunicação direta com gerentes para suporte e orientações.
 
-Na tela de Chat, o atendente terá a possibilidade de se comunicar diretamente com os gerentes de maneira prática e em tempo real. Essa funcionalidade permitirá trocar informações, fornecer orientações, esclarecer dúvidas e acompanhar a execução das atividades, promovendo uma comunicação eficiente e colaborativa entre o gerente e a equipe de atendimento.
-  
-## 🔗 Aproveite a aplicação
-Para que a aplicação funcione corretamente é necessário o Docker Desktop instalado, além da criação do conteiner Postgress(banco de dados utilizado). 
+## 🚀 Como executar
 
-1. Clone o repositório
+### Pré-requisitos
+- Python 3.9 ou superior
+- Docker Desktop instalado e em execução
+- Git
+
+### Instalação
+
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/IagoraNz/POO2-Project
+   cd POO2-Project
+   ```
+
+2. Crie o container do PostgreSQL:
+   ```bash
+   docker run --name postgres -e POSTGRES_USER=poodois -e POSTGRES_PASSWORD=1234 -e POSTGRES_DB=credenciais -p 5432:5432 -d postgres
+   ```
+
+3. Inicie o container do Docker:
+   ```bash
+   docker start postgres
+   ```
+
+4. Execute o arquivo principal da aplicação:
+   ```bash
+   python src/main.py
+   ```
+
+## 📂 Estrutura do repositório
+
 ```
-git clone https://github.com/IagoraNz/POO2-Project
+📂 POO2-Project/
+├── 📂 src/
+│   ├── 🐍 main.py              # Arquivo principal da aplicação
+│   ├── 📂 POO2PROJECT/         # Módulos principais do sistema
+│   ├── 📂 backend/             # Lógica de backend e banco de dados
+│   ├── 📂 chat/                # Funcionalidade de chat
+│   ├── 📂 fonts/               # Fontes customizadas
+│   ├── 📂 images/              # Recursos visuais
+│   ├── 📂 others/              # Utilitários diversos
+│   └── 📂 test/                # Testes automatizados
+├── 📄 pyproject.toml           # Configuração do Poetry
+├── 📄 setup.py                 # Configuração de instalação
+├── 📄 test_autenticar.py       # Testes de autenticação
+└── 📄 README.md                # Documentação do projeto
 ```
 
-2. Criação do container
+## ⚠️ Notas importantes
 
-Para criar o conteiner utilize o código abaixo no terminal do seu compilador com o Docker Desktop em execução.
-``` 
-docker run --name postgres -e POSTGRES_USER=poodois -e POSTGRES_PASSWORD=1234 -e POSTGRES_DB=credenciais -p 5432:5432 -d postgres
-``` 
+> [!IMPORTANT]
+> Certifique-se de que o Docker Desktop está instalado e em execução antes de iniciar a aplicação.
 
-3. Iniciar o conteiner do Docker
+> [!WARNING]
+> O container PostgreSQL deve estar ativo para que o sistema funcione corretamente. Verifique o status com `docker ps`.
 
-Com o Docker Desktop em execução e após o contêiner ter sido criado, utilize o comando abaixo para iniciar o contêiner pelo terminal ou, se preferir, inicie-o manualmente pelo Docker Desktop.
-``` 
-docker start postgres
-```
+> [!NOTE]
+> Certifique-se de que seu sistema tenha recursos suficientes alocados para o Docker Desktop a fim de evitar problemas de desempenho.
 
-4. Rode o arquivo principal da aplicação
-```
-./main.py
-``` 
+## 📝 Licença
 
-## ⚠️ Notas
-- Certifique-se de que você criou o contêiner.
-- Certifique-se de que o Docker e o contêiner Docker estão em execução.
-- Certifique-se de que seu sistema tenha recursos suficientes alocados para o Docker Desktop a fim de evitar problemas de desempenho.
+Este projeto foi desenvolvido como trabalho acadêmico para a disciplina de Programação Orientada a Objetos II.
